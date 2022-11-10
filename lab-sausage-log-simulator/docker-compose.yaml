@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: simulator
+    hostname: simulator
+    volumes:
+      - ./input:/sausage/log/
