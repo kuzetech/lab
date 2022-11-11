@@ -22,7 +22,7 @@ var (
 	// 每种监控指标类型基本都有三个方法
 	// NewCounter		基本方法
 	// NewCounterVec	指定 lable
-	// NewCounterFunc	上报的值为 func 返回值，如果是 counter 类型返回值必须满足一直递增，另外还需要保证方法是线程安全
+	// NewCounterFunc	上报的值为 func 返回值，如果是 counter 类型返回值必须满足一直递增，另外还需要保证方法是线程安全，可以利用该方法即使程序停止了也能继续上传
 
 	// 实现静态 lable
 	MyCounter = promauto.NewCounter(prometheus.CounterOpts{
@@ -30,6 +30,15 @@ var (
 		Name:        "counter_total",
 		Help:        "自定义counter",
 		ConstLabels: constLabels,
+	})
+
+	MyCounter2 = promauto.NewCounterFunc(prometheus.CounterOpts{
+		Namespace:   "my", // 在指标名前面统一加入前缀，最终指标名为 my_counter_total
+		Name:        "counter_total2",
+		Help:        "自定义counter2",
+		ConstLabels: constLabels,
+	}, func() float64 {
+		return float64(time.Now().Unix())
 	})
 
 	// 可以实现动态 lable
