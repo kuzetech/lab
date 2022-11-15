@@ -46,8 +46,8 @@ func testMinuteLevel() {
 
 	c := cron.New(cron.WithSeconds())
 
-	c.AddFunc("0 10 * * * *", func() {
-		log.Info().Msg("每个小时的 30 分钟整触发创建下一个小时的文件夹")
+	c.AddFunc("0 15 * * * *", func() {
+		log.Info().Msg("每个小时的 15 分钟整触发创建下一个小时的文件夹")
 		wTime := time.Now().Add(time.Hour)
 		wyear, wmonth, wday := wTime.Date()
 		for i := 1; i <= mserverCount; i++ {
