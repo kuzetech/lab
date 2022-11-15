@@ -56,7 +56,7 @@ var (
 
 	// 定义histogram
 	// 在 prometheus 服务端计算分位数
-	MyHistogram = prometheus.NewHistogram(prometheus.HistogramOpts{
+	MyHistogram = promauto.NewHistogram(prometheus.HistogramOpts{
 		Namespace: "my", // 在指标名前面统一加入前缀
 		Name:      "histogram_bucket",
 		Help:      "自定义histogram",
@@ -70,7 +70,7 @@ var (
 
 	// 定义 Summary
 	// 在 client 端计算分位数
-	MySummary = prometheus.NewSummary(prometheus.SummaryOpts{
+	MySummary = promauto.NewSummary(prometheus.SummaryOpts{
 		Namespace: "my", // 在指标名前面统一加入前缀
 		Name:      "summary_bucket",
 		Help:      "自定义summary",
@@ -85,9 +85,9 @@ var (
 )
 
 func main() {
-	// 如果是 Histogram 或者 Summary 类型必须注册
-	prometheus.MustRegister(MyHistogram)
-	prometheus.MustRegister(MySummary)
+	// 如果使用 prometheus.New* 则还需要注册
+	// prometheus.MustRegister(MyHistogram)
+	// 如果使用 promauto.New* 则自动注册
 
 	// 如果直接使用 http.ListenAndServe(":2112", nil)
 	// handler 为 nil 的情况下会默认使用 DefaultServeMux，为一个全局变量
