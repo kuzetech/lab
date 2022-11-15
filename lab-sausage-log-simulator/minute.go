@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	mserverCount          = 50
-	mmessageSizePerSecond = 300
+	mserverCount          = 5
+	mmessageSizePerSecond = 1
 
-	mlogParentDir      = "./minute-logs/"
+	mlogParentDir      = "/sausage-logs/"
 	mhourLogDirPathFmt = "%ss%d/%d/%d/%d/%d"
 	mminuteLogPathFmt  = "%ss%d/%d/%d/%d/%d/%d.log"
 )
@@ -46,7 +46,7 @@ func testMinuteLevel() {
 
 	c := cron.New(cron.WithSeconds())
 
-	c.AddFunc("0 30 * * * *", func() {
+	c.AddFunc("0 10 * * * *", func() {
 		log.Info().Msg("每个小时的 30 分钟整触发创建下一个小时的文件夹")
 		wTime := time.Now().Add(time.Hour)
 		wyear, wmonth, wday := wTime.Date()
