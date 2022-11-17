@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	mserverCount          = 5
-	mmessageSizePerSecond = 1
+	mserverCount          = 50
+	mmessageSizePerSecond = 250
 
-	mlogParentDir      = "/sausage-logs/"
+	mlogParentDir      = "./sausage-logs/"
 	mhourLogDirPathFmt = "%ss%d/%d/%d/%d/%d"
 	mminuteLogPathFmt  = "%ss%d/%d/%d/%d/%d/%d.log"
 )
