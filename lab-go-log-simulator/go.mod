@@ -1,4 +1,4 @@
-module lab-sausage-log-simulator
+module lab-go-log-simulator
 
 go 1.18
 

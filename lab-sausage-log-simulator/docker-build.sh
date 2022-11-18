@@ -1,1 +1,0 @@
-docker build -t lab-sausage-log-simulator:1.0.0 .

@@ -2,12 +2,12 @@ FROM golang:1.18-bullseye as builder
 
 ENV GOPROXY=https://goproxy.cn,direct
 
-RUN mkdir -p /app
+RUN mkdir -p /app/simulator
 
-WORKDIR /app
+WORKDIR /app/simulator
 
-COPY . .
+COPY ./* ./
 
 RUN go mod download -x && go build .
 
-CMD ["./lab-promethues-go-client"]
+CMD ["./lab-go-log-simulator"]
