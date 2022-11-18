@@ -26,6 +26,7 @@ func main() {
 	router.Use(ginLoggerMiddleware) // 自定义日志中间件
 
 	initGinRouter(router)
+	initGinRestRouter(router)
 
 	server := &http.Server{
 		Addr:           ":8080",

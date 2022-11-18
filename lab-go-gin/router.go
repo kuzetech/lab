@@ -12,8 +12,10 @@ import (
 // form 针对 Content-Type 等于 x-www-form-urlencoded 或 form-data
 // json 针对 Content-Type 等于 json
 // 如果一个字段的 tag 加上了 binding:"required"，但绑定时是空值, Gin 会报错
+// 关于校验的文档可以参考 https://pkg.go.dev/gopkg.in/go-playground/validator.v8#hdr-Baked_In_Validators_and_Tags
+// 直接在 binding 中添加对应的 tag
 type LoginForm struct {
-	User     string `form:"user" json:"user" binding:"required"`
+	User     string `form:"user" json:"user" binding:"required,min=5,max=10"`
 	Password string `form:"password" json:"password" binding:"required"`
 }
 
@@ -22,6 +24,11 @@ type LoginForm struct {
 type Person struct {
 	ID   string `uri:"id" binding:"required"`
 	Name string `uri:"name" binding:"required"`
+}
+
+type JsonResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
 func initGinRouter(router *gin.Engine) {
@@ -46,6 +53,8 @@ func initGinRouter(router *gin.Engine) {
 	// 从路由中绑定参数
 	v1Group.GET("/router/:name/:id", func(c *gin.Context) {
 		var person Person
+		// 如果要绑定路由参数必须使用 ShouldBindUri
+		// ShouldBind 只能用来绑定 body
 		if err := c.ShouldBindUri(&person); err != nil {
 			c.JSON(400, gin.H{"msg": err.Error()})
 			return
@@ -95,7 +104,7 @@ func initGinRouter(router *gin.Engine) {
 
 	// 绑定 body 为 json 的请求数据
 	// Content-Type: application/json
-	v1Group.POST("/login/:user", func(c *gin.Context) {
+	v1Group.POST("/login", func(c *gin.Context) {
 		var form LoginForm
 		// ShouldBind 会根据 Content-Type 自动选择绑定格式
 		err := c.ShouldBind(&form) // 等价于 c.ShouldBindBodyWith(&form, binding.JSON)  也等价于 c.ShouldBindJSON(&form)
@@ -110,6 +119,11 @@ func initGinRouter(router *gin.Engine) {
 		}
 
 		c.String(http.StatusOK, "user = %s, password = %s", form.User, form.Password)
+	})
+
+	// 返回一个对象自动转换称 json
+	v1Group.GET("/json_response", func(c *gin.Context) {
+		c.JSON(http.StatusOK, JsonResponse{Code: 100, Msg: "test"})
 	})
 
 	// 重定向
