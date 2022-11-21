@@ -9,10 +9,10 @@ services:
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
-  broker:
+  kafka:
     image: 'bitnami/kafka:latest'
-    container_name: broker
-    hostname: broker
+    container_name: kafka
+    hostname: kafka
     depends_on:
       - zookeeper
     ports:
@@ -21,7 +21,7 @@ services:
       - KAFKA_BROKER_ID=1
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENERS=CLIENT://localhost:9092,EXTERNAL://kafka:9093
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      - KAFKA_CFG_LISTENERS=CLIENT://localhost:9092,EXTERNAL://broker:29092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=EXTERNAL://broker:29092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=EXTERNAL://kafka:9093
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
