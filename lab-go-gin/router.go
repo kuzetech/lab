@@ -32,7 +32,12 @@ type JsonResponse struct {
 }
 
 func initGinRouter(router *gin.Engine) {
-	v1Group := router.Group("/v1")
+	v1Group := router.Group("/v1", ginConcurrenceLimitMiddleware)
+
+	v1Group.GET("/my", func(c *gin.Context) {
+		time.Sleep(time.Second * 5)
+		c.String(http.StatusOK, "Hello")
+	})
 
 	// 解析 get 请求参数
 	// 示例 URL： /welcome?firstname=Jane&lastname=Doe

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"syscall"
@@ -14,6 +15,7 @@ import (
 
 func main() {
 	multiLog("Starting server... \n")
+	multiLog(fmt.Sprintf("当前请求并发限制为 %d \n", limit))
 
 	// Default 使用 Logger 和 Recovery 中间件
 	// router := gin.Default()
@@ -42,6 +44,10 @@ func main() {
 			multiLog(fmt.Sprintf("listen err: %s\n", err))
 			os.Exit(1)
 		}
+	}()
+
+	go func() {
+		http.ListenAndServe(":6060", nil)
 	}()
 
 	quit := make(chan os.Signal, 1)
