@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"log"
-	"os"
 	"os/signal"
 	"sync"
 	"syscall"
@@ -18,10 +17,8 @@ func testNormal() {
 
 	var wg sync.WaitGroup
 
-	signChan1 := make(chan os.Signal, 1)
-	signChan2 := make(chan os.Signal, 1)
-	signal.Notify(signChan1, syscall.SIGINT, syscall.SIGTERM)
-	signal.Notify(signChan2, syscall.SIGINT, syscall.SIGTERM)
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
 
 	deadline, _ := context.WithDeadline(context.Background(), time.Now().Add(time.Second*10))
 
@@ -31,7 +28,7 @@ func testNormal() {
 	go func() {
 		for {
 			select {
-			case sig := <-signChan1:
+			case sig := <-ctx.Done():
 				log.Printf("Producer Confirm Caught signal %v: terminating\n", sig)
 				wg.Done()
 				return
@@ -72,7 +69,7 @@ func testNormal() {
 	go func() {
 		for {
 			select {
-			case sig := <-signChan2:
+			case sig := <-ctx.Done():
 				log.Printf("Consumer Caught signal %v: terminating\n", sig)
 
 				// consumer.Commit()                   // 将 offset store 中的暂存的偏移量提交，如果 store 中不存在偏移量会报错，成功提交后清除 store 内容

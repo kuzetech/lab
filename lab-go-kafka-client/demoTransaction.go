@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"log"
-	"os"
 	"os/signal"
 	"sync"
 	"syscall"
@@ -17,10 +16,8 @@ func testTransaction() {
 
 	var wg sync.WaitGroup
 
-	signChan1 := make(chan os.Signal, 1)
-	signChan2 := make(chan os.Signal, 1)
-	signal.Notify(signChan1, syscall.SIGINT, syscall.SIGTERM)
-	signal.Notify(signChan2, syscall.SIGINT, syscall.SIGTERM)
+	stopCtx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
 
 	consumer := createTransactionConsumer(consumerTopic)
 	defer consumer.Close()
@@ -53,7 +50,7 @@ func testTransaction() {
 	go func() {
 		for {
 			select {
-			case sig := <-signChan1:
+			case sig := <-stopCtx.Done():
 				log.Printf("Producer Confirm Caught signal %v: terminating\n", sig)
 				wg.Done()
 				return
@@ -74,7 +71,7 @@ func testTransaction() {
 	go func() {
 		for {
 			select {
-			case sig := <-signChan2:
+			case sig := <-stopCtx.Done():
 				log.Printf("Consumer Caught signal %v: terminating\n", sig)
 				wg.Done()
 				return

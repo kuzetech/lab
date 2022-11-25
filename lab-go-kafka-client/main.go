@@ -2,5 +2,6 @@ package main
 
 func main() {
 	// testNormal()
-	testTransaction()
+	// testTransaction()
+	testIdempotence()
 }
