@@ -22,8 +22,10 @@ func testLuaScript() {
 
 	var incrBy = redis.NewScript(`
 		local key = KEYS[1]
-
-		local sum = redis.call("GET", key)
+		
+		-- call 方法会直接抛出异常，停止程序
+		-- 可以使用 pcall 方法捕获并处理异常
+		local sum = redis.call("GET", key)  --  
 		if not sum then
 		  sum = 0
 		end
