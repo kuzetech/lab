@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/go-redis/redis/v8"
 	"time"
 )
@@ -91,5 +92,20 @@ func (c *RedisC) getKeyByCustomerCommand(key string) (string, error) {
 		} else {
 			return text, nil
 		}
+	}
+}
+
+func (c *RedisC) scanKeysByPrefix(prefix string) {
+	ctx, cancelFunc := context.WithTimeout(context.Background(), timeOutDuration)
+	defer cancelFunc()
+
+	// 可以使用 c.Client.Keys() 实现
+	// 但是 c.Client.Scan 性能更好
+	iter := c.Client.Scan(ctx, 0, prefix, 0).Iterator()
+	for iter.Next(ctx) {
+		fmt.Println("keys", iter.Val())
+	}
+	if err := iter.Err(); err != nil {
+		panic(err)
 	}
 }

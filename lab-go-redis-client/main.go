@@ -5,6 +5,9 @@ func main() {
 	// testPipelines()
 	// incrementInTransaction("abc")
 	// testSub()
-	testLuaScript()
+	// testLuaScript()
+
+	client := NewRedisClientByOption()
+	client.scanKeysByPrefix("my*")
 
 }
