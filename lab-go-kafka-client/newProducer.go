@@ -17,9 +17,24 @@ func createProduce() *kafka.Producer {
 	return p
 }
 
-func createIdempotenceProduce() *kafka.Producer {
+func createClusterIdempotenceProduce() *kafka.Producer {
 	p, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers":  "172.30.0.3:9092,172.30.0.4:9092,172.30.0.5:9092",
+		"compression.type":   "lz4",
+		"message.max.bytes":  10 * 1024 * 1024,
+		"enable.idempotence": true,
+	})
+
+	if err != nil {
+		log.Fatalf("创建 producer 时失败，原因是：%s \n", err)
+	}
+
+	return p
+}
+
+func createIdempotenceProduce() *kafka.Producer {
+	p, err := kafka.NewProducer(&kafka.ConfigMap{
+		"bootstrap.servers":  "localhost:9092",
 		"compression.type":   "lz4",
 		"message.max.bytes":  10 * 1024 * 1024,
 		"enable.idempotence": true,

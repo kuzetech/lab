@@ -10,9 +10,9 @@ import (
 	"time"
 )
 
-func testIdempotence() {
+func testIdempotenceErr() {
 
-	produceTopic := "testIdempotence"
+	produceTopic := "testIdempotence3"
 
 	var wg sync.WaitGroup
 
@@ -49,23 +49,17 @@ func testIdempotence() {
 		}
 	}()
 
-	wg.Add(1)
-	go func() {
-		for {
-			select {
-			case sig := <-ctx.Done():
-				log.Printf("Producer generater Caught signal %v: terminating\n", sig)
-				wg.Done()
-				return
-			default:
-				producer.Produce(&kafka.Message{
-					TopicPartition: kafka.TopicPartition{Topic: &produceTopic, Partition: kafka.PartitionAny},
-					Value:          []byte(time.Now().Format("2006-01-02T15:04:05")),
-				}, nil)
-				time.Sleep(time.Millisecond * 200)
-			}
-		}
-	}()
+	producer.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{Topic: &produceTopic, Partition: kafka.PartitionAny},
+		Value:          []byte(time.Now().Format("2006-01-02T15:04:05")),
+	}, nil)
+
+	time.Sleep(time.Minute * 30)
+
+	producer.Produce(&kafka.Message{
+		TopicPartition: kafka.TopicPartition{Topic: &produceTopic, Partition: kafka.PartitionAny},
+		Value:          []byte(time.Now().Format("2006-01-02T15:04:05")),
+	}, nil)
 
 	wg.Wait()
 

@@ -4,8 +4,8 @@ docker network ls --filter driver=bridge --format "{{.ID}}" | xargs docker netwo
 
 ## kafka-topics.sh
 /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list
-/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --topic testIdempotence2 --partitions 3 --replication-factor 2
-/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --describe --topic testIdempotence2
+/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --create --topic testIdempotence --partitions 1 --replication-factor 2
+/opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --describe --topic testIdempotence
 /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --delete --topic testIdempotence
 
 ## 获取消费者组的消费情况
