@@ -5,5 +5,6 @@ func main() {
 	// testPipelines()
 	// incrementInTransaction("abc")
 	// testSub()
+	testLuaScript()
 
 }
