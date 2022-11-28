@@ -2,5 +2,8 @@ package main
 
 func main() {
 	// testNormal()
-	testPipelines()
+	// testPipelines()
+	// incrementInTransaction("abc")
+	// testSub()
+
 }
