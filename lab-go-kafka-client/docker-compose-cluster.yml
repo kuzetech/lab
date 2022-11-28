@@ -1,5 +1,8 @@
 version: '3'
 
+volumes:
+  kafka_1: {}
+
 networks:
   test-net:
     ipam:
@@ -31,7 +34,7 @@ services:
     ports:
       - '9092:9092'
     volumes:
-      - ./persistence:/bitnami/kafka
+      - kafka_1:/bitnami/kafka
     environment:
       - KAFKA_BROKER_ID=1
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
