@@ -105,6 +105,8 @@ func testNormal() {
 				wg.Done()
 				return
 			default:
+				// consumer.ReadMessage() 是对 consumer.Poll() 的进一步封装，两个方法都只返回一条消息
+				// 区别在于 Poll 还需要自己判断消息类型，而 ReadMessage 只返回消息和错误，更方便判断
 				event := consumer.Poll(100)
 
 				if event == nil {
