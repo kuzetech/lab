@@ -32,10 +32,10 @@ type JsonResponse struct {
 }
 
 func initGinRouter(router *gin.Engine) {
-	v1Group := router.Group("/v1", ginConcurrenceLimitMiddleware)
+	v1Group := router.Group("/v1", ginConcurrenceLimitMiddleware, upstreamMiddleware, downstreamMiddleware)
 
 	v1Group.GET("/my", func(c *gin.Context) {
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * 2)
 		c.String(http.StatusOK, "Hello")
 	})
 
