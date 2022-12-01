@@ -3,6 +3,7 @@ package main
 func main() {
 	// testNormal()
 	// testTransaction()
-	testIdempotence()
+	// testIdempotence()
 	//testIdempotenceErr()
+	testTransactionRestart()
 }

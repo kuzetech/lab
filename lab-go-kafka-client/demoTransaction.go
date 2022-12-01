@@ -30,7 +30,6 @@ func testTransaction() {
 
 	start := time.Now()
 	err := producer.InitTransactions(ctx)
-	duration := time.Now().Sub(start).Seconds()
 
 	if err != nil {
 		consumer.Close()
@@ -41,6 +40,8 @@ func testTransaction() {
 			log.Fatalf("producer InitTransactions err: %v", err)
 		}
 	}
+
+	duration := time.Now().Sub(start).Seconds()
 
 	if duration < maxDuration.Seconds()*0.8 || duration > maxDuration.Seconds()*1.2 {
 		log.Printf("InitTransactions() should have finished within %.2f +-20%%, not %.2f", maxDuration.Seconds(), duration)
