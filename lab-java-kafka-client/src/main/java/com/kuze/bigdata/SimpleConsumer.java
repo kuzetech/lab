@@ -1,9 +1,13 @@
 package com.kuze.bigdata;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -18,6 +22,22 @@ public class SimpleConsumer {
 
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+
+        /*
+        * 一旦设置了 enable.auto.commit 为 true，
+        * 默认 auto.commit.interval.ms 的值，一个 Consumer 将会提交它的 Offset 给 Kafka，
+        * 或者每一次数据从指定的 Topic 取回时，将会提交最后一次的 Offset
+        * 因此它能保证不出现消费丢失的情况，但它可能会出现重复消费
+        * 在默认情况下，Consumer 每 5 秒自动提交一次位移。现在，我们假设提交位移之后的 3 秒发生了 Rebalance 操作。
+        * 在 Rebalance 之后，所有 Consumer 从上一次提交的位移处继续消费，但该位移已经是 3 秒前的位移数据了，
+        * 故在 Rebalance 发生前 3 秒消费的所有数据都要重新再消费一次
+        *
+        * 所以自动提交有2个时机吗？？？？？
+        * 1 固定频率提及，例如5s提交一次
+        * 2 poll新数据之前提交前面消费的数据
+        *
+        * */
+        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 
         /*
         * 当 Consumer Group 完成 Rebalance 之后，每个 Consumer 实例都会定期地向 Coordinator 发送心跳请求，表明它还存活着。
@@ -54,6 +74,41 @@ public class SimpleConsumer {
         props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 1000 * 60 * 5);
 
 
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+
+
+        Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
+        int count = 0;
+
+        while (true) {
+            try {
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+
+                for (ConsumerRecord<String, String> record: records) {
+                    // 处理消息
+                    // process(record);
+
+                    offsets.put(new TopicPartition(record.topic(), record.partition()), new OffsetAndMetadata(record.offset() + 1));
+                    if(count % 100 == 0){
+                        consumer.commitAsync(offsets, null); // 回调处理逻辑是null
+                    }
+                    count++;
+                }
+
+                if(count % 100 > 0){
+                    consumer.commitAsync(offsets, null); // 回调处理逻辑是null
+                }
+            } catch(Exception e) {
+                // 处理异常
+
+            } finally {
+                try {
+                    consumer.commitSync(); // 最后一次提交使用同步阻塞式提交
+                } finally {
+                    consumer.close();
+                }
+            }
+        }
 
 
     }
