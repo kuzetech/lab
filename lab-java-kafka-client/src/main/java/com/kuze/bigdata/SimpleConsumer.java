@@ -32,9 +32,9 @@ public class SimpleConsumer {
         * 在 Rebalance 之后，所有 Consumer 从上一次提交的位移处继续消费，但该位移已经是 3 秒前的位移数据了，
         * 故在 Rebalance 发生前 3 秒消费的所有数据都要重新再消费一次
         *
-        * 所以自动提交有2个时机吗？？？？？
-        * 1 固定频率提及，例如5s提交一次
-        * 2 poll新数据之前提交前面消费的数据
+        * 自动提交时间设置并不是非常严格,可能会大于设置的时间间隔;
+        * 自动提交并不是严格地每间隔一段时间提交一次偏移量，而是每次在调用 KafkaConsumer.poll()时判断当前时间距离上次提交时间是否超过了配置了提交间隔，
+        * 如果超过了就进行提交，所以实际上的提交时间会超过配置的提交间隔
         *
         * */
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
