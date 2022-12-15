@@ -8,13 +8,13 @@ import (
 )
 
 func Test_loader_reference(t *testing.T) {
-	schemaLoader := gojsonschema.NewReferenceLoader("file://./../schema.json")
+	schemaLoader := gojsonschema.NewReferenceLoader("file://./schema.json")
 	schema, err := gojsonschema.NewSchema(schemaLoader)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	dataLoader := gojsonschema.NewReferenceLoader("file://./../data.json")
+	dataLoader := gojsonschema.NewReferenceLoader("file://./data.json")
 	result, err := schema.Validate(dataLoader)
 	if err != nil {
 		log.Fatal(err)

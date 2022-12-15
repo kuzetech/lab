@@ -10,6 +10,10 @@ import (
 
 func Test_simple(t *testing.T) {
 	ctx := context.Background()
+
+	/*
+		"$ref" : "#" 代表引用当前定义
+	*/
 	var schemaData = []byte(`{
 		"title": "Person",
 		"type": "object",

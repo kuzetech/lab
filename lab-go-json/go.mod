@@ -1,4 +1,4 @@
-module lab-go-json-schema
+module lab-go-json
 
 go 1.18
 
