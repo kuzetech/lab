@@ -25,4 +25,9 @@ func Test_parser(t *testing.T) {
 	value := result2.ToString()
 	t.Log(value)
 
+	result3 := fastApi.Get(bytes, "test")
+	if result3.ValueType() == jsoniter.InvalidValue {
+		t.Log("test 节点不存在")
+	}
+
 }
