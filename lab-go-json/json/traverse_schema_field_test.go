@@ -39,7 +39,7 @@ func recursionSchemas(nodeMap map[string]interface{}, any jsoniter.Any, upLevel 
 	}
 }
 
-func Test_traverse_schema(t *testing.T) {
+func Test_traverse_schema_field(t *testing.T) {
 	bytes, err := ioutil.ReadFile("./schema.json")
 	if err != nil {
 		t.Fatal(err)
