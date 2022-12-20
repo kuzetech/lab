@@ -6,6 +6,7 @@ import (
 )
 
 type H = map[string]interface{}
+type A = []interface{}
 
 func TestProjection(t *testing.T) {
 
@@ -23,16 +24,45 @@ func TestProjection(t *testing.T) {
 					},
 				},
 			},
+			"d": H{
+				"type": "array",
+				"items": H{
+					"type": "object",
+					"properties": H{
+						"e": H{
+							"type": "number",
+						},
+						"f": H{
+							"type": "string",
+						},
+					},
+				},
+			},
+			"f": H{
+				"type": "array",
+				"items": H{
+					"type": "string",
+				},
+			},
 		},
 	})
 
 	value := map[string]interface{}{
 		"a": 1,
 		"b": H{
-			"c": 1,
-			"e": 5,
+			"c":  1,
+			"c1": 1,
+			"c2": 1,
 		},
-		"d": 4,
+		"d": A{
+			H{"e": 1, "f": "1", "e1": 1},
+			H{"e": 2, "f": "2", "f1": "2"},
+		},
+		"f": A{
+			"a",
+			"b",
+		},
+		"z": 1,
 	}
 
 	result := p(value)
@@ -42,24 +72,15 @@ func TestProjection(t *testing.T) {
 		"b": H{
 			"c": 1,
 		},
-	}
-
-	assert.Equal(t, expected, result)
-}
-
-func BenchmarkProjection(b *testing.B) {
-	// parse schema, build projector
-	p := buildSliceProjector(buildMapProjector([]string{"a", "b"}, copyProjector))
-
-	value := []interface{}{
-		map[string]interface{}{
-			"a": 1,
-			"b": 2,
-			"c": 3,
+		"d": A{
+			H{"e": 1, "f": "1"},
+			H{"e": 2, "f": "2"},
+		},
+		"f": A{
+			"a",
+			"b",
 		},
 	}
 
-	for i := 0; i < b.N; i++ {
-		p(value)
-	}
+	assert.Equal(t, expected, result)
 }
