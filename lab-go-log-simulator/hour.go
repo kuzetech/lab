@@ -14,7 +14,7 @@ import (
 
 const (
 	serverCount          = 1
-	messageSizePerSecond = 2
+	messageSizePerSecond = 1
 
 	logParentDir     = "./sausage-logs/"
 	dayLogDirPathFmt = "%ss%d/%d/%d/%d"
