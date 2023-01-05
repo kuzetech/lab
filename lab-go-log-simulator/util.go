@@ -30,7 +30,7 @@ func CreateDir(path string) error {
 }
 
 func CreateFile(path string) error {
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_RDONLY, os.ModePerm)
+	file, err := os.Create(path)
 	if err != nil {
 		return err
 	}
