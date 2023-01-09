@@ -71,7 +71,7 @@ func createTransactionConsumer(topic string) *kafka.Consumer {
 		"session.timeout.ms":       6000,
 		"auto.offset.reset":        "earliest",
 		"enable.auto.offset.store": false, // 关闭自动保存 offset 到本地 store
-		"enable.auto.commit":       false,
+		"enable.auto.commit":       true,
 		"auto.commit.interval.ms":  5000,
 		"isolation.level":          "read_committed", // 如果生产者没有开启事务也能照常接收数据
 	})
