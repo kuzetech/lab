@@ -106,3 +106,14 @@ func getKey(key string) (string, error) {
 	return string(valCopy), nil
 
 }
+
+func deleteByKey(key string) error {
+	deleteErr := DB.Update(func(txn *badger.Txn) error {
+		err := txn.Delete([]byte(key))
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return deleteErr
+}

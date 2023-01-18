@@ -1,5 +1,8 @@
 package main
 
-func main() {
+import "log"
 
+func main() {
+	err := deleteByKey("test")
+	log.Println(err)
 }
