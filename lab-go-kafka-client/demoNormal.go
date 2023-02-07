@@ -63,6 +63,9 @@ func testNormal() {
 
 	producer.Close()
 
+	time.Sleep(time.Second * 5)
+	log.Printf("开始接收时间: %s\n", time.Now().Format(time.RFC3339Nano))
+
 	consumer := createConsumer(topic)
 
 	wg.Add(1)
@@ -115,7 +118,7 @@ func testNormal() {
 
 				switch e := event.(type) {
 				case *kafka.Message:
-					log.Printf("接收到消息，Message on %s: %s \n", e.TopicPartition, string(e.Value))
+					log.Printf("接收到消息，Message on %s: %s，数据产生时间为 %s \n", e.TopicPartition, string(e.Value), e.Timestamp.Format(time.RFC3339Nano))
 					if e.Headers != nil {
 						log.Printf("Headers: %v\n", e.Headers)
 					}
