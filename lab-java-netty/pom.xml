@@ -27,6 +27,7 @@
 
     <dependencyManagement>
         <dependencies>
+            <!--     包括 scope 也会传到子项目       -->
             <dependency>
                 <groupId>com.kuze.bigdata.study</groupId>
                 <artifactId>netty-core</artifactId>
@@ -47,26 +48,6 @@
                 <artifactId>netty-tcnative-boringssl-static</artifactId>
                 <version>1.1.33.Fork26</version>
             </dependency>
-            <!--
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.17</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>2.7</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j-impl</artifactId>
-                <version>2.7</version>
-            </dependency>
-            -->
-            <!--     包括 scope 也会传到子项目       -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -97,6 +78,7 @@
                 <version>2.0.2</version>
                 <scope>test</scope>
             </dependency>
+            <!-- logback-core 为基础核心，logback-classic 实现了简单日志门面SLF4J -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
@@ -106,6 +88,29 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
                 <version>1.0.13</version>
+            </dependency>
+            <!-- slf4j 核心包-->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.25</version>
+            </dependency>
+            <!--log4j2 核心包-->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>2.9.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>2.9.1</version>
+            </dependency>
+            <!--用于 log4j2 与 slf4j 保持桥接-->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>2.9.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
