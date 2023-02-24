@@ -104,6 +104,7 @@ public class NettyRemotingServer extends NettyRemotingAbstract implements Remoti
         });
 
         if (useEpoll()) {
+            // eventLoopGroupBoss 线程组，默认使用 1 个线程，对应 Netty 线程模型中的主 Reactor
             this.eventLoopGroupBoss = new EpollEventLoopGroup(1, new ThreadFactory() {
                 private AtomicInteger threadIndex = new AtomicInteger(0);
 
@@ -113,6 +114,7 @@ public class NettyRemotingServer extends NettyRemotingAbstract implements Remoti
                 }
             });
 
+            // eventLoopGroupSelector 线程组，对应 Netty 线程模型中的从 Reactor 组，俗称 IO 线程池
             this.eventLoopGroupSelector = new EpollEventLoopGroup(nettyServerConfig.getServerSelectorThreads(), new ThreadFactory() {
                 private AtomicInteger threadIndex = new AtomicInteger(0);
                 private int threadTotal = nettyServerConfig.getServerSelectorThreads();
@@ -170,6 +172,7 @@ public class NettyRemotingServer extends NettyRemotingAbstract implements Remoti
 
     @Override
     public void start() {
+        // defaultEventExecutorGroup 线程组，在 Netty 中，可以为编解码等事件处理器单独指定一个线程池，从而使 IO 线程只负责数据的读取与写入
         this.defaultEventExecutorGroup = new DefaultEventExecutorGroup(
             nettyServerConfig.getServerWorkerThreads(),
             new ThreadFactory() {
@@ -199,11 +202,13 @@ public class NettyRemotingServer extends NettyRemotingAbstract implements Remoti
                     public void initChannel(SocketChannel ch) throws Exception {
                         ch.pipeline()
                             .addLast(defaultEventExecutorGroup, HANDSHAKE_HANDLER_NAME, handshakeHandler)
-                            .addLast(defaultEventExecutorGroup,
-                                    new NettyEncoder(),new NettyDecoder(),
+                            .addLast(
+                                    defaultEventExecutorGroup,
+                                    new NettyEncoder(),
+                                    new NettyDecoder(),
                                     new IdleStateHandler(0, 0, nettyServerConfig.getServerChannelMaxIdleTimeSeconds()),
-                                connectionManageHandler,
-                                serverHandler
+                                    connectionManageHandler,
+                                    serverHandler // 业务处理器
                             );
                     }
                 });
@@ -213,6 +218,8 @@ public class NettyRemotingServer extends NettyRemotingAbstract implements Remoti
         }
 
         try {
+            // 服务端在指定接口建立监听，等待客户端连接
+            // bind 方法是一个非阻塞方法，后面加上 sync() 方法会变成阻塞方法，即需要等待服务端启动完成
             ChannelFuture sync = this.serverBootstrap.bind().sync();
             InetSocketAddress addr = (InetSocketAddress) sync.channel().localAddress();
             this.port = addr.getPort();
@@ -402,6 +409,9 @@ public class NettyRemotingServer extends NettyRemotingAbstract implements Remoti
     @ChannelHandler.Sharable
     class NettyServerHandler extends SimpleChannelInboundHandler<RemotingCommand> {
         @Override
+        // Handler 是在解码器之后执行，所以业务 Handler 中 channelRead 方法接收到的参数已经是通信协议中定义的具体模型，
+        // 也就是请求对象了。后面就是根据该请求对象中的内容，执行对应的业务逻辑了。
+        // 业务 Handler 会在 defaultEventExecutorGroup 线程组中执行，为了提高解码的性能，避免业务逻辑与 IO 操作相互影响，通常会将业务执行派发到业务线程池
         protected void channelRead0(ChannelHandlerContext ctx, RemotingCommand msg) throws Exception {
             processMessageReceived(ctx, msg);
         }

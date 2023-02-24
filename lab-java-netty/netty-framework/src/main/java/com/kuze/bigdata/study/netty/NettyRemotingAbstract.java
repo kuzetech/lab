@@ -409,11 +409,18 @@ public abstract class NettyRemotingAbstract {
 
     public RemotingCommand invokeSyncImpl(final Channel channel, final RemotingCommand request, final long timeoutMillis)
         throws InterruptedException, RemotingSendRequestException, RemotingTimeoutException {
+        // 为每一个请求创建一个唯一的请求序号。也就是为每一个请求创建一个响应结果 Future，并建立 RequestId 到响应结果的映射 Map，
+        // 这样在收到服务端响应结果时，就可以准确地知道具体是哪一个请求的结果了。这是多线程共同使用单一连接发送请求的核心要点
         final int opaque = request.getOpaque();
         try {
             final ResponseFuture responseFuture = new ResponseFuture(channel, opaque, timeoutMillis, null, null);
+            // 后面的代码会通过调用 Channel 的 writeAndFlush 方法，将数据写入到网络中。
+            // 本例中不需要在发送数据之前先注册写事件，
+            // 而是采用基于 Future 模式添加事件监听器，在收到返回结构后，ResponseFuture 中的状态会被更新
             this.responseTable.put(opaque, responseFuture);
             final SocketAddress addr = channel.remoteAddress();
+            // 同步发送的实现模板，通过调用 ResponseFuture 获取等待结果，
+            // 如果使用异步发送模式，就在第三步执行用户定义的回调函数
             channel.writeAndFlush(request).addListener(new ChannelFutureListener() {
                 public void operationComplete(ChannelFuture f) throws Exception {
                     if (f.isSuccess()) {
@@ -437,6 +444,7 @@ public abstract class NettyRemotingAbstract {
             }
             return responseCommand;
         } finally {
+            // 处理完一个请求后，删除 requestId-ResponseFuture 的映射关系
             this.responseTable.remove(opaque);
         }
     }
