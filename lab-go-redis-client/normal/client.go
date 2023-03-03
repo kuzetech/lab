@@ -2,6 +2,7 @@ package normal
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/go-redis/redis/v8"
 	"time"
@@ -28,14 +29,17 @@ func NewDefaultRedisClient() *RedisClient {
 	return &RedisClient{c: rdb}
 }
 
-func (c *RedisClient) getStringValueByKey(key string) (string, error) {
+func (c *RedisClient) getStringValueByKey(key string) (string, bool, error) {
 	result := c.c.Get(context.Background(), key)
 	err := result.Err()
-	if err != nil {
-		return "", err
-	} else {
-		return result.Val(), nil
+	if err == nil {
+		return result.Val(), true, nil
 	}
+	// key 不存在
+	if errors.Is(err, redis.Nil) {
+		return "", false, nil
+	}
+	return "", false, err
 }
 
 func (c *RedisClient) setKeyNoTTL(key string, value interface{}) error {
