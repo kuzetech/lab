@@ -42,6 +42,23 @@ func (c *RedisClient) getStringValueByKey(key string) (string, bool, error) {
 	return "", false, err
 }
 
+func (c *RedisClient) getIntValueByKey(key string) (int, bool, error) {
+	result := c.c.Get(context.Background(), key)
+	err := result.Err()
+	if err == nil {
+		v, err := result.Int()
+		if err != nil {
+			return 0, false, err
+		}
+		return v, true, nil
+	}
+	// key 不存在
+	if errors.Is(err, redis.Nil) {
+		return 0, false, nil
+	}
+	return 0, false, err
+}
+
 func (c *RedisClient) setKeyNoTTL(key string, value interface{}) error {
 	result := c.c.Set(context.Background(), key, value, -1)
 	err := result.Err()
