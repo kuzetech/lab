@@ -29,6 +29,22 @@ func NewDefaultRedisClient() *RedisClient {
 	return &RedisClient{c: rdb}
 }
 
+func NewClusterRedisClient() redis.UniversalClient {
+	rdb := redis.NewUniversalClient(&redis.UniversalOptions{
+		Addrs: []string{
+			"172.18.0.11:6379",
+			"172.18.0.12:6379",
+			"172.18.0.13:6379",
+			"172.18.0.14:6379",
+			"172.18.0.15:6379",
+			"172.18.0.16:6379",
+		},
+		Password: defaultRedisPassword,
+		DB:       defaultRedisDatabase,
+	})
+	return rdb
+}
+
 func (c *RedisClient) getStringValueByKey(key string) (string, bool, error) {
 	result := c.c.Get(context.Background(), key)
 	err := result.Err()
