@@ -1,4 +1,4 @@
-module lab-go-promethues-client
+module lab-go-promethues
 
 go 1.18
 

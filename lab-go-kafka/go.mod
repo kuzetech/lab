@@ -1,4 +1,4 @@
-module lab-go-kafka-client
+module lab-go-kafka
 
 go 1.18
 

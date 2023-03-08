@@ -1,4 +1,4 @@
-module lab-go-redis-client
+module lab-go-redis
 
 go 1.18
 
