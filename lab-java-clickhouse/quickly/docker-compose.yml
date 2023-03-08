@@ -23,6 +23,8 @@ services:
     volumes:
       - ./config.xml:/etc/clickhouse-server/config.xml
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./users.xml:/etc/clickhouse-server/users.xml
+      - ./users.d:/etc/clickhouse-server/users.d
     ports:
       - 8123:8123
       - 9000:9000

@@ -10,7 +10,7 @@ clickhouse client -n <<-EOSQL
         time    datetime
     )
     ENGINE = ReplicatedMergeTree('/clickhouse/tables/{shard}/{database}/{table}', '{replica}')
-    PARTITION BY event
+    PARTITION BY uid
     ORDER BY uid;
 
 EOSQL
