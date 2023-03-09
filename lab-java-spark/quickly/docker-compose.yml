@@ -123,3 +123,26 @@ services:
       - SPARK_RPC_ENCRYPTION_ENABLED=no
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
+
+  namenode:
+    image: singularities/hadoop:2.8
+    command: start-hadoop namenode
+    hostname: namenode
+    container_name: namenode
+    environment:
+      HDFS_USER: hdfsuser
+    ports:
+      - "8020:8020"
+      - "9000:9000"
+      - "50070:50070"
+      - "50075:50075"
+    depends_on:
+      - zookeeper
+
+    # datanode:
+    #   image: singularities/hadoop:2.8
+    #   command: start-hadoop datanode namenode
+    #   hostname: datanode
+    #   container_name: datanode
+    #   environment:
+    #     HDFS_USER: hdfsuser
