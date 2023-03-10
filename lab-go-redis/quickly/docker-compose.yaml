@@ -11,7 +11,7 @@ networks:
 
 services:
   redis-cluster:
-    image: redis:6-alpine
+    image: redis:7.0.9-bullseye
     command: 'redis-cli --cluster create 
     172.18.0.11:6379 172.18.0.12:6379 172.18.0.13:6379 172.18.0.14:6379 
     172.18.0.15:6379 172.18.0.16:6379
@@ -27,7 +27,7 @@ services:
       - redis6
 
   redis1:
-    image: redis:6-alpine
+    image: redis:7.0.9-bullseye
     container_name: redis1
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
@@ -40,7 +40,7 @@ services:
       - $PWD/docker-config/redis.conf:/usr/local/etc/redis/redis.conf
 
   redis2:
-    image: redis:6-alpine
+    image: redis:7.0.9-bullseye
     container_name: redis2
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
@@ -53,7 +53,7 @@ services:
       - $PWD/docker-config/redis.conf:/usr/local/etc/redis/redis.conf
 
   redis3:
-    image: redis:6-alpine
+    image: redis:7.0.9-bullseye
     container_name: redis3
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
@@ -66,7 +66,7 @@ services:
       - $PWD/docker-config/redis.conf:/usr/local/etc/redis/redis.conf
 
   redis4:
-    image: redis:6-alpine
+    image: redis:7.0.9-bullseye
     container_name: redis4
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
@@ -79,7 +79,7 @@ services:
       - $PWD/docker-config/redis.conf:/usr/local/etc/redis/redis.conf
 
   redis5:
-    image: redis:6-alpine
+    image: redis:7.0.9-bullseye
     container_name: redis5
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
@@ -92,7 +92,7 @@ services:
       - $PWD/docker-config/redis.conf:/usr/local/etc/redis/redis.conf
 
   redis6:
-    image: redis:6-alpine
+    image: redis:7.0.9-bullseye
     container_name: redis6
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
@@ -106,12 +106,15 @@ services:
 
   zookeeper:
     image: 'registry.biubiubiu.io/turbine/bitnami-zookeeper:3.7.0-debian-10-r215'
+    container_name: zookeeper
     ports:
       - '2181:2181'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+
   kafka:
     image: 'registry.biubiubiu.io/turbine/bitnami-kafka:2.4.1-debian-10-r58'
+    container_name: kafka
     ports:
       - '9092:9092'
     environment:

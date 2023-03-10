@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 	"time"
 )
 
 var (
 	defaultTimeOutDuration    = time.Millisecond * 150
-	defaultRedisLocalhostAddr = "localhost:6379"
+	defaultRedisLocalhostAddr = "172.18.0.14:6379"
 	defaultRedisDatabase      = 0
 	defaultRedisUser          = ""
 	defaultRedisPassword      = ""
