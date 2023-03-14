@@ -2,11 +2,11 @@ package com.kuze.bigdata.study.rocksdb;
 
 import java.util.List;
 
-public class Config{
+public class MyConfig {
 
     private List<String> configs;
 
-    public Config(List<String> configs) {
+    public MyConfig(List<String> configs) {
         this.configs = configs;
     }
 

@@ -18,7 +18,7 @@ public class PutByKey {
         list.add("2");
         list.add("5");
 
-        Config config = new Config(list);
+        // MyConfig config = new MyConfig(list);
 
         String jsonStr = JSONObject.toJSONString(list);
 

@@ -11,7 +11,7 @@ public class NoEmptyJsonStringFilterFunction implements FilterFunction<Row>, Ser
     @Override
     public boolean call(Row row) throws Exception {
         String jsonStr = row.getString(row.fieldIndex("value"));
-        return JsonUtils.isJSONString(jsonStr);
+        return JsonUtils.isJsonString(jsonStr);
     }
 
 }

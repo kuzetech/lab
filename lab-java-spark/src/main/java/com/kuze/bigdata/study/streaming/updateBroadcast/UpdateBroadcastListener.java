@@ -1,6 +1,6 @@
 package com.kuze.bigdata.study.streaming.updateBroadcast;
 
-import com.kuze.bigdata.study.clickhouse.ClickhouseQueryService;
+import com.kuze.bigdata.study.clickhouse.ClickHouseQueryService;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQueryListener;
 import org.slf4j.Logger;
@@ -19,12 +19,12 @@ public class UpdateBroadcastListener extends StreamingQueryListener {
     private SparkSession spark;
     private LoadResourceManager loadResourceManager;
     private LongAccumulator nextUpdateTimeStamp;
-    private ClickhouseQueryService chService;
+    private ClickHouseQueryService chService;
 
     public UpdateBroadcastListener(
             SparkSession spark,
             LoadResourceManager loadResourceManager,
-            ClickhouseQueryService chService) {
+            ClickHouseQueryService chService) {
         this.spark = spark;
         this.loadResourceManager = loadResourceManager;
         this.chService = chService;
@@ -47,16 +47,16 @@ public class UpdateBroadcastListener extends StreamingQueryListener {
                     Date now = new Date(currentTimeMillis);
                     logger.info("在 {} 时刻更新目标表 {}.{} 的表结构",
                             format.format(now),
-                            ClickhouseQueryService.CLICKHOUSE_DEST_DATABASE,
-                            ClickhouseQueryService.CLICKHOUSE_DEST_TABLE);
+                            ClickHouseQueryService.CLICKHOUSE_DEST_DATABASE,
+                            ClickHouseQueryService.CLICKHOUSE_DEST_TABLE);
 
                     this.loadResourceManager.unpersist();
                     try {
                         this.loadResourceManager.load(spark, this.chService);
                     } catch (Exception e) {
                         logger.error("获取目标表 {}.{} 的表结构时出现异常，异常信息为：{}",
-                                ClickhouseQueryService.CLICKHOUSE_DEST_DATABASE,
-                                ClickhouseQueryService.CLICKHOUSE_DEST_TABLE,
+                                ClickHouseQueryService.CLICKHOUSE_DEST_DATABASE,
+                                ClickHouseQueryService.CLICKHOUSE_DEST_TABLE,
                                 e.getMessage());
                         System.exit(1);
                     }
@@ -65,8 +65,8 @@ public class UpdateBroadcastListener extends StreamingQueryListener {
                     nextUpdateTimeStamp.accumulate(this.updateBroadcastIntervalMileSec);
                     Date nextUpdateTime = new Date(nextUpdateTimeMileSec);
                     logger.info("下一次更新目标表 {}.{} 的表结构时间为 {}",
-                            ClickhouseQueryService.CLICKHOUSE_DEST_DATABASE,
-                            ClickhouseQueryService.CLICKHOUSE_DEST_TABLE,
+                            ClickHouseQueryService.CLICKHOUSE_DEST_DATABASE,
+                            ClickHouseQueryService.CLICKHOUSE_DEST_TABLE,
                             format.format(nextUpdateTime));
                 }
             }

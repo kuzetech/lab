@@ -1,32 +1,29 @@
 package com.kuze.bigdata.study.utils;
 
 import org.apache.spark.SparkConf;
-import org.apache.spark.rdd.RDD;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import scala.reflect.ClassTag;
+import org.apache.spark.sql.catalyst.expressions.GenericRow;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
+import scala.Tuple2;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.apache.spark.sql.types.DataTypes.IntegerType;
+import static org.apache.spark.sql.types.DataTypes.StringType;
 
 public class SparkSessionUtils {
 
-    public static final List<String> wordList = new ArrayList<>();
-    static {
-        wordList.add("a");
-        wordList.add("b");
-        wordList.add("c");
-        wordList.add("d");
-        wordList.add("e");
-        wordList.add("");
-    }
-
-    public static SparkSession initLocalSparkSession(String appName){
+    public static SparkSession initLocalSparkSession(String appName) {
         SparkConf conf = new SparkConf();
+        conf.setAppName(appName);
         conf.setMaster("local[*]");
 
         SparkSession spark = SparkSession
                 .builder()
-                .appName(appName)
                 .config(conf)
                 .getOrCreate();
 
@@ -34,17 +31,36 @@ public class SparkSessionUtils {
     }
 
 
-    public static RDD<String> generateWordListRdd(String appName){
+    public static Dataset<Row> generatePersonDataFrameByBeanClass(String appName) {
         SparkSession spark = initLocalSparkSession(appName);
 
-        JavaToScalaUtils<String> utils = new JavaToScalaUtils<>();
+        JavaSparkContext javaSc = JavaSparkContext.fromSparkContext(spark.sparkContext());
 
-        RDD<String> distData = spark.sparkContext().parallelize(
-                utils.convertJavaListToScalaSet(wordList),
-                3,
-                ClassTag.apply(String.class));
+        JavaRDD<Person> sourceRDD = javaSc.parallelize(Constants.PersonList);
 
-        return distData;
+        Dataset<Row> dataFrame = spark.createDataFrame(sourceRDD, Person.class);
+
+        return dataFrame;
     }
+
+    public static Dataset<Row> generatePersonDataFrameByStructType(String appName) {
+        SparkSession spark = initLocalSparkSession(appName);
+
+        JavaSparkContext javaSc = JavaSparkContext.fromSparkContext(spark.sparkContext());
+
+        JavaRDD<Tuple2<String, Integer>> sourceRDD = javaSc.parallelize(Constants.tupleList);
+
+        JavaRDD<Row> rowJavaRDD = sourceRDD.map(o -> new GenericRow(new Object[]{o._1, o._2}));
+
+        StructType structType = new StructType(new StructField[]{
+                new StructField("name", StringType, false, Metadata.empty()),
+                new StructField("age", IntegerType, false, Metadata.empty()),
+        });
+
+        Dataset<Row> dataFrame = spark.createDataFrame(rowJavaRDD, structType);
+
+        return dataFrame;
+    }
+
 
 }

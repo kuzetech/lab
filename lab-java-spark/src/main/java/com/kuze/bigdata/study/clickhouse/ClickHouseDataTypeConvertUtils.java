@@ -1,52 +1,25 @@
-package com.kuze.bigdata.study.utils;
+package com.kuze.bigdata.study.clickhouse;
 
+import com.kuze.bigdata.study.utils.SparkDataTypeConvertUtils;
 import org.apache.spark.sql.types.*;
 import scala.collection.JavaConverters;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class StructTypeUtils {
-
-    public static String convertSparkDataTypeToSqlDataType(DataType dataType) throws Exception {
-        if (dataType instanceof StringType) {
-            return "STRING";
-        }
-        if (dataType instanceof IntegerType) {
-            return "INT";
-        }
-        if (dataType instanceof FloatType) {
-            return "FLOAT";
-        }
-        if (dataType instanceof LongType) {
-            return "LONG";
-        }
-        if (dataType instanceof BooleanType) {
-            return "BOOLEAN";
-        }
-        if (dataType instanceof DoubleType) {
-            return "DOUBLE";
-        }
-        if (dataType instanceof DateType) {
-            return "STRING";
-        }
-        if (dataType instanceof TimestampType) {
-            return "STRING";
-        }
-        throw new Exception("不支持的 Spark DataType（" + dataType.typeName() +"）");
-    }
+public class ClickHouseDataTypeConvertUtils {
 
     public static List<String> convertClickhouseSortColumnsToSqlListStr(StructType schema, String sortColumnsStr) throws Exception {
         String[] columns = sortColumnsStr.split(",");
         Set<String> set = Arrays.stream(columns).collect(Collectors.toSet());
-        List<StructField> structFields = JavaConverters.seqAsJavaList(schema.toList());
+        List<StructField> structFields = JavaConverters.<StructField>seqAsJavaList(schema.toList());
         List<String> list = new ArrayList<>();
         for (StructField x : structFields) {
             String fieldName = x.name();
             if(set.contains(fieldName)){
                 DataType dataType = x.dataType();
                 String sqlDataType = null;
-                sqlDataType = StructTypeUtils.convertSparkDataTypeToSqlDataType(dataType);
+                sqlDataType = SparkDataTypeConvertUtils.convertSparkDataTypeToSqlDataType(dataType);
                 list.add(fieldName + " " + sqlDataType);
             }
         }
@@ -92,7 +65,7 @@ public class StructTypeUtils {
             String fieldType = x.getValue();
             DataType dataType = null;
             try {
-                dataType = StructTypeUtils.convertClickhouseDataTypeToSparkDataType(fieldType);
+                dataType = convertClickhouseDataTypeToSparkDataType(fieldType);
             } catch (Exception e) {
                 e.printStackTrace();
             }

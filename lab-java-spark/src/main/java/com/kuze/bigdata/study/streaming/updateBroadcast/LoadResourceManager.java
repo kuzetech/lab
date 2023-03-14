@@ -1,7 +1,7 @@
 package com.kuze.bigdata.study.streaming.updateBroadcast;
 
 
-import com.kuze.bigdata.study.clickhouse.ClickhouseQueryService;
+import com.kuze.bigdata.study.clickhouse.ClickHouseQueryService;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.SparkSession;
@@ -20,7 +20,7 @@ class LoadResourceManager implements Serializable {
         broadcast.unpersist(true);
     }
 
-    public void load(SparkSession spark, ClickhouseQueryService chService) throws Exception {
+    public void load(SparkSession spark, ClickHouseQueryService chService) throws Exception {
         JavaSparkContext jsc = JavaSparkContext.fromSparkContext(spark.sparkContext());
         ClickhouseBroadcastContent content = chService.searchClickhouseBroadcastContent();
         broadcast = jsc.broadcast(content);

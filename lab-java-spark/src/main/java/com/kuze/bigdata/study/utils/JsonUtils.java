@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 
 public class JsonUtils {
-    public static boolean isJSONString(String content) {
+    public static boolean isJsonString(String content) {
         if (StringUtils.isEmpty(content)) {
             return false;
         }

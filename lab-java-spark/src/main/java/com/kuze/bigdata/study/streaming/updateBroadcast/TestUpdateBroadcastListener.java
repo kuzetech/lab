@@ -1,6 +1,6 @@
 package com.kuze.bigdata.study.streaming.updateBroadcast;
 
-import com.kuze.bigdata.study.clickhouse.ClickhouseQueryService;
+import com.kuze.bigdata.study.clickhouse.ClickHouseQueryService;
 import com.kuze.bigdata.study.utils.SparkSessionUtils;
 import org.apache.spark.api.java.function.FilterFunction;
 import org.apache.spark.sql.Dataset;
@@ -13,7 +13,7 @@ public class TestUpdateBroadcastListener {
 
         SparkSession spark = SparkSessionUtils.initLocalSparkSession("TestUpdateBroadcastListener");
 
-        ClickhouseQueryService chService = new ClickhouseQueryService();
+        ClickHouseQueryService chService = new ClickHouseQueryService();
         LoadResourceManager loadResourceManager = new LoadResourceManager();
         UpdateBroadcastListener listener = new UpdateBroadcastListener(spark, loadResourceManager, chService);
         spark.streams().addListener(listener);

@@ -2,7 +2,6 @@ package com.kuze.bigdata.study.clickhouse;
 
 import com.alibaba.fastjson.JSONObject;
 import com.kuze.bigdata.study.streaming.updateBroadcast.ClickhouseBroadcastContent;
-import com.kuze.bigdata.study.utils.StructTypeUtils;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
@@ -18,9 +17,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class ClickhouseQueryService implements Serializable {
+public class ClickHouseQueryService implements Serializable {
 
-    private final static Logger logger = LoggerFactory.getLogger(ClickhouseQueryService.class);
+    private final static Logger logger = LoggerFactory.getLogger(ClickHouseQueryService.class);
 
     private static final String CLICKHOUSE_BALANCED_CONNECT_URL = "jdbc:clickhouse://localhost:8121,localhost:8122/system";
     public static final String CLICKHOUSE_DEST_DATABASE = "default";
@@ -37,7 +36,7 @@ public class ClickhouseQueryService implements Serializable {
 
     private transient ClickHouseConnection driverConn;
 
-    public ClickhouseQueryService() throws SQLException {
+    public ClickHouseQueryService() throws SQLException {
         driverConn = createBalancedConnection();
     }
 
@@ -48,7 +47,7 @@ public class ClickhouseQueryService implements Serializable {
     public ClickhouseBroadcastContent searchClickhouseBroadcastContent() throws SQLException {
         List<String> list = this.searchAvailableHost();
         Map<String, String> columnsMap = this.searchDestTableColumns();
-        StructType structType = StructTypeUtils.convertClickhouseTableColumnsToSparkStructType(columnsMap);
+        StructType structType = ClickHouseDataTypeConvertUtils.convertClickhouseTableColumnsToSparkStructType(columnsMap);
         ClickhouseBroadcastContent content = new ClickhouseBroadcastContent(structType, list);
         return content;
     }
@@ -117,7 +116,7 @@ public class ClickhouseQueryService implements Serializable {
 
 
     private String createInsertStatementSql(StructType schema) {
-        List<StructField> structFields = JavaConverters.seqAsJavaList(schema.toList());
+        List<StructField> structFields = JavaConverters.<StructField>seqAsJavaList(schema.toList());
         String columnsString = structFields.stream().map(x -> x.name()).collect(Collectors.joining(","));
         String valuesString = structFields.stream().map(x -> "?").collect(Collectors.joining(","));
 
@@ -134,7 +133,7 @@ public class ClickhouseQueryService implements Serializable {
         Connection connection = createWorkerConnection(connectUrl);
         String sql = createInsertStatementSql(schema);
         PreparedStatement statement = connection.prepareStatement(sql);
-        List<StructField> structFields = JavaConverters.seqAsJavaList(schema.toList());
+        List<StructField> structFields = JavaConverters.<StructField>seqAsJavaList(schema.toList());
 
         Long count = 0L;
         Integer jsonStrIndex = 0;
