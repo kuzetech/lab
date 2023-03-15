@@ -7,9 +7,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.catalyst.expressions.GenericRow;
-import org.apache.spark.sql.types.Metadata;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
+import org.apache.spark.sql.types.*;
 import scala.Tuple2;
 
 import static org.apache.spark.sql.types.DataTypes.IntegerType;
@@ -51,9 +49,11 @@ public class SparkSessionUtils {
         JavaRDD<Row> rowJavaRDD = sourceRDD.map(o -> new GenericRow(new Object[]{o._1, o._2}));
 
         StructType structType = new StructType(new StructField[]{
-                new StructField("name", StringType, false, Metadata.empty()),
+                DataTypes.createStructField("name", StringType, false),
                 new StructField("age", IntegerType, false, Metadata.empty()),
         });
+
+        // DataTypes.createStructType()
 
         Dataset<Row> dataFrame = spark.createDataFrame(rowJavaRDD, structType);
 

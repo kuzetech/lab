@@ -1,4 +1,4 @@
-package com.kuze.bigdata.study.streaming.checkpoint;
+package com.kuze.bigdata.study.streaming.checkpointDemo;
 
 import com.kuze.bigdata.study.utils.ScalaToJavaUtils;
 import com.kuze.bigdata.study.utils.SparkSessionUtils;
