@@ -133,14 +133,13 @@ public class TestMultipleStreamingThread {
             completionService.submit(task);
         }
 
-
         try {
             completionService.take().get();
         } catch (Exception e) {
             logger.error("执行 pipeline 处理时出现错误，具体错误为：{}", e.getMessage());
         }finally {
             executorService.shutdown();
-            System.exit(1);
+            System.exit(0);
         }
 
     }
