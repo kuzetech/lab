@@ -23,7 +23,7 @@ public class RDDToClickhouseTransactions
 {
     public static void main( String[] args ) {
 
-        SparkSession spark = SparkSessionUtils.initLocalSparkSession("RDDToClickhouseTransactions");
+        SparkSession spark = SparkSessionUtils.initLocalSparkSession();
 
         JavaSparkContext jsc = JavaSparkContext.fromSparkContext(spark.sparkContext());
         List<Event> events = new ArrayList<>();

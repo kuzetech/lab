@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class TestRateSource {
     public static void main(String[] args) throws Exception{
 
-        SparkSession session = SparkSessionUtils.initLocalSparkSession("TestRateSource");
+        SparkSession session = SparkSessionUtils.initLocalSparkSession();
 
         Dataset<Row> rateDF = session.readStream().format("rate")
                 .option("rowsPerSecond", 3)

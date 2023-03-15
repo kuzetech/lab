@@ -8,7 +8,7 @@ import java.util.List;
 
 public class TestCreateDataFrameByRDD {
     public static void main(String[] args) {
-        Dataset<Row> rows = SparkSessionUtils.generatePersonDataFrameByStructType("TestCreateDataFrameByRDD");
+        Dataset<Row> rows = SparkSessionUtils.generatePersonDataFrameByStructType();
 
         List<Row> rowList = rows.collectAsList();
 

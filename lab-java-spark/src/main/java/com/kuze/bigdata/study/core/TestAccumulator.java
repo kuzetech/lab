@@ -13,7 +13,7 @@ import java.util.List;
 public class TestAccumulator {
     public static void main(String[] args) {
 
-        JavaSparkContext jsc = SparkContextUtils.initLocalJavaSparkContext("TestAccumulator");
+        JavaSparkContext jsc = SparkContextUtils.initLocalJavaSparkContext();
 
         LongAccumulator accum = jsc.sc().longAccumulator();
 

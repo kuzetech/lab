@@ -7,11 +7,11 @@ import org.apache.spark.sql.SparkSession;
 
 public class TestKafkaToConsole {
     public static void main(String[] args) throws Exception {
-        SparkSession sc = SparkSessionUtils.initLocalSparkSession("scala-first-try");
+        SparkSession spark = SparkSessionUtils.initLocalSparkSession();
 
-        Dataset<Row> kafkaDF = sc.readStream()
+        Dataset<Row> kafkaDF = spark.readStream()
                 .format("kafka")
-                .option("kafka.bootstrap.servers", "localhost:9092")
+                .option("kafka.bootstrap.servers", spark.conf().get("spark.kafka.bootstrap.servers"))
                 .option("subscribe", "event")
                 .option("startingOffsets", "latest")
                 .option("group_id", "scala-first-try")

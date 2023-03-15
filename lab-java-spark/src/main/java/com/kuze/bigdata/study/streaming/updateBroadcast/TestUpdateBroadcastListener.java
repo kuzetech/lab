@@ -11,7 +11,7 @@ public class TestUpdateBroadcastListener {
 
     public static void main(String[] args) throws Exception{
 
-        SparkSession spark = SparkSessionUtils.initLocalSparkSession("TestUpdateBroadcastListener");
+        SparkSession spark = SparkSessionUtils.initLocalSparkSession();
 
         ClickHouseQueryService chService = new ClickHouseQueryService();
         LoadResourceManager loadResourceManager = new LoadResourceManager();
@@ -20,7 +20,7 @@ public class TestUpdateBroadcastListener {
 
         Dataset<Row> kafkaDF = spark.readStream()
                 .format("kafka")
-                .option("kafka.bootstrap.servers", "localhost:9092")
+                .option("kafka.bootstrap.servers", spark.conf().get("spark.kafka.bootstrap.servers"))
                 .option("subscribe", "event")
                 .option("startingOffsets", "earliest")
                 .option("group_id", "TestUpdateBroadcastListener")

@@ -10,7 +10,7 @@ import static org.apache.spark.sql.functions.col;
 
 public class TestCreateDataFrameByBeanClass {
     public static void main(String[] args) {
-        Dataset<Row> rows = SparkSessionUtils.generatePersonDataFrameByBeanClass("TestCreateDataFrameByBeanClass");
+        Dataset<Row> rows = SparkSessionUtils.generatePersonDataFrameByBeanClass();
 
         Dataset<Row> nameRDD = rows.select(col("name"));
 

@@ -8,7 +8,7 @@ import org.apache.spark.sql.SparkSession;
 public class TestRatePerMicroBatch {
     public static void main(String[] args) throws Exception{
 
-        SparkSession session = SparkSessionUtils.initLocalSparkSession("TestRatePerMicroBatch");
+        SparkSession session = SparkSessionUtils.initLocalSparkSession();
 
         // 该 format 类型在 spark 3.3.0 刚加入
         Dataset<Row> rateDF = session.readStream().format("rate-micro-batch")

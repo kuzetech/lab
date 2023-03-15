@@ -11,7 +11,7 @@ import java.util.List;
 public class TestBroadcast {
     public static void main(String[] args) {
 
-        JavaSparkContext jsc = SparkContextUtils.initLocalJavaSparkContext("TestBroadcast");
+        JavaSparkContext jsc = SparkContextUtils.initLocalJavaSparkContext();
 
         List<String> availableWordList = new ArrayList<>();
         availableWordList.add("a");

@@ -17,10 +17,8 @@ import static org.apache.spark.sql.types.DataTypes.StringType;
 
 public class SparkSessionUtils {
 
-    public static SparkSession initLocalSparkSession(String appName) {
-        SparkConf conf = new SparkConf();
-        conf.setAppName(appName);
-        conf.setMaster("local[*]");
+    public static SparkSession initLocalSparkSession() {
+        SparkConf conf = SparkConfUtils.initSparkConf();
 
         SparkSession spark = SparkSession
                 .builder()
@@ -31,8 +29,8 @@ public class SparkSessionUtils {
     }
 
 
-    public static Dataset<Row> generatePersonDataFrameByBeanClass(String appName) {
-        SparkSession spark = initLocalSparkSession(appName);
+    public static Dataset<Row> generatePersonDataFrameByBeanClass() {
+        SparkSession spark = initLocalSparkSession();
 
         JavaSparkContext javaSc = JavaSparkContext.fromSparkContext(spark.sparkContext());
 
@@ -43,8 +41,8 @@ public class SparkSessionUtils {
         return dataFrame;
     }
 
-    public static Dataset<Row> generatePersonDataFrameByStructType(String appName) {
-        SparkSession spark = initLocalSparkSession(appName);
+    public static Dataset<Row> generatePersonDataFrameByStructType() {
+        SparkSession spark = initLocalSparkSession();
 
         JavaSparkContext javaSc = JavaSparkContext.fromSparkContext(spark.sparkContext());
 

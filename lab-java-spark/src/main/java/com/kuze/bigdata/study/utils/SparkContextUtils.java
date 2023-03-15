@@ -6,10 +6,8 @@ import org.apache.spark.api.java.JavaSparkContext;
 
 public class SparkContextUtils {
 
-    public static JavaSparkContext initLocalJavaSparkContext(String appName) {
-        SparkConf conf = new SparkConf();
-        conf.setAppName(appName);
-        conf.setMaster("local[*]");
+    public static JavaSparkContext initLocalJavaSparkContext() {
+        SparkConf conf = SparkConfUtils.initSparkConf();
 
         JavaSparkContext sc = new JavaSparkContext(conf);
         return sc;
@@ -22,8 +20,8 @@ public class SparkContextUtils {
     }
 
 
-    public static JavaRDD<String> generateWordListJavaRDD(String appName) {
-        JavaSparkContext javaSc = initLocalJavaSparkContext(appName);
+    public static JavaRDD<String> generateWordListJavaRDD() {
+        JavaSparkContext javaSc = initLocalJavaSparkContext();
 
         JavaRDD<String> sourceRDD = javaSc.parallelize(Constants.wordList);
 

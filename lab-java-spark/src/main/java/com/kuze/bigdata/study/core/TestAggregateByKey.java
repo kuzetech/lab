@@ -10,7 +10,7 @@ import java.util.List;
 
 public class TestAggregateByKey {
     public static void main(String[] args) {
-        JavaRDD<String> wordRDD = SparkContextUtils.generateWordListJavaRDD("TestAggregateByKey");
+        JavaRDD<String> wordRDD = SparkContextUtils.generateWordListJavaRDD();
 
         JavaPairRDD<String, Integer> pairs = wordRDD.mapToPair(w -> new Tuple2(w, 1));
 

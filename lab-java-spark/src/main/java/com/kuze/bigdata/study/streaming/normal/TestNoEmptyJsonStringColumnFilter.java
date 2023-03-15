@@ -10,11 +10,11 @@ public class TestNoEmptyJsonStringColumnFilter {
 
     public static void main(String[] args) throws Exception{
 
-        SparkSession spark = SparkSessionUtils.initLocalSparkSession("TestNoEmptyJsonStringColumnFilter");
+        SparkSession spark = SparkSessionUtils.initLocalSparkSession();
 
         Dataset<Row> kafkaDF = spark.readStream()
                 .format("kafka")
-                .option("kafka.bootstrap.servers", "localhost:9092")
+                .option("kafka.bootstrap.servers", spark.conf().get("spark.kafka.bootstrap.servers"))
                 .option("subscribe", "event")
                 .option("startingOffsets", "earliest")
                 .option("group_id", "TestNoEmptyJsonStringColumnFilter")

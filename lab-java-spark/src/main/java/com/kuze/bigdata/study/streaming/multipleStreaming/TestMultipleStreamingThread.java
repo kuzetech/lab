@@ -48,7 +48,7 @@ public class TestMultipleStreamingThread {
     }
 
     public static void main(String[] args) throws Exception{
-        SparkSession spark = SparkSessionUtils.initLocalSparkSession("TestMultipleStreaming");
+        SparkSession spark = SparkSessionUtils.initLocalSparkSession();
 
         spark.streams().addListener(new MyStreamingQueryListener());
 
@@ -71,7 +71,7 @@ public class TestMultipleStreamingThread {
             public Boolean call() throws Exception {
                 Dataset<Row> kafkaDF = spark.readStream()
                         .format("kafka")
-                        .option("kafka.bootstrap.servers", "localhost:9092")
+                        .option("kafka.bootstrap.servers", spark.conf().get("spark.kafka.bootstrap.servers"))
                         .option("subscribe", "event")
                         .option("startingOffsets", "earliest")
                         .option("group_id", "TestMultipleStreamingThread")
@@ -99,7 +99,7 @@ public class TestMultipleStreamingThread {
             public Boolean call() throws Exception {
                 Dataset<Row> kafkaDF2 = spark.readStream()
                         .format("kafka")
-                        .option("kafka.bootstrap.servers", "localhost:9092")
+                        .option("kafka.bootstrap.servers", spark.conf().get("spark.kafka.bootstrap.servers"))
                         .option("subscribe", "event2")
                         .option("startingOffsets", "earliest")
                         .option("group_id", "TestMultipleStreamingThread")
