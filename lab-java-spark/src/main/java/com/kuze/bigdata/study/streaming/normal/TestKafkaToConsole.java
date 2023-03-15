@@ -23,7 +23,7 @@ public class TestKafkaToConsole {
         messageDF.writeStream()
                 .format("console")
                 .option("truncate", false)
-                .option("checkpointLocation", "./checkpoint/scala-first-try")
+                .option("checkpointLocation", "/Users/huangsw/code/lab/lab-java-spark/ckdata//scala-first-try")
                 .start()
                 .awaitTermination();
     }

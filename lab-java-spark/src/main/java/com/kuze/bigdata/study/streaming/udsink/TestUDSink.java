@@ -30,7 +30,7 @@ public class TestUDSink {
 
         sortDF.writeStream()
                 .outputMode(OutputMode.Append())
-                .option("checkpointLocation", "/Users/huangsw/code/study/study-spark/checkpoint")
+                .option("checkpointLocation", "/Users/huangsw/code/lab/lab-java-spark/ckdata/TestUDSink")
                 .format("com.kuze.bigdata.study.streaming.udsink.MyStreamSinkProvider")
                 .start()
                 .awaitTermination();

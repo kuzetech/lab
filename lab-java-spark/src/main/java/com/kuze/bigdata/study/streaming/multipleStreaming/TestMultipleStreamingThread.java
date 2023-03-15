@@ -82,7 +82,7 @@ public class TestMultipleStreamingThread {
                 Dataset<Row> tableDF = messageDF.selectExpr("from_json(value, 'uid String, eventId String, eventTime Date') as value").select(col("value.*"));
 
                 tableDF.writeStream()
-                        .option("checkpointLocation", "checkpoint/TestMultipleStreamingThread/pipeline1")
+                        .option("checkpointLocation", "/Users/huangsw/code/lab/lab-java-spark/ckdata//TestMultipleStreamingThread/pipeline1")
                         .format("console")
                         .option("truncate", false)
                         .trigger(Trigger.ProcessingTime("5 seconds"))
@@ -114,7 +114,7 @@ public class TestMultipleStreamingThread {
                 Dataset<Row> tableDF4 = tableDF3.selectExpr("10 / uid");
 
                 tableDF4.writeStream()
-                        .option("checkpointLocation", "checkpoint/TestMultipleStreamingThread/pipeline2")
+                        .option("checkpointLocation", "/Users/huangsw/code/lab/lab-java-spark/ckdata/TestMultipleStreamingThread/pipeline2")
                         .format("console")
                         .option("truncate", false)
                         .trigger(Trigger.ProcessingTime("5 seconds"))
