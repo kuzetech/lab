@@ -11,4 +11,9 @@ public class ScalaToJavaUtils<T> {
         return javaList;
     }
 
+
+    public List<T> convertSeqToList(scala.collection.Seq<T> seq) {
+        List<T> javaList = JavaConverters.<T>seqAsJavaList(seq);
+        return javaList;
+    }
 }
