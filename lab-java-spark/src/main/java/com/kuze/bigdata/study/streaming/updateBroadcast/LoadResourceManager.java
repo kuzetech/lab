@@ -1,3 +1,4 @@
+/*
 package com.kuze.bigdata.study.streaming.updateBroadcast;
 
 
@@ -26,3 +27,4 @@ class LoadResourceManager implements Serializable {
         broadcast = jsc.broadcast(content);
     }
 }
+*/

@@ -1,6 +1,7 @@
-package com.kuze.bigdata.study.streaming.udsink;
+package com.kuze.bigdata.study.streaming.foreachbatch;
 
 import com.kuze.bigdata.study.utils.SparkSessionUtils;
+import org.apache.spark.TaskContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -14,9 +15,9 @@ import java.util.HashMap;
 import static org.apache.spark.sql.functions.col;
 import static org.apache.spark.sql.functions.from_json;
 
-public class TestUDSink {
+public class TestForeachBatch {
 
-    private final static Logger logger = LoggerFactory.getLogger(TestUDSink.class);
+    private final static Logger logger = LoggerFactory.getLogger(TestForeachBatch.class);
 
     public static void main(String[] args) throws Exception {
         SparkSession session = SparkSessionUtils.initLocalSparkSession();
@@ -33,20 +34,23 @@ public class TestUDSink {
 
         Dataset<Row> resultDF = socketDF
                 .withColumn("value", col("value").cast(DataTypes.StringType))
-                .withColumn("value", from_json(col("value"), "uid int, eventTime Date", new HashMap<String, String>()))
-                .select(col("value.*"));
+                .withColumn("value", from_json(col("value"), "uid int, eventTime Date", new HashMap<>()))
+                .select(col("value.*"))
+                .repartition(3, col("uid"));
 
         resultDF.writeStream()
                 .outputMode(OutputMode.Append())
-                .format("com.kuze.bigdata.study.streaming.udsink.ClickHouseStreamSinkProvider")
-                .option("connectUrl", "jdbc:clickhouse://172.26.0.9:8123,172.26.0.10:8123/system")
-                .option("cluster", "my")
-                .option("port", "8123")
-                .option("user", "default")
-                .option("password", "")
-                .option("database", "default")
-                .option("table", "event_local")
-                .option("shardingColumn", "uid")
+                .foreachBatch((batch, batchId) -> {
+                    logger.error("这里在 driver 执行，仅一次");
+                    batch.foreachPartition(iter -> {
+                        logger.error("这里在 executor 执行，仅一次");
+                        int partitionId = TaskContext.getPartitionId();
+                        while (iter.hasNext()) {
+                            Row row = iter.next();
+                            logger.error(String.format("分区 %d，传入的值为 %s", partitionId, row.mkString()));
+                        }
+                    });
+                })
                 .start()
                 .awaitTermination();
     }
