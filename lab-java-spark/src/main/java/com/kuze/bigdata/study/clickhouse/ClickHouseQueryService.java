@@ -24,7 +24,7 @@ public class ClickHouseQueryService implements Serializable {
     private static final String CLICKHOUSE_AVAILABLE_HOST_SQL_TEMPLATE = "select host_name from clusters where cluster = '%s'";
     private static final String CLICKHOUSE_TABLE_COLUMN_SQL_TEMPLATE = "select name, type from columns where table = '%s'";
 
-    private ClickHouseConnection conn;
+    private transient ClickHouseConnection conn;
     private ClickHouseQueryConfig config;
 
     public ClickHouseQueryService(ClickHouseQueryConfig config, Boolean createConnect) throws SQLException {
@@ -40,7 +40,7 @@ public class ClickHouseQueryService implements Serializable {
 
     public List<String> searchAvailableServer() throws SQLException {
         List<String>  list = this.searchAvailableHost(config.getDatabase());
-        logger.info("目标表为 {}.{} 的流程序从 clickhouse 服务中获取最新的可写入服务器连接信息，具体为 {}",
+        logger.error("目标表为 {}.{} 的流程序从 clickhouse 服务中获取最新的可写入服务器连接信息，具体为 {}",
                 config.getDatabase(),
                 config.getTable(),
                 list.toString());

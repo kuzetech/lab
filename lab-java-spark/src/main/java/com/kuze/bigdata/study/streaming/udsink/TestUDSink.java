@@ -22,9 +22,7 @@ public class TestUDSink {
         SparkSession session = SparkSessionUtils.initLocalSparkSession();
 
         // 执行命令 nc -lk 9999 输入数据如下：
-        // {"uid":1,"eventTime":"2022-01-01"}
-        // {"uid":2,"eventTime":"2022-01-01"}
-        // {"uid":3,"eventTime":"2022-01-01"}
+        // {"uid":1,"eventId":"test","eventTime":"2022-01-01"}
         Dataset<Row> socketDF = session.readStream()
                 .format("socket")
                 .option("host", "127.0.0.1")
@@ -33,13 +31,14 @@ public class TestUDSink {
 
         Dataset<Row> resultDF = socketDF
                 .withColumn("value", col("value").cast(DataTypes.StringType))
-                .withColumn("value", from_json(col("value"), "uid int, eventTime Date", new HashMap<String, String>()))
+                .withColumn("value", from_json(col("value"), "uid int,eventId string, eventTime Date", new HashMap<String, String>()))
                 .select(col("value.*"));
 
         resultDF.writeStream()
                 .outputMode(OutputMode.Append())
                 .format("com.kuze.bigdata.study.streaming.udsink.ClickHouseStreamSinkProvider")
-                .option("connectUrl", "jdbc:clickhouse://172.26.0.9:8123,172.26.0.10:8123/system")
+                .option("checkpointLocation", "/Users/kuze/code/lab/lab-java-spark/checkpoint/TestUDSink")
+                .option("connectUrl", "jdbc:clickhouse://172.21.0.9:8123,172.21.0.10:8123/system")
                 .option("cluster", "my")
                 .option("port", "8123")
                 .option("user", "default")
