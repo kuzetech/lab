@@ -9,7 +9,7 @@ public class TestUpdateOutputModel {
     public static void main(String[] args) throws Exception {
         Dataset<Row> countDF = TestCompleteOutputModel.getRowDataset();
 
-        // 仅输出内容有更新的计算结果
+        // 输出有更新的行
         countDF.writeStream()
                 .format("console")
                 .option("truncate", false)

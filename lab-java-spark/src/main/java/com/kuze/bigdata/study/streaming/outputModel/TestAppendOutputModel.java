@@ -9,10 +9,8 @@ import org.apache.spark.sql.streaming.OutputMode;
 import static org.apache.spark.sql.functions.*;
 
 
-
-public class TestCompleteOutputModel {
-
-    public static Dataset<Row> getRowDataset() {
+public class TestAppendOutputModel {
+    public static void main(String[] args) throws Exception {
         SparkSession session = SparkSessionUtils.initLocalSparkSession();
 
         Dataset<Row> socketDF = session.readStream()
@@ -21,21 +19,16 @@ public class TestCompleteOutputModel {
                 .option("port", 9999)
                 .load();
 
-        return socketDF
+        Dataset<Row> resultDF = socketDF
                 .withColumn("words", split(col("value"), " "))
-                .withColumn("word", explode(col("words")))
-                .groupBy(col("word"))
-                .count();
-    }
+                .withColumn("word", explode(col("words")));
 
-    public static void main(String[] args) throws Exception {
-        Dataset<Row> countDF = getRowDataset();
-
-        // 输出全部行
-        countDF.writeStream()
+        // 新行才会输出
+        // 如果没有聚合操作是可以直接使用 Append 模式的
+        resultDF.writeStream()
                 .format("console")
                 .option("truncate", false)
-                .outputMode(OutputMode.Complete())
+                .outputMode(OutputMode.Append())
                 .start()
                 .awaitTermination();
     }
