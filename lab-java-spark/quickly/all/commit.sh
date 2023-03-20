@@ -14,6 +14,8 @@ spark-submit \
 /opt/bitnami/spark/examples/jars/spark-examples_2.12-3.2.2.jar \
 10
 
+cp /root/.ivy2/jars/* /opt/bitnami/spark/jars
+
 spark-submit \
 --master spark://master:7077 \
 --executor-memory 1G \
