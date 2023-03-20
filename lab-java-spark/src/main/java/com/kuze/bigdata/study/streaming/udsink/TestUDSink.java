@@ -22,23 +22,25 @@ public class TestUDSink {
         SparkSession session = SparkSessionUtils.initLocalSparkSession();
 
         // 执行命令 nc -lk 9999 输入数据如下：
-        // {"uid":1,"eventId":"test","eventTime":"2022-01-01"}
-        Dataset<Row> socketDF = session.readStream()
-                .format("socket")
-                .option("host", "127.0.0.1")
-                .option("port", 9999)
+        // {"uid":8,"eventId":"test","eventTime":"2022-01-01"}
+
+        Dataset<Row> kafkaDF = session.readStream()
+                .format("kafka")
+                .option("kafka.bootstrap.servers", "broker:29092")
+                .option("subscribe", "test")
+                .option("startingOffsets", "latest")
                 .load();
 
-        Dataset<Row> resultDF = socketDF
+        Dataset<Row> resultDF = kafkaDF
                 .withColumn("value", col("value").cast(DataTypes.StringType))
-                .withColumn("value", from_json(col("value"), "uid int,eventId string, eventTime Date", new HashMap<String, String>()))
+                .withColumn("value", from_json(col("value"), "eventTime Date,eventId string,uid int", new HashMap<String, String>()))
                 .select(col("value.*"));
 
         resultDF.writeStream()
                 .outputMode(OutputMode.Append())
                 .format("com.kuze.bigdata.study.streaming.udsink.ClickHouseStreamSinkProvider")
-                .option("checkpointLocation", "/Users/kuze/code/lab/lab-java-spark/checkpoint/TestUDSink")
-                .option("connectUrl", "jdbc:clickhouse://172.21.0.9:8123,172.21.0.10:8123/system")
+                .option("checkpointLocation", "/TestUDSink")
+                .option("connectUrl", "jdbc:clickhouse://clickhouse1:8123,clickhouse2:8123/system")
                 .option("cluster", "my")
                 .option("port", "8123")
                 .option("user", "default")
@@ -46,6 +48,7 @@ public class TestUDSink {
                 .option("database", "default")
                 .option("table", "event_local")
                 .option("shardingColumn", "uid")
+                .option("fsParentLocation", "/TestUDSink")
                 .start()
                 .awaitTermination();
     }

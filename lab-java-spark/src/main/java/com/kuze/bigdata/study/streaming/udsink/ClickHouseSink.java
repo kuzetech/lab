@@ -2,6 +2,7 @@ package com.kuze.bigdata.study.streaming.udsink;
 
 import com.kuze.bigdata.study.clickhouse.ClickHouseQueryConfig;
 import com.kuze.bigdata.study.clickhouse.ClickHouseQueryService;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.spark.TaskContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -10,12 +11,10 @@ import org.apache.spark.sql.types.StructType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.apache.spark.sql.functions.col;
+import java.util.Date;
 
 public class ClickHouseSink implements Sink, Serializable {
 
@@ -23,37 +22,66 @@ public class ClickHouseSink implements Sink, Serializable {
 
     private ClickHouseQueryConfig config;
     private ClickHouseQueryService service;
+    private WalService walService;
+    private Long createTimeStamp = new Date().getTime();
 
-    public ClickHouseSink(ClickHouseQueryConfig config) {
+    public ClickHouseSink(ClickHouseQueryConfig config, Configuration hadoopConfig) {
         this.config = config;
         try {
             this.service = new ClickHouseQueryService(config, true);
+            this.walService = new FileSystemWalService(config, hadoopConfig);
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("create ClickHouseQueryService error");
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("create FileSystemWalService error");
         }
     }
 
+
+
     @Override
     public void addBatch(long batchId, Dataset<Row> data) {
-        logger.error("这里是在 driver 执行");
-
+        Wal wal = new Wal();
         final StructType rowSchema = data.schema();
-        final Test test = new Test();
 
         try {
-            test.setAvailableServers(service.searchAvailableServer());
-            test.setStructType(service.searchDestTableStructType());
-        } catch (SQLException e) {
+            wal.setStructType(service.searchDestTableStructType());
+
+            Wal lastWal = walService.getWal();
+
+            if (lastWal != null) {
+                logger.error(lastWal.toString());
+                wal.setBatchAllocation(lastWal.getBatchAllocation());
+                wal.setBatchIndex(lastWal.getBatchIndex());
+            }else{
+                logger.error("lastWal 为空啊");
+                wal.setBatchAllocation(service.searchAvailableServer());
+                wal.setBatchIndex(createTimeStamp + "-" + batchId);
+            }
+
+            walService.setWal(wal);
+        } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("init Batch error when execute addBatch function");
         }
 
         // 从流操作转换成批操作
-        data.queryExecution().toRdd().toJavaRDD().foreachPartition(iter -> {
+        data.queryExecution().toRdd().toJavaRDD().repartition(wal.getBatchAllocation().size()).foreachPartition(iter -> {
             ClickHouseQueryService workService = new ClickHouseQueryService(config, false);
             int partitionId = TaskContext.getPartitionId();
-            String connectUrl = test.getAvailableServers().get(partitionId);
-            workService.batchInsert(iter, rowSchema, test.getStructType(), connectUrl, "test");
+            String connectUrl = wal.getBatchAllocation().get(partitionId);
+            workService.batchInsert(iter, rowSchema, wal.getStructType(), connectUrl, wal.getBatchIndex());
         });
+
+        try {
+            // System.exit(0);
+            walService.deleteWal();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("execute walService deleteWal error");
+        }
     }
 
 }

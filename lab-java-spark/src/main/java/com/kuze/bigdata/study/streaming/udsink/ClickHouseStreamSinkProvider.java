@@ -18,7 +18,7 @@ public class ClickHouseStreamSinkProvider implements StreamSinkProvider, DataSou
 
     @Override
     public String shortName() {
-        return "test";
+        return "clickhouse";
     }
 
     @Override
@@ -32,18 +32,9 @@ public class ClickHouseStreamSinkProvider implements StreamSinkProvider, DataSou
 
         CaseInsensitiveMap<String> optionMap = new CaseInsensitiveMap<>(parameters);
 
-        String connectUrl = optionMap.get("connectUrl").isEmpty() ? "" : parameters.get("connectUrl").get();
-        String cluster = optionMap.get("cluster").isEmpty() ? "" : parameters.get("cluster").get();
-        String port = optionMap.get("port").isEmpty() ? "" : parameters.get("port").get();
-        String user = optionMap.get("user").isEmpty() ? "" : parameters.get("user").get();
-        String password = optionMap.get("password").isEmpty() ? "" : parameters.get("password").get();
-        String database = optionMap.get("database").isEmpty() ? "" : parameters.get("database").get();
-        String table = optionMap.get("table").isEmpty() ? "" : parameters.get("table").get();
-        String shardingColumn = optionMap.get("shardingColumn").isEmpty() ? "" : parameters.get("shardingColumn").get();
+        ClickHouseQueryConfig config = new ClickHouseQueryConfig(optionMap);
 
-        ClickHouseQueryConfig config = new ClickHouseQueryConfig(connectUrl, cluster, port, user, password, database, table, shardingColumn);
-
-        return new ClickHouseSink(config);
+        return new ClickHouseSink(config, sqlContext.sparkContext().hadoopConfiguration());
     }
 
 }
