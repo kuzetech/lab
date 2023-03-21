@@ -24,7 +24,7 @@ public class FileSystemWalService extends WalService{
     public FileSystemWalService(ClickHouseQueryConfig config, Configuration hadoopConfig) throws IOException {
         super(config);
         fs = FileSystem.get(hadoopConfig);
-        walPath = new Path(super.config.generateCompleteWalUrl());
+        walPath = new Path(super.config.getWalLocation());
         if(!fs.exists(walPath)){
             FSDataOutputStream fsDataOutputStream = fs.create(walPath);
             fsDataOutputStream.close();

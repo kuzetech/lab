@@ -9,25 +9,18 @@ public class SparkConfUtils {
 
         if (conf.getOption("spark.master").isEmpty()) {
             conf.setMaster("local[2]");
+            conf.set("spark.driver.bindAddress", "127.0.0.1");
+            System.setProperty("HADOOP_USER_NAME", "hdfsuser");
         }
 
         if (conf.getOption("spark.app.name").isEmpty()) {
             conf.setAppName("test");
         }
 
-        // 设置checkpoint当前存放在本地的指定位置
+        /*// 设置checkpoint当前存放在本地的指定位置
         if (conf.getOption("spark.sql.streaming.checkpointLocation").isEmpty()) {
             conf.set("spark.sql.streaming.checkpointLocation", "/Users/huangsw/code/lab/lab-java-spark/checkpoint");
-        }
-
-        /**
-         * Kafka服务器相关配置
-         */
-        String kafkaBootstrapServers = "localhost:9092";
-        if (conf.getOption("spark.kafka.bootstrap.servers").isEmpty()) {
-            // kafkaBootstrapServers = conf.get("spark.kafka.bootstrap.servers");
-            conf.set("spark.kafka.bootstrap.servers", kafkaBootstrapServers);
-        }
+        }*/
 
         return conf;
     }

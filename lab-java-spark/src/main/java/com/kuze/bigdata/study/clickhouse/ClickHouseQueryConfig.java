@@ -19,7 +19,7 @@ public class ClickHouseQueryConfig implements Serializable {
     private String database;
     private String table;
     private String shardingColumn;
-    private String fsParentLocation;
+    private String walLocation;
 
     public ClickHouseQueryConfig( CaseInsensitiveMap<String> optionMap) {
         this.connectUrl = optionMap.get("connectUrl").isEmpty() ? "" : optionMap.get("connectUrl").get();
@@ -30,7 +30,7 @@ public class ClickHouseQueryConfig implements Serializable {
         this.database = optionMap.get("database").isEmpty() ? "" : optionMap.get("database").get();
         this.table = optionMap.get("table").isEmpty() ? "" : optionMap.get("table").get();
         this.shardingColumn = optionMap.get("shardingColumn").isEmpty() ? "" : optionMap.get("shardingColumn").get();
-        this.fsParentLocation = optionMap.get("fsParentLocation").isEmpty() ? "" : optionMap.get("fsParentLocation").get();
+        this.walLocation = optionMap.get("walLocation").isEmpty() ? "" : optionMap.get("walLocation").get();
         this.checkParameters();
     }
 
@@ -53,43 +53,77 @@ public class ClickHouseQueryConfig implements Serializable {
     }
 
 
-    public String generateCompleteWalUrl() {
-        String url = this.fsParentLocation + "/wal";
-        return url;
-    }
-
     public String getConnectUrl() {
         return connectUrl;
+    }
+
+    public void setConnectUrl(String connectUrl) {
+        this.connectUrl = connectUrl;
     }
 
     public String getCluster() {
         return cluster;
     }
 
+    public void setCluster(String cluster) {
+        this.cluster = cluster;
+    }
+
     public String getPort() {
         return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
     }
 
     public String getUser() {
         return user;
     }
 
+    public void setUser(String user) {
+        this.user = user;
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getDatabase() {
         return database;
     }
 
+    public void setDatabase(String database) {
+        this.database = database;
+    }
+
     public String getTable() {
         return table;
+    }
+
+    public void setTable(String table) {
+        this.table = table;
     }
 
     public String getShardingColumn() {
         return shardingColumn;
     }
 
+    public void setShardingColumn(String shardingColumn) {
+        this.shardingColumn = shardingColumn;
+    }
+
+    public String getWalLocation() {
+        return walLocation;
+    }
+
+    public void setWalLocation(String walLocation) {
+        this.walLocation = walLocation;
+    }
 
     @Override
     public String toString() {
@@ -102,6 +136,7 @@ public class ClickHouseQueryConfig implements Serializable {
                 ", database='" + database + '\'' +
                 ", table='" + table + '\'' +
                 ", shardingColumn='" + shardingColumn + '\'' +
+                ", walLocation='" + walLocation + '\'' +
                 '}';
     }
 }
