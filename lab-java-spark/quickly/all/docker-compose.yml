@@ -185,3 +185,13 @@ services:
     #   container_name: datanode
     #   environment:
     #     HDFS_USER: hdfsuser
+
+#  conveyor:
+#    image: registry.biubiubiu.io/turbine/conveyor:0.1.0
+#    hostname: conveyor
+#    container_name: conveyor
+#    networks:
+#      cluster-network:
+#        ipv4_address: 172.18.0.12
+#    ports:
+#      - "9080:9080"

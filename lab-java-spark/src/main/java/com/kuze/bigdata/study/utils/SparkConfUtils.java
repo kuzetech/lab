@@ -8,6 +8,7 @@ public class SparkConfUtils {
         System.setProperty("HADOOP_USER_NAME", "hdfsuser");
 
         SparkConf conf = new SparkConf();
+        //conf.setMaster("spark://172.18.0.8:7077");
 
         if (conf.getOption("spark.master").isEmpty()) {
             conf.setMaster("local[2]");
