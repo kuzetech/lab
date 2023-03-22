@@ -22,7 +22,7 @@ public class TestUDSink {
         SparkSession session = SparkSessionUtils.initLocalSparkSession();
 
         // 执行命令 nc -lk 9999 输入数据如下：
-        // {"uid":5,"eventId":"test","eventTime":"2022-01-01"}
+        // {"uid":11,"eventId":"test","eventTime":"2022-01-01"}
 
         Dataset<Row> kafkaDF = session.readStream()
                 .format("kafka")
@@ -38,7 +38,7 @@ public class TestUDSink {
 
         resultDF.writeStream()
                 .outputMode(OutputMode.Append())
-                .format("com.kuze.bigdata.study.streaming.udsink.ClickHouseStreamSinkProvider")
+                .format("clickhouse")
                 .option("checkpointLocation", "/TestUDSink/checkpoint")
                 .option("walLocation", "/TestUDSink/wal")
                 .option("connectUrl", "jdbc:clickhouse://172.18.0.6:8123,172.18.0.7:8123/system")

@@ -5,12 +5,13 @@ import org.apache.spark.SparkConf;
 public class SparkConfUtils {
 
     public static SparkConf initSparkConf() {
+        System.setProperty("HADOOP_USER_NAME", "hdfsuser");
+
         SparkConf conf = new SparkConf();
 
         if (conf.getOption("spark.master").isEmpty()) {
             conf.setMaster("local[2]");
-            conf.set("spark.driver.bindAddress", "127.0.0.1");
-            System.setProperty("HADOOP_USER_NAME", "hdfsuser");
+            conf.set("spark.driver.bindAddress", "localhost");
         }
 
         if (conf.getOption("spark.app.name").isEmpty()) {
