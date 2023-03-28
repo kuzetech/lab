@@ -2,10 +2,7 @@ module lab-go-promethues
 
 go 1.18
 
-require (
-	github.com/prometheus/client_golang v1.13.1
-	golang.org/x/exp v0.0.0-20200224162631-6cc2880d07d6
-)
+require github.com/prometheus/client_golang v1.13.1
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect

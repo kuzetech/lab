@@ -10,4 +10,4 @@ COPY . .
 
 RUN go mod download -x && go build .
 
-CMD ["./lab-go-promethues-client"]
+CMD ["./lab-go-promethues"]
