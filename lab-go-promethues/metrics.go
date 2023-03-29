@@ -57,8 +57,7 @@ var (
 	// 如果不指定则使用默认 DefBuckets = []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10}
 	// 也可以使用 Buckets: prometheus.LinearBuckets(0, 1, 10)
 	// 手动指定也可以 Buckets: []float64{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	// 正常都会使用手动指定，使得数据的分布比较均匀
-	// 需要注意分位数算法并不会真的全部数据排序后再取，而是看数据分布在哪些桶，通过桶的上下限直接估算，如果数据分布不均匀或者桶分配不好，可能会导致误差很大
+	// 正常都会使用手动指定，使得数据的分布比较均匀，这个跟分位数计算准确度有关，详情可以查看 /doc/prometheus histogram 分位数计算原理.png
 	MetricRequestDuration = promauto.NewHistogram(prometheus.HistogramOpts{
 		Name:    "request_duration",
 		Help:    "请求时长",
