@@ -27,7 +27,10 @@ func main() {
 	router.Use(gin.Recovery())
 	router.Use(ginLoggerMiddleware) // 自定义日志中间件
 
+	// 主要用来测试功能
 	initGinRouter(router)
+
+	// 展示完整的 restful 风格的路由定义
 	initGinRestRouter(router)
 
 	server := &http.Server{

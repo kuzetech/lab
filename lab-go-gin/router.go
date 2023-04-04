@@ -32,7 +32,11 @@ type JsonResponse struct {
 }
 
 func initGinRouter(router *gin.Engine) {
-	v1Group := router.Group("/v1", ginConcurrenceLimitMiddleware, upstreamMiddleware, downstreamMiddleware)
+	v1Group := router.Group("/v1", ginConcurrenceLimitMiddleware, upstreamParameterMiddleware, downstreamParameterMiddleware, bodyContentByteLimitMiddleware)
+
+	v1Group.POST("/test", func(c *gin.Context) {
+		c.String(http.StatusOK, "test")
+	})
 
 	v1Group.GET("/my", func(c *gin.Context) {
 		time.Sleep(time.Second * 2)
@@ -132,7 +136,7 @@ func initGinRouter(router *gin.Engine) {
 	})
 
 	// 重定向
-	v1Group.GET("/test", func(c *gin.Context) {
+	v1Group.GET("/redirect", func(c *gin.Context) {
 		c.Request.URL.Path = "/v1/test2"
 		router.HandleContext(c)
 	})
