@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	io_prometheus_client "github.com/prometheus/client_model/go"
 	"net/http"
 	"time"
 )
@@ -27,7 +29,7 @@ func main() {
 		writer.Write([]byte("login"))
 	})
 
-	mux.HandleFunc("/addConfig", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/add", func(writer http.ResponseWriter, request *http.Request) {
 		startTime := time.Now().UnixMilli()
 		MetricRequestCount.Inc()
 		MetricRequestCountDynamicLabel.With(prometheus.Labels{"path": "/addConfig"}).Inc()
@@ -37,7 +39,17 @@ func main() {
 		writer.Write([]byte("addConfig"))
 	})
 
-	mux.HandleFunc("/deleteConfig", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/get", func(writer http.ResponseWriter, request *http.Request) {
+		var m = &io_prometheus_client.Metric{}
+		err := MetricRequestCount.Write(m)
+		if err != nil {
+			writer.Write([]byte(err.Error()))
+		}
+		result := fmt.Sprintf("%v", *m.GetCounter().Value)
+		writer.Write([]byte(result))
+	})
+
+	mux.HandleFunc("/delete", func(writer http.ResponseWriter, request *http.Request) {
 		startTime := time.Now().UnixMilli()
 		MetricRequestCount.Inc()
 		MetricRequestCountDynamicLabel.With(prometheus.Labels{"path": "/deleteConfig"}).Inc()
