@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	io_prometheus_client "github.com/prometheus/client_model/go"
 	"net/http"
@@ -57,6 +58,16 @@ func main() {
 		endTime := time.Now().UnixMilli()
 		MetricRequestDuration.Observe(float64(endTime - startTime))
 		writer.Write([]byte("deleteConfig"))
+	})
+
+	// 动态注册指标
+	mux.HandleFunc("/registered", func(writer http.ResponseWriter, request *http.Request) {
+		test := promauto.NewGauge(prometheus.GaugeOpts{
+			Name: "test22222",
+			Help: "test22222",
+		})
+		test.Set(10)
+		writer.Write([]byte("registered"))
 	})
 
 	// 配置 http server 的各方面
