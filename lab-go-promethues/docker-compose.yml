@@ -18,6 +18,15 @@ services:
     ports:
       - "9090:9090"
 
+  pushgateway:
+    image: prom/pushgateway:latest
+    container_name: pushgateway
+    hostname: pushgateway
+    depends_on:
+      - client
+    ports:
+      - "9091:9091"
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana

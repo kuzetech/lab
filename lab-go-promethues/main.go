@@ -70,6 +70,11 @@ func main() {
 		writer.Write([]byte("registered"))
 	})
 
+	mux.HandleFunc("/push", func(writer http.ResponseWriter, request *http.Request) {
+
+		writer.Write([]byte("push"))
+	})
+
 	// 配置 http server 的各方面
 	s := &http.Server{
 		Addr:         ":2112", // 前面部分省略默认使用 http://127.0.0.1
