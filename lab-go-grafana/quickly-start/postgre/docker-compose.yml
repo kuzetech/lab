@@ -1,0 +1,25 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    hostname: postgres
+    environment:
+      POSTGRES_PASSWORD: test
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    hostname: grafana
+    ports:
+      - 3000:3000
+  
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    hostname: adminer
+    ports:
+      - 8080:8080
+
+
+  

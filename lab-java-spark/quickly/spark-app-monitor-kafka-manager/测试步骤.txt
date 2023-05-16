@@ -1,0 +1,8 @@
+
+docker exec broker /opt/bitnami/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --create --topic event --partitions 2 --replication-factor 1
+
+docker exec broker /opt/bitnami/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic event --group demo
+
+docker exec master chmod +x /util/commit.sh
+
+docker exec master /util/commit.sh

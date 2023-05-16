@@ -1,0 +1,247 @@
+version: '3'
+services: 
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    container_name: zookeeper
+    hostname: zookeeper
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 300M
+        reservations:
+          memory: 300M
+
+  broker:
+    image: 'bitnami/kafka:2.8.1'
+    container_name: broker
+    hostname: broker
+    ports:
+      - 9092:9092
+      - 7891:7891
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:29092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://localhost:9092,EXTERNAL://broker:29092
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+      - JMX_PORT=7891
+    depends_on:
+      - zookeeper
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1000M
+        reservations:
+          memory: 500M
+
+  kafka-exporter:
+    image: bitnami/kafka-exporter:1.6.0
+    container_name: kafka-exporter
+    hostname: kafka-exporter
+    command: 
+      - --kafka.server=broker:29092
+    depends_on:
+      - broker
+    ports:
+      - 9308:9308
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 50M
+        reservations:
+          memory: 10M
+
+  jmx-exporter:
+    image: bitnami/jmx-exporter:0.17.1
+    container_name: jmx-exporter
+    hostname: jmx-exporter
+    volumes:
+      - ./conf/jmx-exporter-config.yml:/jmx-exporter-config.yml
+    command: 
+      - '5556'
+      - /jmx-exporter-config.yml
+    depends_on:
+      - broker
+    ports:
+      - 5556:5556
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 200M
+        reservations:
+          memory: 150M
+
+  prometheus:
+    image: prom/prometheus:v2.35.0
+    container_name: prometheus
+    hostname: prometheus
+    volumes:
+      - ./conf:/etc/prometheus
+    ports:
+      - 9090:9090
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 200M
+        reservations:
+          memory: 50M
+
+  grafana:
+    image: grafana/grafana:9.1.5
+    container_name: grafana
+    hostname: grafana
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 200M
+        reservations:
+          memory: 50M
+
+  master:
+    image: bitnami/spark:3.2.2
+    container_name: master
+    user: root
+    environment:
+      - HADOOP_USER_NAME=hdfsuser
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - 4040:4040
+      - 8080:8080
+      - 8282:8282
+      - 7077:7077
+    volumes:
+      - /Users/huangsw/code/funny/funnydb/spark-block-aggregator/quickly-start/log4j.properties:/opt/bitnami/spark/conf/log4j.properties
+      - ./util:/util
+      - /Users/huangsw/code/funny/funnydb/spark-block-aggregator/target:/spark_src
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1400M
+        reservations:
+          memory: 500M
+      
+  worker:
+    image: bitnami/spark:3.2.2
+    container_name: worker
+    user: root
+    depends_on:
+      - master
+    ports:
+      - 8081:8081
+    environment:
+      - HADOOP_USER_NAME=hdfsuser
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://master:7077
+      - SPARK_WORKER_MEMORY=2500m
+      - SPARK_WORKER_CORES=2
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2500M
+        reservations:
+          memory: 500M
+  
+  namenode:
+    image: singularities/hadoop:2.8
+    command: start-hadoop namenode
+    hostname: namenode
+    container_name: namenode
+    environment:
+      HDFS_USER: hdfsuser
+    ports:
+      - "8020:8020"
+      - "9000:9000"
+      - "50070:50070"
+      - "50075:50075"
+    depends_on:
+      - zookeeper
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 1000M
+        reservations:
+          memory: 500M
+
+  clickhouse1:
+    image: clickhouse/clickhouse-server:22.7.2.15
+    container_name: clickhouse1
+    hostname: clickhouse1
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+      nproc:
+        soft: 131072
+        hard: 131072
+    volumes:
+      - /Users/huangsw/code/study/study-spark/quickly-start/config1.xml:/etc/clickhouse-server/config.xml
+    ports:
+      - 8121:8123
+      - 9001:9000
+    depends_on:
+      - zookeeper
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2000M
+        reservations:
+          memory: 300M
+
+  clickhouse2:
+    image: clickhouse/clickhouse-server:22.7.2.15
+    container_name: clickhouse2
+    hostname: clickhouse2
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+      nproc:
+        soft: 131072
+        hard: 131072
+    volumes:
+      - /Users/huangsw/code/study/study-spark/quickly-start/config2.xml:/etc/clickhouse-server/config.xml
+      - /Users/huangsw/code/study/study-spark/quickly-start/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - 8122:8123
+      - 9002:9000
+    depends_on:
+      - zookeeper
+      - clickhouse1
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2000M
+        reservations:
+          memory: 300M
+
+
+  
