@@ -1,0 +1,21 @@
+<configuration>
+
+    <!-- 指定NameNode的地址 -->
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://172.18.0.11:8020</value>
+    </property>
+
+    <!--  写入失败时,是否要切换到新的 DataNode  -->
+    <property>
+        <name>dfs.client.block.write.replace-datanode-on-failure.enable</name>
+        <value>true</value>
+    </property>
+
+    <!-- 替换 DataNode 的具体策略, NEVER：始终不进行替换DN的动作   -->
+    <property>
+        <name>dfs.client.block.write.replace-datanode-on-failure.policy</name>
+        <value>NEVER</value>
+    </property>
+
+</configuration>
