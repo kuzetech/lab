@@ -48,11 +48,38 @@ public class FunnelDataProcess {
         stepMap.put("client_startup-16", 16);
         stepMap.put("field-0", 17);
 
-        Dataset<Row> data = spark.read().schema(structType).csv("/Users/huangsw/code/lab/lab-java-spark/data/yc_4y13.csv");
+        Dataset<Row> sourceDF = spark.read().schema(structType).csv("/Users/huangsw/code/lab/lab-java-spark/data/yc_4y13.csv");
+
+        StructType allStructType = new StructType(new StructField[]{
+                DataTypes.createStructField("deviceId", StringType, false)
+        });
+
+        sourceDF.createTempView("events");
+
+        Dataset<Row> deviceIdDF = spark.read().schema(allStructType).csv("/Users/huangsw/code/lab/lab-java-spark/data/first_step_deviceIds.csv");
+
+        deviceIdDF.createTempView("deviceIds");
+
+        Dataset<Row> joinDF = spark.sql("SELECT events.* FROM events INNER JOIN deviceIds ON events.deviceId = deviceIds.deviceId;");
+
+        joinDF.cache();
+
+        joinDF.printSchema();
+
+        Dataset<String> distinctDF = joinDF.map(new MapFunction<Row, String>() {
+            @Override
+            public String call(Row v) throws Exception {
+                return v.getString(v.fieldIndex("deviceId"));
+            }
+        }, Encoders.STRING());
+
+        long count = distinctDF.distinct().count();
+
+        System.out.println(count);
 
         Encoder<FunnyEvent> funnyEventEncoder = Encoders.bean(FunnyEvent.class);
 
-        Dataset<FunnyEvent> funnyEventDF = data.map(new MapFunction<Row, FunnyEvent>() {
+        Dataset<FunnyEvent> funnyEventDF = joinDF.map(new MapFunction<Row, FunnyEvent>() {
             @Override
             public FunnyEvent call(Row v) throws Exception {
                 return new FunnyEvent(

@@ -34,29 +34,32 @@ public class FunnelAnalysis {
 
         Dataset<Row> data = spark.read().schema(structType).csv("/Users/huangsw/code/lab/lab-java-spark/data/level.csv");
 
+        Dataset<Row> firstStepUsers = data.filter(col("level").geq(funnelSteps[0])).select("deviceId").distinct();
+        long firstStepUserCount = firstStepUsers.count();
+
         // 计算每个步骤的转化率
-        Double[] conversionRates = new Double[funnelSteps.length];
+        FunnelResult[] results = new FunnelResult[funnelSteps.length];
         for (int i = 0; i < funnelSteps.length; i++) {
-            Integer step = funnelSteps[i];
-            // 计算当前步骤的转化率
+
             if (i == 0) {
                 // 第一步的转化率为100%
-                conversionRates[i] = 1.0;
+                results[i] = new FunnelResult(firstStepUserCount,1.0);
             } else {
                 // 计算当前步骤的转化率
-                Integer prevStep = funnelSteps[i-1];
-                Dataset<Row> prevStepUsers = data.filter(col("level").geq(prevStep)).select("deviceId").distinct();
+                Integer step = funnelSteps[i];
                 Dataset<Row> stepUsers = data.filter(col("level").geq(step)).select("deviceId").distinct();
-                double conversionRate = (double) stepUsers.count() / (double) prevStepUsers.count();
-                conversionRates[i] = conversionRate;
+                long stepUserCount = stepUsers.count();
+                double conversionRate = (double)  stepUserCount/ (double) firstStepUserCount;
+                results[i] = new FunnelResult(stepUserCount,conversionRate);
             }
         }
 
-        for (Double conversionRate : conversionRates) {
-            // System.out.println(conversionRate);
-            BigDecimal bd = new BigDecimal(conversionRate);
-            System.out.println(bd.setScale(2, RoundingMode.DOWN).toString());
-        }
+        for (int i = 0; i < results.length; i++) {
+            FunnelResult result = results[i];
+            BigDecimal bd = new BigDecimal(result.getPercent() * 100);
+            String percentStr = bd.setScale(2, RoundingMode.DOWN).toString();
 
+            System.out.println(String.format("%d|%s", result.getStepUserCount(), percentStr));
+        }
     }
 }
