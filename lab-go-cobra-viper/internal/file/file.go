@@ -1,9 +1,13 @@
 package file
 
-import "github.com/rs/zerolog/log"
+import (
+	"github.com/rs/zerolog/log"
+	"lab-go-cobra-viper/internal/common"
+)
 
-func Run(config *Config) error {
+func Run(rootConfig *common.RootConfig, modeConfig *FileConfig) error {
 	log.Info().Msg("4. file called")
-	err := config.checkParameters()
-	return err
+	log.Info().Msg(rootConfig.LogLevel)
+	log.Info().Msg(modeConfig.GeneratePath)
+	return nil
 }

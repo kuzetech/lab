@@ -9,10 +9,10 @@ import (
 	"lab-go-cobra-viper/internal/file"
 )
 
-var (
-	fileFlagGeneratePath = ""
-	fileFlagServerSize   = 10
-)
+var fileConfig *file.FileConfig = &file.FileConfig{
+	GeneratePath: "",
+	ServerSize:   10,
+}
 
 // fileCmd represents the file command
 var fileCmd = &cobra.Command{
@@ -25,12 +25,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := file.Run(&file.Config{
-			GeneratePath:  fileFlagGeneratePath,
-			RatePerSecond: rootFlagRatePerSecond,
-			EventSize:     rootFlagEventSize,
-			ServerSize:    fileFlagServerSize,
-		})
+		err := file.Run(rootConfig, fileConfig)
 		if err != nil {
 			log.Error().Err(err).Msg("run file booster error")
 		}
@@ -50,10 +45,10 @@ func init() {
 	// is called directly, e.g.:
 	// fileCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	fileCmd.PersistentFlags().StringVarP(&fileFlagGeneratePath, "path", "p", fileFlagGeneratePath, "log generate path")
-	// fileCmd.MarkPersistentFlagRequired("path")
+	fileCmd.PersistentFlags().StringVarP(&fileConfig.GeneratePath, "path", "p", fileConfig.GeneratePath, "log generate path")
+	fileCmd.MarkPersistentFlagRequired("path")
 
-	fileCmd.PersistentFlags().IntVarP(&fileFlagServerSize, "server-size", "s", fileFlagServerSize, "server size")
+	fileCmd.PersistentFlags().IntVarP(&fileConfig.ServerSize, "server-size", "s", fileConfig.ServerSize, "server size")
 }
 
 func initFileConfig() {

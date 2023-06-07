@@ -6,20 +6,20 @@ package cmd
 import (
 	"fmt"
 	"github.com/rs/zerolog/log"
+	"lab-go-cobra-viper/internal/common"
 	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
-
-var (
-	rootFlagLogLevel       = "info"
-	rootFlagPrometheusAddr = ":2112"
-	rootFlagRatePerSecond  = 100
-	rootFlagEventSize      = 10
-)
+var rootConfig *common.RootConfig = &common.RootConfig{
+	ConfigFile:     "",
+	LogLevel:       "info",
+	PrometheusAddr: ":2112",
+	RatePerSecond:  100,
+	EventSize:      10,
+}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -58,8 +58,8 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.lab-go-cobra-viper.yaml)")
+	rootCmd.PersistentFlags().StringVar(&rootConfig.ConfigFile, "config", rootConfig.ConfigFile, "config file (default is $HOME/.lab-go-cobra-viper.yaml)")
+	rootCmd.PersistentFlags().StringVar(&rootConfig.LogLevel, "log-level", rootConfig.LogLevel, "log level")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -69,9 +69,9 @@ func init() {
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	log.Info().Msg("2. root init config")
-	if cfgFile != "" {
+	if rootConfig.ConfigFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
+		viper.SetConfigFile(rootConfig.ConfigFile)
 	} else {
 		// Find home directory.
 		home, err := os.UserHomeDir()
