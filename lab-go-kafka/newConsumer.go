@@ -8,16 +8,16 @@ import (
 func createConsumer(topic string) *kafka.Consumer {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":        "localhost:9092",
-		"group.id":                 "myGroup",
+		"group.id":                 "myGroup7",
 		"session.timeout.ms":       6000,
 		"auto.offset.reset":        "earliest",
 		"enable.auto.offset.store": false, // 关闭自动保存 offset 到本地 store
-		"enable.auto.commit":       false,
-		"auto.commit.interval.ms":  5000,
+		//"enable.auto.commit":       false,
+		//"auto.commit.interval.ms":  5000,
 
 		// Statistics output from the client enabled by setting statistics.interval.ms
 		// and can handling kafka.Stats events (see below).
-		"statistics.interval.ms": 5000,
+		//"statistics.interval.ms": 5000,
 	})
 
 	if err != nil {
