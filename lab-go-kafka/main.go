@@ -1,46 +1,88 @@
 package main
 
 import (
-	"github.com/confluentinc/confluent-kafka-go/kafka"
-	"log"
+	"encoding/json"
+	"github.com/rs/zerolog/log"
 	"time"
 )
 
+func TruncateMinuteTime(t int64) int64 {
+	eventTime := time.Unix(t, 0)
+	truncateTime := eventTime.Truncate(time.Minute)
+	return truncateTime.Unix()
+}
+
 func main() {
-	topic := "myTopic7"
-	first := false
 
-	if first {
-		log.Printf("产生数据 \n")
-		producer := createProduce()
+	consumer := createConsumer("pass2")
+	errorCount := 0
+	messageCount := 0
 
-		for _, word := range []string{"Welcome", "to", "the", "Confluent", "Kafka", "Golang", "client"} {
-			producer.Produce(&kafka.Message{
-				TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-				Value:          []byte(word),
-			}, nil)
+	logIdMap := make(map[string]int)
+
+	for {
+		if messageCount >= 326 {
+			break
 		}
+		msg, err := consumer.ReadMessage(time.Second)
+		if err == nil {
+			messageCount++
+			var messageMap map[string]interface{}
+			err := json.Unmarshal(msg.Value, &messageMap)
+			if err != nil {
+				log.Error().Err(err).Str("source", string(msg.Value)).Msg("Unmarshal message error")
+				continue
+			}
 
-		producer.Flush(1000)
+			dataField, exist := messageMap["data"]
+			if !exist {
+				log.Error().Str("source", string(msg.Value)).Msg("message field data no exist")
+				continue
+			}
 
-		producer.Close()
+			dataMap, ok := dataField.(map[string]interface{})
+			if !ok {
+				log.Error().Str("source", string(msg.Value)).Msg("message field data can not convert to map")
+				continue
+			}
 
-		time.Sleep(time.Second * 3)
+			timeField, exist := dataMap["#time"]
+			if !exist {
+				log.Error().Str("source", string(msg.Value)).Msg("data content time field no exist")
+				continue
+			}
+
+			timeValue, ok := timeField.(float64)
+			if !ok {
+				log.Error().Str("source", string(msg.Value)).Msg("data content time field can not convert to float64")
+				continue
+			}
+
+			logId := dataMap["#log_id"].(string)
+			log.Info().Int64("truncateTime", TruncateMinuteTime(int64(timeValue))).Interface("data", dataMap).Msg("接收到消息")
+
+			c, exist := logIdMap[logId]
+			if exist {
+				logIdMap[logId] = c + 1
+			} else {
+				logIdMap[logId] = 1
+			}
+		} else {
+			log.Error().Err(err).Msg("consumerLoop ReadMessage error")
+			errorCount++
+			if errorCount >= 3 {
+				break
+			}
+		}
 	}
 
-	log.Printf("接收数据 \n")
+	//consumer.Close()
 
-	consumer := createConsumer(topic)
-
-	message, _ := consumer.ReadMessage(time.Second)
-
-	if message != nil {
-		consumer.StoreMessage(message)
-		log.Println(string(message.Value))
-		log.Println(message.TopicPartition.Offset.String())
+	for logId, count := range logIdMap {
+		if count > 1 {
+			log.Error().Str("log_id", logId).Msg("发现重复数据")
+		}
 	}
 
-	consumer.Close()
-
-	log.Println("程序结束")
+	log.Info().Msg("程序结束")
 }

@@ -8,10 +8,11 @@ import (
 func createConsumer(topic string) *kafka.Consumer {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":        "localhost:9092",
-		"group.id":                 "myGroup7",
+		"group.id":                 "myGroup001",
 		"session.timeout.ms":       6000,
 		"auto.offset.reset":        "earliest",
-		"enable.auto.offset.store": false, // 关闭自动保存 offset 到本地 store
+		"enable.auto.offset.store": false,            // 关闭自动保存 offset 到本地 store
+		"isolation.level":          "read_committed", // 如果生产者没有开启事务也能照常接收数据
 		//"enable.auto.commit":       false,
 		//"auto.commit.interval.ms":  5000,
 
@@ -67,7 +68,7 @@ func createConsumer(topic string) *kafka.Consumer {
 func createTransactionConsumer(topic string) *kafka.Consumer {
 	c, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":        "localhost:9092",
-		"group.id":                 "myGroup",
+		"group.id":                 "myGroup111",
 		"session.timeout.ms":       6000,
 		"auto.offset.reset":        "earliest",
 		"enable.auto.offset.store": false, // 关闭自动保存 offset 到本地 store
