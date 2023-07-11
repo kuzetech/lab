@@ -6,6 +6,7 @@ import (
 	"github.com/lib/pq"
 	_ "github.com/lib/pq"
 	"log"
+	"time"
 )
 
 var (
@@ -21,6 +22,7 @@ func createDBIfNotExist() error {
 		return fmt.Errorf("open postgres error : %s", err)
 	}
 
+	defer db.Close()
 	var createTmp = "create database %s"
 
 	_, err = db.Exec(fmt.Sprintf(createTmp, destDB))
@@ -41,6 +43,7 @@ func createTableIfNotExist() error {
 		return fmt.Errorf("open postgres error : %s", err)
 	}
 
+	defer db.Close()
 	var createTmp = `
 		CREATE TABLE %s (
 			"id" serial NOT NULL,
@@ -77,27 +80,18 @@ func main() {
 		log.Fatalf("createTableIfNotExist error : %s", err)
 	}
 
-	//
-	//_, err = db.Exec(fmt.Sprintf(createTmp, database))
-	//
-	//if err != nil {
-	//	pError := err.(*pq.Error)
-	//	if pError.Message != fmt.Sprintf("database \"%s\" does not exist", database) {
-	//		log.Fatalf("search database error : %s", err)
-	//	}
-	//
-	//	log.Printf("search database %s not exist, will create", database)
-	//
-	//	_, err := db.Exec(fmt.Sprintf("create database %s", database))
-	//
-	//	if err != nil {
-	//		log.Fatalf("create database error : %s", err)
-	//	}
-	//
-	//	_, err = db.Exec(fmt.Sprintf(createTmp, database))
-	//	if err != nil {
-	//		log.Fatalf("create table error : %s", err)
-	//	}
-	//}
+	db, err := sql.Open("postgres", createTableConnStr)
+	if err != nil {
+		log.Fatalf("open postgres error : %s", err)
+	}
+	defer db.Close()
+
+	for {
+		_, err = db.Exec("INSERT INTO record (time, host, client,category, count) VALUES (0, '1', '2', 3, 4)")
+		if err != nil {
+			log.Fatal(err)
+		}
+		time.Sleep(time.Second * 2)
+	}
 
 }
