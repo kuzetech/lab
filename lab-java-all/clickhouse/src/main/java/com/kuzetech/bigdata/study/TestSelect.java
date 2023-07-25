@@ -1,4 +1,4 @@
-package com.kuze.bigdata.lab;
+package com.kuzetech.bigdata.study;
 
 import com.clickhouse.jdbc.ClickHouseDataSource;
 

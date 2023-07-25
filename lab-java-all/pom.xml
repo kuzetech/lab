@@ -17,6 +17,7 @@
         <module>lab</module>
         <module>socket</module>
         <module>netty</module>
+        <module>clickhouse</module>
     </modules>
 
     <!--      子项目默认都会继承这一部分配置，并且可以覆盖      -->
