@@ -1,6 +1,26 @@
-.idea
+target
+.project
+.settings
+.classpath
+nbactions.xml
+nb-configuration.xml
+.DS_Store
+.metadata
+.recommenders
+
+# Intellij
+.idea/
 *.iml
+*.iws
+*.ipr
+*~
+
+.vscode/
+
+/.secrets/
+
+/deployment/dist/*
+
 checkpoint/
-target/
 fs/
 
