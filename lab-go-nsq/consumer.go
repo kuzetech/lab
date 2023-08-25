@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-var UseTopic = "test"
+var UseTopic = "client_log"
 var UseChannel = "hsw"
 
 func createConsumer() *nsq.Consumer {
