@@ -13,11 +13,20 @@
     <name>netty</name>
 
     <dependencies>
-
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.97.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.97.Final</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
-        <!--    子项目可以变更部分配置，其他部分依然继承    -->
         <pluginManagement>
             <plugins>
                 <plugin>
