@@ -1,5 +1,7 @@
 package com.kuzetech.bigdata.study.hmac;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -11,22 +13,22 @@ public class Sha256 {
 
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException {
 
-        extracted("{\"batchId\":\"123\",\"messages\":[{\"type\":\"event\",\"data\":{\"a\":3,\"b\":\"3\"}}]}");
+        String strContent = "{\"batchId\":\"123\",\"messages\":[{\"type\":\"event\",\"data\":{\"a\":3,\"b\":\"3\"}}]}";
+        extracted(strContent.getBytes(StandardCharsets.UTF_8));
     }
 
-    public static String extracted(String content) throws NoSuchAlgorithmException, InvalidKeyException {
+    public static String extracted(byte[] content) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac hmacSha256 = Mac.getInstance("HmacSHA256");
         hmacSha256.init(new SecretKeySpec("secret".getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
 
-        StringBuilder builder = new StringBuilder();
-        builder.append("POST");
-        builder.append("/v1/collect");
-        builder.append("demo");
-        builder.append("123");
-        builder.append("123");
-        builder.append(content);
+        byte[] methodBytes = "POST".getBytes(StandardCharsets.UTF_8);
+        byte[] all = ArrayUtils.addAll(methodBytes, "/v1/collect".getBytes(StandardCharsets.UTF_8));
+        all = ArrayUtils.addAll(all, "demo".getBytes(StandardCharsets.UTF_8));
+        all = ArrayUtils.addAll(all, "123".getBytes(StandardCharsets.UTF_8));
+        all = ArrayUtils.addAll(all, "123".getBytes(StandardCharsets.UTF_8));
+        all = ArrayUtils.addAll(all, content);
 
-        byte[] serverSign = hmacSha256.doFinal(builder.toString().getBytes());
+        byte[] serverSign = hmacSha256.doFinal(all);
 
         return Base64.getEncoder().encodeToString(serverSign);
     }
