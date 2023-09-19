@@ -33,7 +33,8 @@ public class App {
 
         Vertx vertx = Vertx.vertx(options);
 
-        // setTimer setPeriodic 有什么区别
+        // setTimer 仅一次
+        // setPeriodic 定时任务
         long timerId = vertx.setPeriodic(15000, id -> {
             log.info("change output topic --- test22222");
             config.setOutputTopic("test22222");
