@@ -1,5 +1,7 @@
 package com.kuze.bigdata.study;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
@@ -13,9 +15,12 @@ import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.kafka.clients.producer.ProducerRecord;
+
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
-public class App {
+public class KafkaApp {
 
     public static void main(String[] args) throws Exception {
 
@@ -43,11 +48,17 @@ public class App {
 
         KafkaSink<String> sink = KafkaSink.<String>builder()
                 .setBootstrapServers("localhost:9092")
-                .setRecordSerializer(KafkaRecordSerializationSchema.builder()
-                        .setTopic("output-topic")
-                        .setValueSerializationSchema(new SimpleStringSchema())
-                        .build()
-                )
+                .setRecordSerializer((KafkaRecordSerializationSchema<String>) (data, context, timestamp) -> {
+                    ObjectMapper mapper = new ObjectMapper();
+                    String outputTopic;
+                    try {
+                        JsonNode jsonNode = mapper.readTree(data);
+                        outputTopic = jsonNode.get("table").asText();
+                    } catch (Exception e) {
+                        outputTopic = "error";
+                    }
+                    return new ProducerRecord<>(outputTopic, data.getBytes(StandardCharsets.UTF_8));
+                })
                 .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE)
                 .build();
 
