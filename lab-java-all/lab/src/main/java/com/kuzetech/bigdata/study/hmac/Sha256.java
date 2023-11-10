@@ -13,8 +13,8 @@ public class Sha256 {
 
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException {
 
-        String strContent = "{\"batchId\":\"123\",\"messages\":[{\"type\":\"event\",\"data\":{\"a\":3,\"b\":\"3\"}}]}";
-        extracted(strContent.getBytes(StandardCharsets.UTF_8));
+        String strContent = "{\"batchId\": \"123\",\"messages\":[{\"type\": \"UserMutation\",\"data\": {\"#identify\": \"user-fake428566\",\"#log_id\": \"f6399633-ce17-494e-a943-cec1873d5bdd\",\"#operate\": \"set\",\"#time\": 1699609490679,\"properties\": {\"#device_id\": \"device-fake1548091\",\"level\": 84,\"sex\": \"男\",\"user_last_login_time\": 1699609490679}}}]}";
+        System.out.println(extracted(strContent.getBytes(StandardCharsets.UTF_8)));
     }
 
     public static String extracted(byte[] content) throws NoSuchAlgorithmException, InvalidKeyException {
