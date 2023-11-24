@@ -70,9 +70,14 @@ func main() {
 		writer.Write([]byte("registered"))
 	})
 
-	mux.HandleFunc("/push", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/ingest", func(writer http.ResponseWriter, request *http.Request) {
+		MetricGaugeIngest.With(prometheus.Labels{"event": "login"}).Add(1)
+		writer.Write([]byte("ingest"))
+	})
 
-		writer.Write([]byte("push"))
+	mux.HandleFunc("/clickhouse", func(writer http.ResponseWriter, request *http.Request) {
+		MetricGaugeClickhouse.With(prometheus.Labels{"event": "login"}).Add(1)
+		writer.Write([]byte("clickhouse"))
 	})
 
 	// 配置 http server 的各方面

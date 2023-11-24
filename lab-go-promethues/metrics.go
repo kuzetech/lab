@@ -63,4 +63,18 @@ var (
 		Help:    "请求时长",
 		Buckets: []float64{10, 20, 30, 40, 50, 60, 70, 80, 90, 100},
 	})
+
+	MetricGaugeIngest = promauto.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "ingest_receive",
+		},
+		[]string{"event"},
+	)
+
+	MetricGaugeClickhouse = promauto.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "clickhouse_store",
+		},
+		[]string{"event"},
+	)
 )
