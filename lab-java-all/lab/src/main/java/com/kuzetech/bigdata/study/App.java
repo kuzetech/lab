@@ -1,19 +1,30 @@
 package com.kuzetech.bigdata.study;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * Hello world!
  *
  */
-public class App 
+public class App
 {
     public static void main( String[] args )
     {
-        int startIndex = (("funnydb-ingest-receive".hashCode() * 31) & 0x7FFFFFFF) % 18;
-        System.out.println(startIndex);
+        Set<Long> t = new HashSet<>();
+        t.add(1L);
+        t.add(5L);
+        t.add(2L);
+        t.add(8L);
 
-        // 1581549697
-        // 1581549697 % 9 = 1
-        // 1581549697 % 18 = 1
+        List<Long> collect = t.stream().sorted().collect(Collectors.toList());
+
+        for (Long l : collect) {
+            System.out.println(l);
+        }
+
 
     }
 }
