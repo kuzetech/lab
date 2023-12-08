@@ -8,11 +8,11 @@ import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.producer.KafkaProducerRecord;
 import io.vertx.kafka.client.producer.RecordMetadata;
 
-public class ServerVerticle extends AbstractVerticle {
+public class ServerProducerVerticle extends AbstractVerticle {
 
     private final KafkaProducer<String, String> producer;
 
-    public ServerVerticle(KafkaProducer<String, String> producer) {
+    public ServerProducerVerticle(KafkaProducer<String, String> producer) {
         this.producer = producer;
     }
 
