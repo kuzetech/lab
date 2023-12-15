@@ -1,4 +1,4 @@
-package com.xmfunny.funnydb;
+package org.example;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -17,12 +17,12 @@ public class ServerDemoVerticle extends AbstractVerticle {
         router.route(HttpMethod.POST, "/v1/test/:uuid")
                 .handler(ctx -> {
                     Future<Buffer> future = ctx.request().body();
-                    future.onComplete(result->{
+                    future.onComplete(result -> {
                         String uuid = ctx.pathParam("uuid");
-                        if (result.succeeded()){
+                        if (result.succeeded()) {
                             String content = result.result().toString("utf-8");
                             ctx.response().end(uuid + "-" + content);
-                        }else{
+                        } else {
                             ctx.response().end(uuid);
                         }
                     });

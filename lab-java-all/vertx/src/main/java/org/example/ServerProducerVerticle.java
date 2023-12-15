@@ -1,4 +1,4 @@
-package com.xmfunny.funnydb;
+package org.example;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -24,14 +24,14 @@ public class ServerProducerVerticle extends AbstractVerticle {
             KafkaProducerRecord<String, String> record = KafkaProducerRecord.create("test", "Hello World!");
             final Future<RecordMetadata> fut = producer.send(record);
 
-            fut.onComplete(result->{
+            fut.onComplete(result -> {
                 HttpServerResponse response = request.response();
                 response.putHeader("content-type", "text/plain");
-               if (result.succeeded()){
-                   response.end("success!");
-               }else{
-                   response.end("error!");
-               }
+                if (result.succeeded()) {
+                    response.end("success!");
+                } else {
+                    response.end("error!");
+                }
             });
 
         });

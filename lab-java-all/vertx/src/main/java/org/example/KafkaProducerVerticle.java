@@ -1,4 +1,4 @@
-package com.xmfunny.funnydb;
+package org.example;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.kafka.client.producer.KafkaProducer;
