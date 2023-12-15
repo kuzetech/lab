@@ -3,6 +3,7 @@ package org.example;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.Router;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.producer.KafkaProducerRecord;
@@ -35,23 +36,18 @@ public class App {
         Router router = Router.router(vertx);
 
         router.post("/test")
-                .handler(routingContext -> {
-
-                    log.info("接收到请求");
-
-                    String body = routingContext.body().asString("utf-8");
-                    KafkaProducerRecord<String, String> record = KafkaProducerRecord.create("my_topic", body);
-
-                    producer.send(record).onComplete(result -> {
-                        boolean succeeded = result.succeeded();
-                        if (succeeded) {
-                            log.info("接收结束");
-                            routingContext.json("success");
-                        } else {
-                            log.error(result.cause().getMessage());
-                            routingContext.json("fail");
-                        }
-
+                .handler(ctx -> {
+                    HttpServerRequest request = ctx.request();
+                    request.body().onComplete(r -> {
+                        KafkaProducerRecord<String, String> record = KafkaProducerRecord.create("my_topic", r.result().toString());
+                        producer.send(record).onComplete(result -> {
+                            boolean succeeded = result.succeeded();
+                            if (succeeded) {
+                                ctx.json("success");
+                            } else {
+                                ctx.json("fail");
+                            }
+                        });
                     });
                 });
 
