@@ -26,7 +26,7 @@ public class App {
                     }
                 });
             } else {
-                log.error("deployed kafka producer error");
+                log.error("deployed kafka producer error", r.cause());
                 vertx.close();
             }
         });
