@@ -1,22 +1,37 @@
 package org.example;
 
-import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.Router;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.producer.KafkaProducerRecord;
+import lombok.extern.slf4j.Slf4j;
 
-public class ServerProducerVerticle extends AbstractVerticle {
+import java.util.HashMap;
+import java.util.Map;
 
-    private final KafkaProducer<String, String> producer;
+/**
+ * Hello world!
+ */
 
-    public ServerProducerVerticle(KafkaProducer<String, String> producer) {
-        this.producer = producer;
-    }
+@Slf4j
+public class AllInOneApp {
 
-    @Override
-    public void start() throws Exception {
+    public static void main(String[] args) {
+
+        VertxOptions options = new VertxOptions();
+        Vertx vertx = Vertx.vertx(options);
+
+        Map<String, String> producerConfig = new HashMap<>();
+        producerConfig.put("bootstrap.servers", "localhost:9092");
+        producerConfig.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        producerConfig.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        producerConfig.put("acks", "1");
+
+        KafkaProducer<String, String> producer = KafkaProducer.create(vertx, producerConfig);
+
         HttpServer server = vertx.createHttpServer();
         Router router = Router.router(vertx);
 
@@ -36,11 +51,14 @@ public class ServerProducerVerticle extends AbstractVerticle {
                     });
                 });
 
-        server.requestHandler(router).listen(8080);
+        server.requestHandler(router).listen(8080, "0.0.0.0").onComplete(res -> {
+            if (res.succeeded()) {
+                log.info("Server is now listening!");
+            } else {
+                log.info("Failed to bind!");
+            }
+        });
+
     }
 
-    @Override
-    public void stop() throws Exception {
-        super.stop();
-    }
 }

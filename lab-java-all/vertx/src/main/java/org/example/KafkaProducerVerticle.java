@@ -3,10 +3,12 @@ package org.example;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Getter
 public class KafkaProducerVerticle extends AbstractVerticle {
 
