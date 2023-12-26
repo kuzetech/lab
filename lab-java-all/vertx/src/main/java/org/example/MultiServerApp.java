@@ -17,9 +17,9 @@ public class MultiServerApp {
         Future<String> deployed = vertx.deployVerticle(ServerVerticle.class, deploymentOptions);
         deployed.onComplete(r -> {
             if (r.succeeded()) {
-                log.info("1 success");
+                log.info("deploy success");
             } else {
-                log.error("1 fail, {}", r.cause().toString());
+                log.error("deploy fail, {}", r.cause().toString());
             }
         });
 
