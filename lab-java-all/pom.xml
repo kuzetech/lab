@@ -17,7 +17,6 @@
         <module>kafka</module>
         <module>vertx</module>
         <module>flink</module>
-        <module>opentelemetry</module>
     </modules>
 
     <!--      子项目默认都会继承这一部分配置，并且可以覆盖      -->
