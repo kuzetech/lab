@@ -12,36 +12,51 @@
     <artifactId>spark</artifactId>
     <name>spark</name>
 
+    <properties>
+        <compiler.version>1.8</compiler.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <spark.version>3.2.2</spark.version>
+        <scala.version>2.12</scala.version>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_${scala.version}</artifactId>
+            <version>${spark.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_${scala.version}</artifactId>
+            <version>${spark.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-streaming_${scala.version}</artifactId>
+            <version>${spark.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql-kafka-0-10_${scala.version}</artifactId>
+            <version>${spark.version}</version>
         </dependency>
+        <!--      ClickHouse      -->
         <dependency>
             <groupId>com.clickhouse</groupId>
             <artifactId>clickhouse-jdbc</artifactId>
+            <version>0.3.2-patch10</version>
         </dependency>
         <dependency>
             <groupId>com.clickhouse</groupId>
             <artifactId>clickhouse-client</artifactId>
+            <version>0.3.2-patch11</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -92,7 +107,8 @@
                     </filters>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"></transformer>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"></transformer>
                         <transformer
                                 implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                             <mainClass>com.kuzetech.bigdata.study.streaming.udsink.TestUDSink</mainClass>

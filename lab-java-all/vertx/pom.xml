@@ -18,38 +18,34 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <docker.image.prefix>registry.biubiubiu.io/turbine</docker.image.prefix>
+        <vertx.version>4.4.5</vertx.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
-            <version>4.4.5</version>
+            <version>${vertx.version}</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
-            <version>4.4.5</version>
+            <version>${vertx.version}</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-health-check</artifactId>
-            <version>4.4.5</version>
+            <version>${vertx.version}</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-micrometer-metrics</artifactId>
-            <version>4.4.5</version>
-        </dependency>
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-registry-prometheus</artifactId>
-            <version>1.11.4</version>
+            <version>${vertx.version}</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-kafka-client</artifactId>
-            <version>4.4.5</version>
+            <version>${vertx.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.kafka</groupId>
@@ -63,21 +59,22 @@
             <version>3.2.3</version>
         </dependency>
         <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <version>1.11.4</version>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.28</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>32.1.2-jre</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
-
-
         <!-- slf4j核心包-->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -101,7 +98,6 @@
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>2.9.1</version>
         </dependency>
-
     </dependencies>
 
     <build>
