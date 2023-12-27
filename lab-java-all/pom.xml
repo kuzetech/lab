@@ -11,16 +11,11 @@
     <name>lab-java-all</name>
 
     <modules>
-        <module>core</module>
         <module>design</module>
         <module>spark</module>
         <module>lab</module>
-        <module>socket</module>
         <module>netty</module>
-        <module>clickhouse</module>
         <module>kafka</module>
-        <module>dropwizard</module>
-        <module>jetty-jersey</module>
         <module>logback</module>
         <module>vertx</module>
         <module>flink</module>
@@ -167,19 +162,6 @@
 
             <!--      Netty      -->
 
-
-            <!--      ClickHouse      -->
-            <dependency>
-                <groupId>com.clickhouse</groupId>
-                <artifactId>clickhouse-jdbc</artifactId>
-                <version>0.3.2-patch10</version>
-            </dependency>
-            <dependency>
-                <groupId>com.clickhouse</groupId>
-                <artifactId>clickhouse-client</artifactId>
-                <version>0.3.2-patch11</version>
-            </dependency>
-
             <!--      Spark      -->
             <dependency>
                 <groupId>org.apache.spark</groupId>
@@ -201,8 +183,6 @@
                 <artifactId>spark-sql-kafka-0-10_${scala.version}</artifactId>
                 <version>${spark.version}</version>
             </dependency>
-
-
         </dependencies>
     </dependencyManagement>
 
