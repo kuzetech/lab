@@ -23,6 +23,7 @@ public class Cache {
             @Override
             public Animal load(String name) {
                 // 根据 name 从数据库中搜索并加载 Animal 类
+                // 这边 return null 会导致报错，com.google.common.cache.CacheLoader$InvalidCacheLoadException: CacheLoader returned null for key 狼.
                 return null;
             }
         };
@@ -41,8 +42,8 @@ public class Cache {
     public static void main(String[] args) throws InterruptedException, ExecutionException {
         Animal animal = (Animal) loadingCache.get("狼");
         System.out.println(animal);
-        Thread.sleep(4 * 1000);
-        // 狼已经自动过去，获取为 null 值报错
+        Thread.sleep(5 * 1000);
+        // 狼已经自动过过期，从 CacheLoader 中加载数据但是返回 null 值报错
         System.out.println(loadingCache.get("狼"));
         /**
          * key=猫,value=Animal{name='汤姆', age=3},reason=EXPLICIT
