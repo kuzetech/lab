@@ -1,6 +1,6 @@
 package com.kuzetech.bigdata.study.streaming.udsink;
 
-import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.spark.sql.types.StructType;
 
 import java.io.Serializable;
@@ -10,7 +10,7 @@ public class Wal implements Serializable {
 
     private List<String> batchAllocation;
     private String batchIndex;
-    @JSONField(serialize = false)
+    @JsonIgnore
     private StructType structType;
 
     public StructType getStructType() {

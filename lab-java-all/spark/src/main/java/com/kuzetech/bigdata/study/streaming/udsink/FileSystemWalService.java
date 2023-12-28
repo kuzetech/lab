@@ -1,6 +1,6 @@
 package com.kuzetech.bigdata.study.streaming.udsink;
 
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuzetech.bigdata.study.clickhouse.ClickHouseQueryConfig;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -14,9 +14,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class FileSystemWalService extends WalService{
+public class FileSystemWalService extends WalService {
 
     private final static Logger logger = LoggerFactory.getLogger(FileSystemWalService.class);
+    private final ObjectMapper mapper = new ObjectMapper();
 
     private transient FileSystem fs;
     private Path walPath;
@@ -25,7 +26,7 @@ public class FileSystemWalService extends WalService{
         super(config);
         fs = FileSystem.get(hadoopConfig);
         walPath = new Path(super.config.getWalLocation());
-        if(!fs.exists(walPath)){
+        if (!fs.exists(walPath)) {
             FSDataOutputStream fsDataOutputStream = fs.create(walPath);
             fsDataOutputStream.close();
         }
@@ -36,16 +37,16 @@ public class FileSystemWalService extends WalService{
         BufferedReader br = new BufferedReader(new InputStreamReader(open));
         String content = br.readLine();
         open.close();
-        if(content == null || content.trim().isEmpty()) {
+        if (content == null || content.trim().isEmpty()) {
             return null;
-        }else{
-            Wal wal = JSONObject.parseObject(content, Wal.class);
+        } else {
+            Wal wal = mapper.readValue(content, Wal.class);
             return wal;
         }
     }
 
     public void setWal(Wal wal) throws IOException {
-        String content = JSONObject.toJSONString(wal);
+        String content = mapper.writeValueAsString(wal);
         logger.info("写入 wal 的内容为 {}", content);
         FSDataOutputStream outputStream = fs.create(walPath, true);
         outputStream.writeBytes(content);

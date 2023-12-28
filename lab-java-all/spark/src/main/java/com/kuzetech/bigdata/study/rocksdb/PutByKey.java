@@ -1,6 +1,7 @@
 package com.kuzetech.bigdata.study.rocksdb;
 
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 public class PutByKey {
 
-    public static void main(String[] args) throws RocksDBException {
+    public static void main(String[] args) throws RocksDBException, JsonProcessingException {
 
         RocksDB db = RocksDB.open("/Users/huangsw/code/study/study-spark/checkpoint/wal");
 
@@ -20,7 +21,9 @@ public class PutByKey {
 
         // MyConfig config = new MyConfig(list);
 
-        String jsonStr = JSONObject.toJSONString(list);
+        ObjectMapper mapper = new ObjectMapper();
+
+        String jsonStr = mapper.writeValueAsString(list);
 
         String key = "test";
         byte[] keyBytes = key.getBytes();

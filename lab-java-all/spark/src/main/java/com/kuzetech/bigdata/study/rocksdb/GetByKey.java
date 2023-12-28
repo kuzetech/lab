@@ -1,6 +1,7 @@
 package com.kuzetech.bigdata.study.rocksdb;
 
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class GetByKey {
 
-    public static void main(String[] args) throws RocksDBException {
+    public static void main(String[] args) throws RocksDBException, JsonProcessingException {
 
         RocksDB db = RocksDB.open("/Users/huangsw/code/funny/funnydb/spark-block-aggregator/checkpoint/user/wal");
 
@@ -19,9 +20,10 @@ public class GetByKey {
 
         String resultStr = new String(result);
 
-        List<String> list = JSONObject.parseArray(resultStr, String.class);
+        ObjectMapper mapper = new ObjectMapper();
+
+        List<String> list = mapper.readerForArrayOf(String.class).readValue(resultStr);
+
         System.out.println(list);
-
-
     }
 }
