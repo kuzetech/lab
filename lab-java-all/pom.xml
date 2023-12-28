@@ -29,6 +29,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spark.version>3.2.2</spark.version>
         <scala.version>2.12</scala.version>
+        <log4j2.version>2.17.2</log4j2.version>
     </properties>
 
 
@@ -69,6 +70,11 @@
 
             <!--      通用-工具      -->
             <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.28</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.12.0</version>
@@ -79,19 +85,9 @@
                 <version>4.4</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.httpcomponents</groupId>
-                <artifactId>httpclient</artifactId>
-                <version>4.5.13</version>
-            </dependency>
-            <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>
                 <version>4.10.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>1.18.28</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -100,6 +96,7 @@
             </dependency>
 
             <!--      通用-日志      -->
+            <!--      特别注意，该配置仅适用于 slf4j 1.7.X 及之前版本    -->
             <!-- slf4j 核心包-->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -110,18 +107,18 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
-                <version>2.17.2</version>
+                <version>${log4j2.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
-                <version>2.17.2</version>
+                <version>${log4j2.version}</version>
             </dependency>
             <!--log4j适配器-->
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-slf4j-impl</artifactId>
-                <version>2.17.2</version>
+                <version>${log4j2.version}</version>
             </dependency>
 
             <!--      Json      -->
