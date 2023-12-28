@@ -1,30 +1,25 @@
 package com.kuzetech.bigdata.lab;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Hello world!
- *
  */
-public class App
-{
-    public static void main( String[] args )
-    {
-        Set<Long> t = new HashSet<>();
-        t.add(1L);
-        t.add(5L);
-        t.add(2L);
-        t.add(8L);
+public class App {
 
-        List<Long> collect = t.stream().sorted().collect(Collectors.toList());
+    private static final Logger logger = LoggerFactory.getLogger(App.class);
 
-        for (Long l : collect) {
-            System.out.println(l);
-        }
+    public static void main(String[] args) {
 
+        Level logLevel = Level.valueOf("info");
+        Configurator.setRootLevel(logLevel);
+
+        logger.debug("11111");
+        logger.info("22222");
+        logger.error("333333");
 
     }
 }
