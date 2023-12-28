@@ -1,6 +1,0 @@
----
-startDelaySeconds: 0
-hostPort: broker:7891
-ssl: false
-lowercaseOutputName: false
-lowercaseOutputLabelNames: false

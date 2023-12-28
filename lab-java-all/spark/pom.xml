@@ -107,7 +107,7 @@
                                 implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"></transformer>
                         <transformer
                                 implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>com.kuzetech.bigdata.study.streaming.udsink.TestUDSink</mainClass>
+                            <mainClass>com.kuzetech.bigdata.spark.streaming.udsink.TestUDSink</mainClass>
                         </transformer>
                     </transformers>
                 </configuration>

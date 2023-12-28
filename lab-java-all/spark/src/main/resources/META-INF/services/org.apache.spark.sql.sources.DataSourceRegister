@@ -17,4 +17,4 @@
 # under the License.
 #
 
-com.kuzetech.bigdata.study.streaming.udsink.ClickHouseStreamSinkProvider
+com.kuzetech.bigdata.spark.streaming.udsink.ClickHouseStreamSinkProvider

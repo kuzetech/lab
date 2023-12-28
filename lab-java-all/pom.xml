@@ -17,6 +17,7 @@
         <module>kafka</module>
         <module>vertx</module>
         <module>flink</module>
+        <module>concurrent</module>
     </modules>
 
     <!--      子项目默认都会继承这一部分配置，并且可以覆盖      -->
@@ -113,13 +114,13 @@
             <!--log4j2 核心包-->
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>2.12.4</version>
+                <artifactId>log4j-api</artifactId>
+                <version>2.17.2</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>2.9.1</version>
+                <artifactId>log4j-core</artifactId>
+                <version>2.17.2</version>
             </dependency>
             <!--用于 log4j2 与 slf4j 保持桥接-->
             <dependency>
