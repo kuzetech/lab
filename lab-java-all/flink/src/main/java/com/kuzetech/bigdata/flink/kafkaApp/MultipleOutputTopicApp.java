@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.study;
+package com.kuzetech.bigdata.flink.kafkaApp;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +20,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
-public class KafkaApp {
+public class MultipleOutputTopicApp {
 
     public static void main(String[] args) throws Exception {
 

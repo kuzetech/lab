@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.kuzetech.bigdata.flink.study;
+package com.kuzetech.bigdata.flink;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -32,7 +32,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  * <p>If you change the name of the main class (with the public static void main(String[] args))
  * method, change the respective entry in the POM.xml file (simply search for 'mainClass').
  */
-public class DataStreamJobDemo {
+public class App {
 
     public static void main(String[] args) throws Exception {
         // Sets up the execution environment, which is the main entry point

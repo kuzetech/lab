@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.study;
+package com.kuzetech.bigdata.flink.broadcastConnect;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;

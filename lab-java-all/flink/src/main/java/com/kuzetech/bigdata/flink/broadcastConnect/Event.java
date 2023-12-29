@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.study;
+package com.kuzetech.bigdata.flink.broadcastConnect;
 
 public class Event {
     private Long eventId;

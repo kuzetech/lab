@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.study;
+package com.kuzetech.bigdata.flink.broadcastConnect;
 
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;

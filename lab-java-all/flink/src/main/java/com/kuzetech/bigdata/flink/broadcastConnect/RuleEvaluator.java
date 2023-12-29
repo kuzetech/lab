@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.study;
+package com.kuzetech.bigdata.flink.broadcastConnect;
 
 import org.apache.flink.api.common.state.BroadcastState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
