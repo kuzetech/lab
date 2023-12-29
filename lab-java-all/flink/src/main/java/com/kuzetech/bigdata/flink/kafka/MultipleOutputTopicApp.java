@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.kafkaApp;
+package com.kuzetech.bigdata.flink.kafka;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

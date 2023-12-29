@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.broadcastConnect;
+package com.kuzetech.bigdata.flink.common;
 
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 
