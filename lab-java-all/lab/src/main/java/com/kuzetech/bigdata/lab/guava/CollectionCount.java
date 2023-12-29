@@ -21,6 +21,7 @@ public class CollectionCount {
 
         // guava 统计相同元素出现的次数
         HashMultiset<String> multiset = HashMultiset.create(words);
+        System.out.println(multiset); // [a x 2, b, c x 2, d]
         multiset.elementSet().forEach(s -> System.out.println(s + ":" + multiset.count(s)));
     }
 }

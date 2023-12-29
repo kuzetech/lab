@@ -27,6 +27,7 @@ public class CollectionClassify {
         multimap.put("猫", "加菲");
         multimap.put("猫", "汤姆");
         multimap.put("猫", "汤姆");
+        System.out.println(multimap); // {狗=[旺财, 大黄], 猫=[加菲, 汤姆]}
         System.out.println(multimap.get("猫")); // [加菲, 汤姆]
     }
 }
