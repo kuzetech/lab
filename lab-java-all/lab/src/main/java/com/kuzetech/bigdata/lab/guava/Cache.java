@@ -24,7 +24,7 @@ public class Cache {
             public Animal load(String name) {
                 // 根据 name 从数据库中搜索并加载 Animal 类
                 // 这边 return null 会导致报错，com.google.common.cache.CacheLoader$InvalidCacheLoadException: CacheLoader returned null for key 狼.
-                return null;
+                return new Animal("灰太狼3", 5);
             }
         };
 
