@@ -5,10 +5,17 @@ public class App {
         try {
             Exception e = new NullPointerException();
             throw e;
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             System.out.println(1);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(2);
+        }
+
+
+        try {
+            throw new RuntimeException("test");
+        } catch (Exception e) {
+            System.out.println(3);
         }
     }
 }
