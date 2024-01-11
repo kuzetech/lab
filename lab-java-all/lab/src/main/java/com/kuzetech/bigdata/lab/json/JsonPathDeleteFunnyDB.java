@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.StringUtils;
 
-public class Delete2 {
+public class JsonPathDeleteFunnyDB {
 
     public static void main(String[] args) throws JsonProcessingException {
         String content = "{\n" +

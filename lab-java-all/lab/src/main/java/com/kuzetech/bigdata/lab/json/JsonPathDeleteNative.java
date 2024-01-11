@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.StringUtils;
 
-public class Delete {
+public class JsonPathDeleteNative {
 
     public static void main(String[] args) throws JsonProcessingException {
         String content = "{\n" +
@@ -51,14 +51,14 @@ public class Delete {
     }
 
     public static void deleteElementByPath(ObjectNode topNodes, String removePath) {
-        String removeElementIndex = removePath.substring(removePath.lastIndexOf('/')+1);
+        String removeElementIndex = removePath.substring(removePath.lastIndexOf('/') + 1);
         JsonPointer removeElementParentJsonPointer = JsonPointer.compile(removePath.substring(0, removePath.lastIndexOf('/')));
-        if (StringUtils.startsWith(removeElementIndex, "[")){
-            ArrayNode parent = (ArrayNode)topNodes.at(removeElementParentJsonPointer);
+        if (StringUtils.startsWith(removeElementIndex, "[")) {
+            ArrayNode parent = (ArrayNode) topNodes.at(removeElementParentJsonPointer);
             String arrayIndex = removeElementIndex.substring(1, removeElementIndex.length() - 1);
             parent.remove(Integer.parseInt(arrayIndex));
-        }else{
-            ObjectNode parent = (ObjectNode)topNodes.at(removeElementParentJsonPointer);
+        } else {
+            ObjectNode parent = (ObjectNode) topNodes.at(removeElementParentJsonPointer);
             parent.remove(removeElementIndex);
         }
     }
