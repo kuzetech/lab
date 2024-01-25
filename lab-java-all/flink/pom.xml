@@ -24,8 +24,7 @@ under the License.
         <artifactId>lab-java-all</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-
-    <groupId>com.kuze.bigdata.study</groupId>
+    
     <artifactId>flink</artifactId>
     <packaging>jar</packaging>
     <name>flink</name>
