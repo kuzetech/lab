@@ -13,7 +13,7 @@ public class Sha256 {
 
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException {
 
-        String strContent = "{\"batchId\": \"123\",\"messages\":[{\"type\": \"UserMutation\",\"data\": {\"#event\": \"login\",\"#identify\": \"user-fake428566\",\"#log_id\": \"f6399633-ce17-494e-a943-cec1873d5bdd\",\"#operate\": \"set\",\"#time\": 1699609490679,\"properties\": {\"#device_id\": \"device-fake1548091\",\"level\": 4509781237501530015,\"sex\": \"男\",\"user_last_login_time\": 1699609490679}}}]}";
+        String strContent = "{\"batchId\": \"123\",\"messages\":[{\"type\": \"Event\",\"data\": {\"#event\": \"login\",\"#identify\": \"user-fake428566\",\"#log_id\": \"f6399633-ce17-494e-a943-cec1873d5bdd\",\"#operate\": \"set\",\"#time\": 1699609490679,\"properties\": {\"#device_id\": \"device-fake1548091\",\"level\": 4509781237501530015,\"sex\": \"男\",\"user_last_login_time\": 1699609490679}}}]}";
         System.out.println(extracted("demo", "123", "123", strContent.getBytes(StandardCharsets.UTF_8)));
     }
 
