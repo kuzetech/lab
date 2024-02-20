@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.vertx;
+package com.kuzetech.bigdata.vertx.httpServerToKafkaDeploy;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.kafka.KafkaClientMetrics;

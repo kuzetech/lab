@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.vertx;
+package com.kuzetech.bigdata.vertx.multiServer;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Future;

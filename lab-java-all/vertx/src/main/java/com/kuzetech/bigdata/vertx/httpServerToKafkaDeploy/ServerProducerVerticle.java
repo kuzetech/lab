@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.vertx;
+package com.kuzetech.bigdata.vertx.httpServerToKafkaDeploy;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServer;
