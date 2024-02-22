@@ -1,8 +1,5 @@
 package com.kuzetech.bigdata.vertx.multiServer;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.kafka.KafkaClientMetrics;
-import io.micrometer.core.instrument.config.MeterFilter;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
@@ -16,7 +13,6 @@ import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.producer.KafkaProducerRecord;
 import io.vertx.kafka.client.producer.RecordMetadata;
 import io.vertx.micrometer.PrometheusScrapingHandler;
-import io.vertx.micrometer.backends.BackendRegistries;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -45,10 +41,6 @@ public class ServerVerticle extends AbstractVerticle {
             log.info("I have received a message: " + m.getName());
             metadata = m;
         });
-
-        MeterRegistry registry = BackendRegistries.getDefaultNow();
-        registry.config().meterFilter(MeterFilter.accept());
-        new KafkaClientMetrics(producer.unwrap()).bindTo(registry);
 
         server = vertx.createHttpServer();
         Router router = Router.router(vertx)
