@@ -14,8 +14,7 @@ import io.vertx.micrometer.VertxPrometheusOptions;
 import io.vertx.micrometer.backends.BackendRegistries;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Properties;
 
 @Slf4j
 public class MultiServerApp {
@@ -32,24 +31,27 @@ public class MultiServerApp {
         vertxOptions.setMetricsOptions(micrometerMetricsOptions);
         Vertx vertx = Vertx.vertx(vertxOptions);
 
-        Map<String, String> producerConfig = new HashMap<>();
-        producerConfig.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        producerConfig.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        producerConfig.put("compression.type", "lz4");
-        producerConfig.put("bootstrap.servers", "localhost:9092");
+        Properties producerConfig = new Properties();
+        producerConfig.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        producerConfig.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        producerConfig.setProperty("compression.type", "lz4");
+        producerConfig.setProperty("bootstrap.servers", "localhost:9092");
         KafkaProducer<String, String> producer = KafkaProducer.createShared(vertx, "producer", producerConfig);
 
         MeterRegistry registry = BackendRegistries.getDefaultNow();
         registry.config().meterFilter(MeterFilter.accept());
         new KafkaClientMetrics(producer.unwrap()).bindTo(registry);
+        MetricsManager metricsManager = new MetricsManager(registry);
+
+        Metadata metadata = new Metadata();
+        metadata.setName("aaa");
 
         DeploymentOptions deploymentOptions = new DeploymentOptions();
         deploymentOptions.setInstances(3);
-
         JsonObject config = new JsonObject();
-        Metadata metadata = new Metadata();
-        metadata.setName("aaa");
         config.put("metadata", metadata);
+        config.put("metricsManager", metricsManager);
+        config.put("kafkaConfig", new KafkaConfig(producerConfig));
         deploymentOptions.setConfig(config);
 
         Future<String> serverDeployed = vertx.deployVerticle(ServerVerticle.class, deploymentOptions);

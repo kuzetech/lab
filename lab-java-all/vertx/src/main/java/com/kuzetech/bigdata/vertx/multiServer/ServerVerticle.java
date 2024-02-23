@@ -15,26 +15,21 @@ import io.vertx.kafka.client.producer.RecordMetadata;
 import io.vertx.micrometer.PrometheusScrapingHandler;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Slf4j
 public class ServerVerticle extends AbstractVerticle {
 
     private HttpServer server;
     private Metadata metadata;
+    private MetricsManager metricsManager;
 
     @Override
     public void start(Promise<Void> startPromise) {
+        metricsManager = (MetricsManager) config().getValue("metricsManager");
         metadata = (Metadata) config().getValue("metadata");
         log.info("初始化 server，metadata 为 " + metadata.getName());
 
-        Map<String, String> producerConfig = new HashMap<>();
-        producerConfig.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        producerConfig.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        producerConfig.put("compression.type", "lz4");
-        producerConfig.put("bootstrap.servers", "localhost:9092");
-        KafkaProducer<String, String> producer = KafkaProducer.createShared(vertx, "producer", producerConfig);
+        KafkaConfig kafkaConfig = (KafkaConfig) config().getValue("kafkaConfig");
+        KafkaProducer<String, String> producer = KafkaProducer.createShared(vertx, "producer", kafkaConfig.getProperties());
 
         vertx.eventBus().consumer("news.uk.sport", message -> {
             Metadata m = (Metadata) message.body();
@@ -57,6 +52,7 @@ public class ServerVerticle extends AbstractVerticle {
 
         router.get("/test")
                 .handler(ctx -> {
+                    long beginTime = System.currentTimeMillis();
                     String message = " done at " + Thread.currentThread().getId() + " " + Thread.currentThread().getName();
                     KafkaProducerRecord<String, String> record = KafkaProducerRecord.create("topic", message);
                     final Future<RecordMetadata> fut = producer.send(record);
@@ -66,6 +62,8 @@ public class ServerVerticle extends AbstractVerticle {
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
+                        metricsManager.recordCPUTime(beginTime);
+                        metricsManager.recordSignatureErrorRequest();
                         ctx.end("success");
                     }).onFailure(event -> {
                         ctx.end("fail");
