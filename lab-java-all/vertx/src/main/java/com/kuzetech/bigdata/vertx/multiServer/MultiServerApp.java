@@ -14,7 +14,8 @@ import io.vertx.micrometer.VertxPrometheusOptions;
 import io.vertx.micrometer.backends.BackendRegistries;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public class MultiServerApp {
@@ -31,11 +32,11 @@ public class MultiServerApp {
         vertxOptions.setMetricsOptions(micrometerMetricsOptions);
         Vertx vertx = Vertx.vertx(vertxOptions);
 
-        Properties producerConfig = new Properties();
-        producerConfig.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        producerConfig.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        producerConfig.setProperty("compression.type", "lz4");
-        producerConfig.setProperty("bootstrap.servers", "localhost:9092");
+        Map<String, String> producerConfig = new HashMap<>();
+        producerConfig.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        producerConfig.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+        producerConfig.put("compression.type", "lz4");
+        producerConfig.put("bootstrap.servers", "localhost:9092");
         KafkaProducer<String, String> producer = KafkaProducer.createShared(vertx, "producer", producerConfig);
 
         MeterRegistry registry = BackendRegistries.getDefaultNow();

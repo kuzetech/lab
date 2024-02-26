@@ -29,7 +29,7 @@ public class ServerVerticle extends AbstractVerticle {
         log.info("初始化 server，metadata 为 " + metadata.getName());
 
         KafkaConfig kafkaConfig = (KafkaConfig) config().getValue("kafkaConfig");
-        KafkaProducer<String, String> producer = KafkaProducer.createShared(vertx, "producer", kafkaConfig.getProperties());
+        KafkaProducer<String, String> producer = KafkaProducer.createShared(vertx, "producer", kafkaConfig.getProducerConfig());
 
         vertx.eventBus().consumer("news.uk.sport", message -> {
             Metadata m = (Metadata) message.body();
