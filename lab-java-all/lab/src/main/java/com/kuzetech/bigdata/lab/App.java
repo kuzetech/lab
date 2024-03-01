@@ -1,25 +1,33 @@
 package com.kuzetech.bigdata.lab;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * Hello world!
  */
 public class App {
 
-    private static final Logger logger = LoggerFactory.getLogger(App.class);
+    public static void main(String[] args) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
 
-    public static void main(String[] args) {
+        File file = new File("/Users/huangsw/code/lab/lab-java-all/lab/src/main/resources/1.json");
 
-        Level logLevel = Level.valueOf("info");
-        Configurator.setRootLevel(logLevel);
+        MetadataSyncResponse metadataSyncResponse = objectMapper.readValue(file, MetadataSyncResponse.class);
 
-        logger.debug("11111");
-        logger.info("22222");
-        logger.error("333333");
 
+        MetaData[] metaData = objectMapper.readValue(metadataSyncResponse.getContent(), MetaData[].class);
+
+        String content = objectMapper.writeValueAsString(metaData);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("/Users/huangsw/code/lab/lab-java-all/lab/src/main/resources/2.json"))) {
+            writer.write(content);
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
     }
 }
