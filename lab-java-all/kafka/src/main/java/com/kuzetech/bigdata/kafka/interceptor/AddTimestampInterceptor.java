@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.kafka;
+package com.kuzetech.bigdata.kafka.interceptor;
 
 import org.apache.kafka.clients.producer.ProducerInterceptor;
 import org.apache.kafka.clients.producer.ProducerRecord;

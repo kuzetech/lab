@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.kafka;
+package com.kuzetech.bigdata.kafka.base;
 
 public class Reactor {
 
@@ -27,7 +27,6 @@ public class Reactor {
         3. 既然这两种方案都不好，那么，Kafka 是如何处理请求的呢？用一句话概括就是，Kafka 使用的是 Reactor 模式
            Reactor 模式是事件驱动架构的一种实现方式，特别适合应用于处理多个客户端并发向服务器端发送请求的场景
     */
-
 
 
 }

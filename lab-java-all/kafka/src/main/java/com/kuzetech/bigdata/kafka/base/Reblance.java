@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.kafka;
+package com.kuzetech.bigdata.kafka.base;
 
 public class Reblance {
 

@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.kafka;
+package com.kuzetech.bigdata.kafka.base;
 
 import org.apache.kafka.clients.producer.Partitioner;
 import org.apache.kafka.common.Cluster;
