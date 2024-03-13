@@ -15,7 +15,8 @@ services:
       - "8090:8090"
     links:
       - apollo-db
-      #environment:
+    environment:
+      EUREKA_INSTANCE_IP_ADDRESS: 0.0.0.0
       #JAVA_OPTS: '-Xms100m -Xmx1000m -Xmn100m -Xss256k -XX:MetaspaceSize=10m -XX:MaxMetaspaceSize=250m'
       #APOLLO_CONFIG_DB_USERNAME: 'root'
       #APOLLO_CONFIG_DB_PASSWORD: 'apollo'
