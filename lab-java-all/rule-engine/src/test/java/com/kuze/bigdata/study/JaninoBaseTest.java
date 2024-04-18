@@ -49,16 +49,16 @@ public class JaninoBaseTest {
         compiler.setParentClassLoader(JaninoBaseTest.class.getClassLoader());
 
         String content = "public class Foo {\n" +
-                "    public void say() {\n" +
-                "        System.out.println(100);\n" +
+                "    public void say(int a) {\n" +
+                "        System.out.println(a);\n" +
                 "    }\n" +
                 "}";
         compiler.cook(content);
 
         Class<?> aClass = compiler.getClassLoader().loadClass("Foo");
 
-        Method sayMethod = aClass.getDeclaredMethod("say");
-        sayMethod.invoke(aClass.newInstance());
+        Method sayMethod = aClass.getDeclaredMethod("say", int.class);
+        sayMethod.invoke(aClass.newInstance(), new Object[]{1});
 
     }
 
