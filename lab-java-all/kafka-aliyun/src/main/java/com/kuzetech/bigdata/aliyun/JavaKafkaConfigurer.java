@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.study;
+package com.kuzetech.bigdata.aliyun;
 
 import java.util.Properties;
 

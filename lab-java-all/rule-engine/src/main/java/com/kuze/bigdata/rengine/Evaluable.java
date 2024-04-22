@@ -1,4 +1,4 @@
-package com.kuze.bigdata.study;
+package com.kuze.bigdata.rengine;
 
 
 public interface Evaluable {

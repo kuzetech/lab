@@ -1,8 +1,5 @@
-package com.kuzetech.bigdata.study;
+package com.kuzetech.bigdata.aliyun;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -12,6 +9,10 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 public class KafkaConsumerDemo {
 
     public static void main(String args[]) {
@@ -19,7 +20,7 @@ public class KafkaConsumerDemo {
         JavaKafkaConfigurer.configureSasl();
 
         //加载kafka.properties。
-        Properties kafkaProperties =  JavaKafkaConfigurer.getKafkaProperties();
+        Properties kafkaProperties = JavaKafkaConfigurer.getKafkaProperties();
 
         Properties props = new Properties();
         //设置接入点，请通过控制台获取对应Topic的接入点。
@@ -55,14 +56,14 @@ public class KafkaConsumerDemo {
         KafkaConsumer<String, String> consumer = new org.apache.kafka.clients.consumer.KafkaConsumer<String, String>(props);
         //设置消费组订阅的Topic，可以订阅多个。
         //如果GROUP_ID_CONFIG是一样，则订阅的Topic也建议设置成一样。
-        List<String> subscribedTopics =  new ArrayList<String>();
+        List<String> subscribedTopics = new ArrayList<String>();
         //如果需要订阅多个Topic，则在这里加进去即可。
         //每个Topic需要先在控制台进行创建。
         subscribedTopics.add(kafkaProperties.getProperty("topic"));
         consumer.subscribe(subscribedTopics);
 
         //循环消费消息。
-        while (true){
+        while (true) {
             try {
                 ConsumerRecords<String, String> records = consumer.poll(1000);
                 //必须在下次Poll之前消费完这些数据, 且总耗时不得超过SESSION_TIMEOUT_MS_CONFIG。

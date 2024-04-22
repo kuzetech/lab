@@ -22,6 +22,7 @@
         <module>apollo</module>
         <module>kafka-aliyun</module>
         <module>rule-engine</module>
+        <module>kafka-streams</module>
     </modules>
 
     <!--      子项目默认都会继承这一部分配置，并且可以覆盖      -->
