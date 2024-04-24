@@ -18,15 +18,9 @@ package com.kuze.bigdata.kstreams.demo;
 
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
-import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.Topology;
-import org.apache.kafka.streams.kstream.Materialized;
-import org.apache.kafka.streams.kstream.Produced;
-import org.apache.kafka.streams.kstream.TimeWindows;
-import org.apache.kafka.streams.kstream.Windowed;
-import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.*;
+import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.state.WindowStore;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -51,12 +45,20 @@ public class WordCount {
 
         final StreamsBuilder builder = new StreamsBuilder();
 
-        builder.<String, String>stream("streams-plaintext-input")
+        builder.<String, String>stream("streams-wordcount-input")
                 .flatMapValues(value -> Arrays.asList(value.toLowerCase(Locale.getDefault()).split("\\W+")))
                 .groupBy((key, value) -> value)
-                .windowedBy(TimeWindows.of(Duration.ofMinutes(1)))
-                .count(Materialized.<Windowed, Long, KeyValueStore<Bytes, byte[]>>as("counts-store"))
+                // 从程序启动开始算一分钟
+                .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(1)))
+                .emitStrategy(EmitStrategy.onWindowClose())
+                .count(Materialized.<String, Long, WindowStore<Bytes, byte[]>>as("counts-store"))
                 .toStream()
+                .map(new KeyValueMapper<Windowed<String>, Long, KeyValue<String, Long>>() {
+                    @Override
+                    public KeyValue<String, Long> apply(Windowed<String> key, Long value) {
+                        return new KeyValue<>(key.key(), value);
+                    }
+                })
                 .to("streams-wordcount-output", Produced.with(Serdes.String(), Serdes.Long()));
 
         final Topology topology = builder.build();
