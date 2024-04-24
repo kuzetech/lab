@@ -6,7 +6,7 @@ import org.codehaus.janino.SimpleCompiler;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class Benchmark {
+public class BenchmarkComplex {
 
     private static void benchmarkForJava() {
         long start2 = System.currentTimeMillis();
@@ -55,7 +55,7 @@ public class Benchmark {
     public static void benchmarkForJanino() throws CompileException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 
         SimpleCompiler compiler = new SimpleCompiler();
-        compiler.setParentClassLoader(Benchmark.class.getClassLoader());
+        compiler.setParentClassLoader(BenchmarkComplex.class.getClassLoader());
 
         String content = "public class demo2 implements com.kuze.bigdata.study.Evaluable{\n"
                 + "    @Override\n"
