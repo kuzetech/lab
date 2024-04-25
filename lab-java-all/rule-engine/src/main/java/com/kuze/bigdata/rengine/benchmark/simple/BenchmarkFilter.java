@@ -1,4 +1,4 @@
-package com.kuze.bigdata.rengine;
+package com.kuze.bigdata.rengine.benchmark.simple;
 
 import groovy.lang.GroovyClassLoader;
 import org.codehaus.commons.compiler.CompileException;
@@ -6,7 +6,7 @@ import org.codehaus.janino.SimpleCompiler;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class BenchmarkComplex {
+public class BenchmarkFilter {
 
     private static void benchmarkForJava() {
         long start2 = System.currentTimeMillis();
@@ -55,7 +55,7 @@ public class BenchmarkComplex {
     public static void benchmarkForJanino() throws CompileException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException {
 
         SimpleCompiler compiler = new SimpleCompiler();
-        compiler.setParentClassLoader(BenchmarkComplex.class.getClassLoader());
+        compiler.setParentClassLoader(BenchmarkFilter.class.getClassLoader());
 
         String content = "public class demo2 implements com.kuze.bigdata.study.Evaluable{\n"
                 + "    @Override\n"

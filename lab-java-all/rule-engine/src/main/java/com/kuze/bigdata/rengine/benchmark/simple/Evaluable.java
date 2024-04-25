@@ -1,4 +1,4 @@
-package com.kuze.bigdata.rengine;
+package com.kuze.bigdata.rengine.benchmark.simple;
 
 
 public interface Evaluable {
