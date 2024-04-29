@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.common;
+package com.kuzetech.bigdata.flink.udsource;
 
 public class Event {
     private Long eventId;

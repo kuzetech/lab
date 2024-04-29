@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.common;
+package com.kuzetech.bigdata.flink.udsource;
 
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 

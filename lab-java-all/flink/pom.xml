@@ -85,6 +85,12 @@ under the License.
             <artifactId>flink-connector-kafka</artifactId>
             <version>${flink.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-statebackend-rocksdb</artifactId>
+            <version>${flink.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Add other dependencies here. They must be in the default scope (compile). -->
         <dependency>
@@ -164,6 +170,7 @@ under the License.
             <artifactId>guava</artifactId>
             <version>30.1.1-jre</version>
         </dependency>
+
     </dependencies>
 
     <build>
