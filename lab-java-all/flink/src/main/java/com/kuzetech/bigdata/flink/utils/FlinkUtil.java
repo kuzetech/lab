@@ -22,7 +22,7 @@ public class FlinkUtil {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration);
 
         // 设置全局默认并行度
-        env.setParallelism(2);
+        env.setParallelism(1);
 
         ExecutionConfig executionConfig = env.getConfig();
         // use compression for the state snapshot data
@@ -32,7 +32,7 @@ public class FlinkUtil {
 
         // 设置 hadoop 用户
         System.setProperty("HADOOP_USER_NAME", "hadoop");
-        env.enableCheckpointing(30 * 1000);
+        env.enableCheckpointing(10 * 1000);
         CheckpointConfig checkpointConfig = env.getCheckpointConfig();
         // 使用 FileSystemCheckpointStorage
         // hdfs://namenode:40010/flink/checkpoints
