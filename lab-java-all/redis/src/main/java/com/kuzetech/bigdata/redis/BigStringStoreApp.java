@@ -8,9 +8,9 @@ import redis.clients.jedis.JedisPool;
 /**
  * Hello world!
  */
-public class FunnydbConnectApp {
+public class BigStringStoreApp {
 
-    private static final Logger log = LoggerFactory.getLogger(FunnydbConnectApp.class);
+    private static final Logger log = LoggerFactory.getLogger(BigStringStoreApp.class);
 
     public static void main(String[] args) {
         try (
