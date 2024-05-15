@@ -17,10 +17,12 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import java.util.Random;
 
-public class SinkToRedisAndKafkaDemo {
+public class SinkToPipelineRedisAndKafkaDemo {
     public static void main(String[] args) throws Exception {
 
-        StreamExecutionEnvironment env = FlinkUtil.getEnvironment("file://" + "/Users/huangsw/code/lab/lab-java-all/flink/checkpoints");
+        String jobName = "SinkToPipelineRedisAndKafkaDemo";
+
+        StreamExecutionEnvironment env = FlinkUtil.getEnvironment(jobName);
         env.setParallelism(1);
 
         KafkaSource<String> kafkaSource = KafkaSource.<String>builder()
@@ -59,7 +61,7 @@ public class SinkToRedisAndKafkaDemo {
 
         redisTupleStream.addSink(redisPipelineSink);
 
-        env.execute("test");
+        env.execute(jobName);
     }
 }
 

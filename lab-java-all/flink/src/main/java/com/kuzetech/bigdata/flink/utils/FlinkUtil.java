@@ -10,7 +10,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 public class FlinkUtil {
 
-    public static StreamExecutionEnvironment getEnvironment(String checkPointPath) {
+    public static StreamExecutionEnvironment getEnvironment(String jobName) {
         Configuration configuration = new Configuration();
 
         configuration.setString(RestOptions.BIND_PORT, "8081-9999");
@@ -37,7 +37,7 @@ public class FlinkUtil {
         // 使用 FileSystemCheckpointStorage
         // hdfs://namenode:40010/flink/checkpoints
         // file:///data/flink/checkpoints
-        checkpointConfig.setCheckpointStorage(checkPointPath);
+        checkpointConfig.setCheckpointStorage(" file:///Users/huangsw/code/lab/lab-java-all/flink/checkpoints/" + jobName);
         checkpointConfig.setMaxConcurrentCheckpoints(1);
         checkpointConfig.setCheckpointTimeout(10 * 30 * 1000);
         checkpointConfig.setMinPauseBetweenCheckpoints(5 * 1000);
