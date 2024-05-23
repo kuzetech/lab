@@ -11,6 +11,10 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 public class FlinkUtil {
 
     public static StreamExecutionEnvironment getEnvironment(String jobName) {
+        return getEnvironment(jobName, 1);
+    }
+
+    public static StreamExecutionEnvironment getEnvironment(String jobName, Integer parallelism) {
         Configuration configuration = new Configuration();
 
         configuration.setString(RestOptions.BIND_PORT, "8081-9999");
@@ -22,7 +26,7 @@ public class FlinkUtil {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration);
 
         // 设置全局默认并行度
-        env.setParallelism(1);
+        env.setParallelism(parallelism);
 
         ExecutionConfig executionConfig = env.getConfig();
         // use compression for the state snapshot data
@@ -32,12 +36,12 @@ public class FlinkUtil {
 
         // 设置 hadoop 用户
         System.setProperty("HADOOP_USER_NAME", "hadoop");
-        env.enableCheckpointing(10 * 1000);
+        env.enableCheckpointing(15 * 1000);
         CheckpointConfig checkpointConfig = env.getCheckpointConfig();
         // 使用 FileSystemCheckpointStorage
         // hdfs://namenode:40010/flink/checkpoints
         // file:///data/flink/checkpoints
-        checkpointConfig.setCheckpointStorage(" file:///Users/huangsw/code/lab/lab-java-all/flink/checkpoints/" + jobName);
+        checkpointConfig.setCheckpointStorage("file:///Users/huangsw/code/lab/lab-java-all/flink/checkpoints/" + jobName);
         checkpointConfig.setMaxConcurrentCheckpoints(1);
         checkpointConfig.setCheckpointTimeout(10 * 30 * 1000);
         checkpointConfig.setMinPauseBetweenCheckpoints(5 * 1000);

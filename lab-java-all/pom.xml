@@ -154,6 +154,13 @@
                 <artifactId>hadoop-client</artifactId>
                 <version>2.7.4</version>
             </dependency>
+
+            <!--      模拟数据生成工具      -->
+            <dependency>
+                <groupId>net.datafaker</groupId>
+                <artifactId>datafaker</artifactId>
+                <version>1.9.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

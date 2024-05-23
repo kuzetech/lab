@@ -1,5 +1,6 @@
 package com.kuzetech.bigdata.flink.udsource;
 
+import com.kuzetech.bigdata.flink.udsource.model.Event;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 
 /**

@@ -1,6 +1,6 @@
 package com.kuzetech.bigdata.flink.broadcastConnect;
 
-import com.kuzetech.bigdata.flink.udsource.Event;
+import com.kuzetech.bigdata.flink.udsource.model.Event;
 import org.apache.flink.api.common.state.BroadcastState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.Types;

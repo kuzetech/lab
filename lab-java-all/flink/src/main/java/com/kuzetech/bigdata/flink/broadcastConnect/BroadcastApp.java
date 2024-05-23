@@ -1,8 +1,8 @@
 package com.kuzetech.bigdata.flink.broadcastConnect;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kuzetech.bigdata.flink.udsource.Event;
 import com.kuzetech.bigdata.flink.udsource.EventNoParallelSource;
+import com.kuzetech.bigdata.flink.udsource.model.Event;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.common.state.MapStateDescriptor;
