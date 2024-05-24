@@ -1,5 +1,6 @@
 package com.kuzetech.bigdata.flink.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.RestOptions;
@@ -11,32 +12,39 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 public class FlinkUtil {
 
     public static StreamExecutionEnvironment getEnvironment(String jobName) {
-        return getEnvironment(jobName, 1);
+        return getEnvironment(jobName, 1, null);
     }
 
     public static StreamExecutionEnvironment getEnvironment(String jobName, Integer parallelism) {
+        return getEnvironment(jobName, parallelism, null);
+    }
+
+    public static StreamExecutionEnvironment getEnvironment(String jobName, Integer parallelism, String checkpointPath) {
         Configuration configuration = new Configuration();
 
         configuration.setString(RestOptions.BIND_PORT, "8081-9999");
 
+        if (StringUtils.isNotEmpty(checkpointPath)) {
+            configuration.setString("execution.savepoint.path", checkpointPath);
+            // configuration.setBoolean("state.backend.allowNonRestoredState", true);
+        }
+
         // 设置本地启动的 slot 数量
         // configuration.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, 10);
 
-
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration);
-
-        // 设置全局默认并行度
-        env.setParallelism(parallelism);
-
-        ExecutionConfig executionConfig = env.getConfig();
-        // use compression for the state snapshot data
-        executionConfig.setUseSnapshotCompression(true);
-
-        env.setStateBackend(new EmbeddedRocksDBStateBackend(true));
 
         // 设置 hadoop 用户
         System.setProperty("HADOOP_USER_NAME", "hadoop");
+
+        // 设置全局默认并行度
+        env.setParallelism(parallelism);
         env.enableCheckpointing(15 * 1000);
+        env.setStateBackend(new EmbeddedRocksDBStateBackend(true));
+
+        ExecutionConfig executionConfig = env.getConfig();
+        executionConfig.setUseSnapshotCompression(true);
+
         CheckpointConfig checkpointConfig = env.getCheckpointConfig();
         // 使用 FileSystemCheckpointStorage
         // hdfs://namenode:40010/flink/checkpoints

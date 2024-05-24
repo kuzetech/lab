@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.stateprocessor;
+package com.kuzetech.bigdata.flink.stateprocessor.model;
 
 import lombok.*;
 

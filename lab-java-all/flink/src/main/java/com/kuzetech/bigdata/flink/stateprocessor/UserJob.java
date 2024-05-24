@@ -1,5 +1,6 @@
 package com.kuzetech.bigdata.flink.stateprocessor;
 
+import com.kuzetech.bigdata.flink.stateprocessor.model.UserCountryStatistics;
 import com.kuzetech.bigdata.flink.udsource.UserParallelSource;
 import com.kuzetech.bigdata.flink.udsource.model.User;
 import com.kuzetech.bigdata.flink.utils.FlinkUtil;
