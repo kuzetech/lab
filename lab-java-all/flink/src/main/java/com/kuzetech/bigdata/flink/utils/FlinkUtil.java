@@ -11,6 +11,15 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 public class FlinkUtil {
 
+    public static StreamExecutionEnvironment getEnvironment() {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        assert stackTrace.length >= 3;
+        // xxxx.java
+        String callerClassFileName = stackTrace[2].getFileName(); // 索引 2 是调用 printCallerClassName 的方法
+        assert callerClassFileName != null;
+        return getEnvironment(callerClassFileName.split("\\.")[0], 1, null);
+    }
+
     public static StreamExecutionEnvironment getEnvironment(String jobName) {
         return getEnvironment(jobName, 1, null);
     }
@@ -19,13 +28,13 @@ public class FlinkUtil {
         return getEnvironment(jobName, parallelism, null);
     }
 
-    public static StreamExecutionEnvironment getEnvironment(String jobName, Integer parallelism, String checkpointPath) {
+    public static StreamExecutionEnvironment getEnvironment(String jobName, Integer parallelism, String recoverCheckpointPath) {
         Configuration configuration = new Configuration();
 
         configuration.setString(RestOptions.BIND_PORT, "8081-9999");
 
-        if (StringUtils.isNotEmpty(checkpointPath)) {
-            configuration.setString("execution.savepoint.path", checkpointPath);
+        if (StringUtils.isNotEmpty(recoverCheckpointPath)) {
+            configuration.setString("execution.savepoint.path", recoverCheckpointPath);
             // configuration.setBoolean("state.backend.allowNonRestoredState", true);
         }
 
