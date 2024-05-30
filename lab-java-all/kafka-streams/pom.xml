@@ -28,7 +28,6 @@
     <groupId>com.kuze.bigdata.kstreams</groupId>
     <artifactId>kafka-streams</artifactId>
     <packaging>jar</packaging>
-    <name>Kafka Streams Quickstart :: Java</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
