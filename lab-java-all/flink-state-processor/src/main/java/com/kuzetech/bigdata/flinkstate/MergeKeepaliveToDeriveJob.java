@@ -10,11 +10,19 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 public class MergeKeepaliveToDeriveJob {
 
     public static void main(String[] args) throws Exception {
+        if (args.length != 3) {
+            throw new RuntimeException("args length must = 3");
+        }
+
+        String keepaliveSavepointPath = args[0];
+        String deriveSavepointPath = args[1];
+        String newSavepointPath = args[2];
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         SavepointReader keepaliveSavepoint = SavepointReader.read(
                 env,
-                "file:///Users/huangsw/code/lab/lab-java-all/flink-state-processor/savepoints/keepalive",
+                keepaliveSavepointPath,
                 new EmbeddedRocksDBStateBackend(true));
 
         DataStream<Tuple2<String, Long>> keepaliveState = keepaliveSavepoint.readKeyedState(
@@ -28,7 +36,7 @@ public class MergeKeepaliveToDeriveJob {
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                "file:///Users/huangsw/code/lab/lab-java-all/flink-state-processor/savepoints/derive",
+                deriveSavepointPath,
                 new EmbeddedRocksDBStateBackend(true));
 
         DataStream<Tuple2<String, Long>> eventState = savepoint.readKeyedState(
@@ -80,7 +88,7 @@ public class MergeKeepaliveToDeriveJob {
                 .withOperator(OperatorIdentifier.forUid(dauOperatorUid), dauTransformation)
                 .withOperator(OperatorIdentifier.forUid(wauOperatorUid), wauTransformation)
                 .withOperator(OperatorIdentifier.forUid(mauOperatorUid), mauTransformation)
-                .write("file:///Users/huangsw/code/lab/lab-java-all/flink-state-processor/savepoints/derive-keepalive");
+                .write(newSavepointPath);
 
         env.execute("MergeKeepaliveToDeriveJob");
     }
