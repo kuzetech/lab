@@ -12,7 +12,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 public class MergeKeepaliveToDeriveJob {
 
     public static void main(String[] args) throws Exception {
-        if (args.length >= 3) {
+        if (args.length < 3) {
             throw new RuntimeException("args length must >= 3");
         }
 
@@ -92,7 +92,7 @@ public class MergeKeepaliveToDeriveJob {
                 .transform(new DeriveAuBootstrapper(mauActiveCycle));
 
         SavepointWriter
-                .newSavepoint(env, new EmbeddedRocksDBStateBackend(true), 20)
+                .newSavepoint(env, new EmbeddedRocksDBStateBackend(true), 100)
                 .withOperator(OperatorIdentifier.forUid("suppression-mutation-event"), keepaliveTransformation)
                 .withOperator(OperatorIdentifier.forUid("derive-event-process"), eventTransformation)
                 .withOperator(OperatorIdentifier.forUid(dauOperatorUid), dauTransformation)
