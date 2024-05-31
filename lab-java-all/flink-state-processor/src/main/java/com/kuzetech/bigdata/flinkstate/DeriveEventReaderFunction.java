@@ -24,7 +24,7 @@ public class DeriveEventReaderFunction extends KeyedStateReaderFunction<String, 
 
     @Override
     public void readKey(String key, Context ctx, Collector<Tuple2<String, Long>> out) throws Exception {
-        log.info("key = {}, value = {}", key, createdTsState.value());
+        log.debug("key = {}, value = {}", key, createdTsState.value());
         out.collect(Tuple2.of(key, createdTsState.value()));
     }
 }

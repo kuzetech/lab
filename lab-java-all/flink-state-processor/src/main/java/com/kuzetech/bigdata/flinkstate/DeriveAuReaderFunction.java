@@ -39,7 +39,7 @@ public class DeriveAuReaderFunction extends KeyedStateReaderFunction<String, Tup
 
     @Override
     public void readKey(String key, Context ctx, Collector<Tuple2<String, ActiveMark>> out) throws Exception {
-        log.info("key = {},", key);
+        log.debug("key = {},", key);
         out.collect(Tuple2.of(key, activeState.value()));
     }
 }

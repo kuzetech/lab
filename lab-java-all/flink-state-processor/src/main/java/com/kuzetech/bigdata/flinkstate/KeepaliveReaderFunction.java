@@ -32,7 +32,7 @@ public class KeepaliveReaderFunction extends KeyedStateReaderFunction<String, Tu
 
     @Override
     public void readKey(String key, Context ctx, Collector<Tuple2<String, Long>> out) throws Exception {
-        log.info("key = {}, value = {}", key, lastTsState.value());
+        log.debug("key = {}, value = {}", key, lastTsState.value());
         out.collect(Tuple2.of(key, lastTsState.value()));
     }
 }
