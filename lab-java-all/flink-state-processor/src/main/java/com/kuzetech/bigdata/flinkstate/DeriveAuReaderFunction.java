@@ -31,7 +31,7 @@ public class DeriveAuReaderFunction extends KeyedStateReaderFunction<String, Tup
         // 暂定过期时间为60天
         StateTtlConfig ttlCfg = StateTtlConfig.newBuilder(Time.of(60, TimeUnit.DAYS))
                 .setUpdateType(StateTtlConfig.UpdateType.OnReadAndWrite)
-                .setStateVisibility(StateTtlConfig.StateVisibility.ReturnExpiredIfNotCleanedUp)
+                .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
                 .build();
         activeStateDesc.enableTimeToLive(ttlCfg);
         this.activeState = this.getRuntimeContext().getState(activeStateDesc);
@@ -39,7 +39,9 @@ public class DeriveAuReaderFunction extends KeyedStateReaderFunction<String, Tup
 
     @Override
     public void readKey(String key, Context ctx, Collector<Tuple2<String, ActiveMark>> out) throws Exception {
-        log.debug("key = {},", key);
-        out.collect(Tuple2.of(key, activeState.value()));
+        ActiveMark value = activeState.value();
+        if (value != null) {
+            out.collect(Tuple2.of(key, value));
+        }
     }
 }

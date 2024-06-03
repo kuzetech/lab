@@ -22,7 +22,7 @@ public class KeepaliveReaderFunction extends KeyedStateReaderFunction<String, Tu
 
         StateTtlConfig ttlCfg = StateTtlConfig.newBuilder(Time.days(3))
                 .setUpdateType(StateTtlConfig.UpdateType.OnReadAndWrite)
-                .setStateVisibility(StateTtlConfig.StateVisibility.ReturnExpiredIfNotCleanedUp)
+                .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
                 .build();
 
         lastTsStageDesc.enableTimeToLive(ttlCfg);
@@ -32,7 +32,9 @@ public class KeepaliveReaderFunction extends KeyedStateReaderFunction<String, Tu
 
     @Override
     public void readKey(String key, Context ctx, Collector<Tuple2<String, Long>> out) throws Exception {
-        log.debug("key = {}, value = {}", key, lastTsState.value());
-        out.collect(Tuple2.of(key, lastTsState.value()));
+        Long value = lastTsState.value();
+        if (value != null) {
+            out.collect(Tuple2.of(key, value));
+        }
     }
 }
