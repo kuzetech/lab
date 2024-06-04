@@ -24,7 +24,6 @@
         <module>rule-engine</module>
         <module>kafka-streams</module>
         <module>redis</module>
-        <module>akka-streams</module>
         <module>picocli</module>
         <module>flink-state-processor</module>
         <module>sentry</module>
