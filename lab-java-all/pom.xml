@@ -27,6 +27,7 @@
         <module>akka-streams</module>
         <module>picocli</module>
         <module>flink-state-processor</module>
+        <module>sentry</module>
     </modules>
 
     <!--      子项目默认都会继承这一部分配置，并且可以覆盖      -->
