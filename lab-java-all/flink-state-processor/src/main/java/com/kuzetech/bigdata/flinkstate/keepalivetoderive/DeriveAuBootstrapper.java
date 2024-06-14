@@ -1,7 +1,6 @@
-package com.kuzetech.bigdata.flinkstate;
+package com.kuzetech.bigdata.flinkstate.keepalivetoderive;
 
 import com.xmfunny.funnydb.flink.model.ActiveMark;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.state.StateTtlConfig;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
@@ -9,39 +8,34 @@ import org.apache.flink.api.common.time.Time;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.state.api.functions.KeyedStateReaderFunction;
-import org.apache.flink.util.Collector;
+import org.apache.flink.state.api.functions.KeyedStateBootstrapFunction;
 
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
-public class DeriveAuReaderFunction extends KeyedStateReaderFunction<String, Tuple2<String, ActiveMark>> {
+public class DeriveAuBootstrapper extends KeyedStateBootstrapFunction<String, Tuple2<String, ActiveMark>> {
 
     private ValueState<ActiveMark> activeState;
 
     private final String activeCycle;
 
-    public DeriveAuReaderFunction(String activeCycle) {
+    public DeriveAuBootstrapper(String activeCycle) {
         this.activeCycle = activeCycle;
     }
 
     @Override
-    public void open(Configuration parameters) throws Exception {
+    public void open(Configuration parameters) {
         ValueStateDescriptor<ActiveMark> activeStateDesc = new ValueStateDescriptor<>(String.format("%s-state", activeCycle.toLowerCase()), Types.POJO(ActiveMark.class));
         // 暂定过期时间为60天
         StateTtlConfig ttlCfg = StateTtlConfig.newBuilder(Time.of(60, TimeUnit.DAYS))
                 .setUpdateType(StateTtlConfig.UpdateType.OnReadAndWrite)
-                .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
+                .setStateVisibility(StateTtlConfig.StateVisibility.ReturnExpiredIfNotCleanedUp)
                 .build();
         activeStateDesc.enableTimeToLive(ttlCfg);
         this.activeState = this.getRuntimeContext().getState(activeStateDesc);
     }
 
     @Override
-    public void readKey(String key, Context ctx, Collector<Tuple2<String, ActiveMark>> out) throws Exception {
-        ActiveMark value = activeState.value();
-        if (value != null) {
-            out.collect(Tuple2.of(key, value));
-        }
+    public void processElement(Tuple2<String, ActiveMark> value, Context ctx) throws Exception {
+        activeState.update(value.f1);
     }
 }
