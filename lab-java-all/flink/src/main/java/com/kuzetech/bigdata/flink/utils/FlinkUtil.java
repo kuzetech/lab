@@ -35,7 +35,7 @@ public class FlinkUtil {
 
         if (StringUtils.isNotEmpty(recoverCheckpointPath)) {
             configuration.setString("execution.savepoint.path", recoverCheckpointPath);
-            // configuration.setBoolean("state.backend.allowNonRestoredState", true);
+            // configuration.setBoolean("execution.savepoint.ignore-unclaimed-state", true);
         }
 
         // 设置本地启动的 slot 数量
