@@ -1,8 +1,7 @@
 package com.kuzetech.bigdata.flinkstate;
 
-import com.kuzetech.bigdata.flinkstate.tracktopipeline.PipelineDistinctStateBootstrapper;
-import com.kuzetech.bigdata.flinkstate.tracktopipeline.PipelineDistinctStateReaderFunction;
-import com.kuzetech.bigdata.flinkstate.tracktopipeline.PipelineProcessorBootstrapFunction;
+import com.kuzetech.bigdata.flinkstate.tracktopipeline.*;
+import com.xmfunny.funnydb.flink.model.DeviceInfoCacheData;
 import com.xmfunny.funnydb.pipeline.PipelineConfig;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -13,7 +12,7 @@ import org.apache.flink.state.api.*;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-public class MergeTrackToPipelineJob {
+public class MergeTrackToPipelineNewJob {
 
     public static void main(String[] args) throws Exception {
         if (args.length < 3) {
@@ -32,6 +31,11 @@ public class MergeTrackToPipelineJob {
         } else {
             env = StreamExecutionEnvironment.getExecutionEnvironment();
         }
+
+        SavepointReader trackSavepoint = SavepointReader.read(
+                env,
+                trackSavepointPath,
+                new EmbeddedRocksDBStateBackend(true));
 
         SavepointReader pipelineSavepoint = SavepointReader.read(
                 env,
@@ -56,10 +60,30 @@ public class MergeTrackToPipelineJob {
                 .bootstrapWith(ruleState)
                 .transform(new PipelineProcessorBootstrapFunction());
 
+        DataStream<Tuple2<String, String>> userLoginDeviceState = trackSavepoint.readKeyedState(
+                OperatorIdentifier.forUid("user-login-device-state"),
+                new TrackUserLoginDeviceStateReaderFunction());
+
+        StateBootstrapTransformation<Tuple2<String, String>> userLoginDeviceStateTransformation = OperatorTransformation
+                .bootstrapWith(userLoginDeviceState)
+                .keyBy(s -> s.f0)
+                .transform(new TrackUserLoginDeviceStateBootstrapper());
+
+        DataStream<Tuple2<String, DeviceInfoCacheData>> deviceInfoEnrichState = trackSavepoint.readKeyedState(
+                OperatorIdentifier.forUid("device-info-enrich-state"),
+                new TrackDeviceInfoEnrichStateReaderFunction());
+
+        StateBootstrapTransformation<Tuple2<String, DeviceInfoCacheData>> deviceInfoEnrichStateTransformation = OperatorTransformation
+                .bootstrapWith(deviceInfoEnrichState)
+                .keyBy(s -> s.f0)
+                .transform(new TrackDeviceInfoEnrichStateBootstrapper());
+
         SavepointWriter
-                .fromExistingSavepoint(env, trackSavepointPath, new EmbeddedRocksDBStateBackend(true))
+                .newSavepoint(env, new EmbeddedRocksDBStateBackend(true), 100)
                 .withOperator(OperatorIdentifier.forUid("filter-distinct"), distinctStateTransformation)
                 .withOperator(OperatorIdentifier.forUid("event-etl"), ruleStateTransformation)
+                .withOperator(OperatorIdentifier.forUid("user-login-device-state"), userLoginDeviceStateTransformation)
+                .withOperator(OperatorIdentifier.forUid("device-info-enrich-state"), deviceInfoEnrichStateTransformation)
                 .write(newSavepointPath);
 
         env.execute("MergeTrackToPipelineJob");

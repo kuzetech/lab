@@ -2,6 +2,7 @@ package com.kuzetech.bigdata.flinkstate.tracktopipeline;
 
 import com.xmfunny.funnydb.flink.model.DeviceInfoCacheData;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.state.StateTtlConfig;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
@@ -26,7 +27,7 @@ public class TrackDeviceInfoEnrichStateReaderFunction extends KeyedStateReaderFu
     @Override
     public void readKey(String key, Context ctx, Collector<Tuple2<String, DeviceInfoCacheData>> out) throws Exception {
         DeviceInfoCacheData data = deviceInfoState.value();
-        if (data != null) {
+        if (StringUtils.isNotEmpty(key) && data != null) {
             out.collect(Tuple2.of(key, data));
         }
     }

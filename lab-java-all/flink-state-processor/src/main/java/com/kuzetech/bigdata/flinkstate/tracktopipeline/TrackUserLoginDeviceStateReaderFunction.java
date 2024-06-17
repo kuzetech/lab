@@ -26,7 +26,7 @@ public class TrackUserLoginDeviceStateReaderFunction extends KeyedStateReaderFun
     @Override
     public void readKey(String key, Context ctx, Collector<Tuple2<String, String>> out) throws Exception {
         String device = userLoginDeviceState.value();
-        if (StringUtils.isNotEmpty(device)) {
+        if (StringUtils.isNotEmpty(key) && StringUtils.isNotEmpty(device)) {
             out.collect(Tuple2.of(key, device));
         }
     }

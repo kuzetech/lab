@@ -25,9 +25,9 @@ public class ReadNewPipelineJob {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         //readDistinctState(env);
-        readRuleState(env);
+        //readRuleState(env);
         //readUserLoginDeviceState(env);
-        //readDeviceEnrichState(env);
+        readDeviceEnrichState(env);
 
 
         env.execute("ReadPipelineJob");
