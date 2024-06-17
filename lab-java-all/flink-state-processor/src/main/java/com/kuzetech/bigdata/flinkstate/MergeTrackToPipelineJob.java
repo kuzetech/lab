@@ -74,7 +74,6 @@ public class MergeTrackToPipelineJob {
                 "rulesList",
                 TypeInformation.of(PipelineConfig.class));
 
-
         StateBootstrapTransformation<PipelineConfig> ruleStateTransformation = OperatorTransformation
                 .bootstrapWith(ruleState)
                 .transform(new PipelineProcessorBootstrapFunction());
