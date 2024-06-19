@@ -86,6 +86,6 @@ public class MergeTrackToPipelineNewJob {
                 .withOperator(OperatorIdentifier.forUid("device-info-enrich-state"), deviceInfoEnrichStateTransformation)
                 .write(newSavepointPath);
 
-        env.execute("MergeTrackToPipelineJob");
+        env.execute("MergeTrackToPipelineNewJob");
     }
 }
