@@ -8,6 +8,7 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.RestOptions;
+import org.apache.flink.configuration.TaskManagerOptions;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
 import org.apache.flink.state.api.*;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -28,10 +29,12 @@ public class MergeTrackToPipelineJob {
         if (args.length > 3) {
             Configuration configuration = new Configuration();
             configuration.setString(RestOptions.BIND_PORT, "9988");
+            configuration.setInteger(TaskManagerOptions.NUM_TASK_SLOTS, 6);
             env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(configuration);
         } else {
             env = StreamExecutionEnvironment.getExecutionEnvironment();
         }
+        env.setParallelism(6);
 
         SavepointReader pipelineSavepoint = SavepointReader.read(
                 env,
