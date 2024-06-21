@@ -59,6 +59,9 @@ public class MergeTrackToPipelineJob {
                 .bootstrapWith(ruleState)
                 .transform(new PipelineProcessorBootstrapFunction());
 
+        // fromExistingSavepoint 可能只能在原来的基础上进行修改
+        // 如果想要像本例中合并两个 savepoint，任务能够执行成功，但恢复作业时会找不到部分的数据文件
+        // 当然也可能是用法不对
         SavepointWriter
                 .fromExistingSavepoint(env, trackSavepointPath, new EmbeddedRocksDBStateBackend(true))
                 .withOperator(OperatorIdentifier.forUid("filter-distinct"), distinctStateTransformation)
