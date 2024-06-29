@@ -1,0 +1,16 @@
+<my>
+    <shard>
+        <internal_replication>true</internal_replication>
+        <replica>
+            <host>clickhouse1</host>
+            <port>9000</port>
+        </replica>
+    </shard>
+    <shard>
+        <internal_replication>true</internal_replication>
+        <replica>
+            <host>clickhouse2</host>
+            <port>9000</port>
+        </replica>
+    </shard>
+</my>

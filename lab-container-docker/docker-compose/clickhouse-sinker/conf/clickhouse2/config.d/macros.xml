@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<yandex>
+    <macros>
+        <!-- <layer>05</layer> -->
+        <shard>02</shard>
+        <replica>clickhouse2</replica>
+    </macros>
+</yandex>

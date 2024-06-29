@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:  
+  name: nginx-prod-svc-demo
+  namespace: demo # service 是 namespace 级别的对象
+spec:
+  selector:       # Pod选择器
+    app: nginx
+    env: prod
+  type: ClusterIP # service 的类型
+  ports:  
+  - name: http 
+    port: 80       # service 的端口号
+    targetPort: 80 # 对应到 Pod 上的端口号
+    protocol: TCP  # 还支持 udp，http 等
+  - name: https 
+    port: 443       # service 的端口号
+    targetPort: 443 # 对应到 Pod 上的端口号
+    protocol: TCP  # 还支持 udp，http 等

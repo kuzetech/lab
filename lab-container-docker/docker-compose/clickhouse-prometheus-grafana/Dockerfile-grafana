@@ -1,0 +1,9 @@
+FROM grafana/grafana:7.5.11
+
+ENV GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS vertamedia-clickhouse-datasource
+
+WORKDIR /var/lib/grafana/plugins
+
+RUN wget https://grafana.com/api/plugins/vertamedia-clickhouse-datasource/versions/2.3.1/download -O clickhouse.zip && unzip clickhouse.zip && rm -rf clickhouse.zip
+
+EXPOSE 3000

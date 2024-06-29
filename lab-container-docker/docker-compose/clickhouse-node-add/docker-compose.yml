@@ -1,0 +1,73 @@
+version: '3'
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:6.0.1
+    hostname: zookeeper
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+  
+  clickhouse1:
+    image: yandex/clickhouse-server:21.7.8.58
+    container_name: clickhouse1
+    hostname: clickhouse1
+    depends_on:
+      - zookeeper
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+      nproc:
+        soft: 131072
+        hard: 131072
+    volumes:
+      - ./conf/clickhouse1/config.xml:/etc/clickhouse-server/config.xml
+      - ./conf/clickhouse1/users.xml:/etc/clickhouse-server/users.xml
+      - ./conf/clickhouse1/config.d:/etc/clickhouse-server/config.d
+      - ./conf/clickhouse1/users.d:/etc/clickhouse-server/users.d
+      - ./conf/clickhouse1/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+  clickhouse2:
+    image: yandex/clickhouse-server:21.7.8.58
+    container_name: clickhouse2
+    hostname: clickhouse2
+    depends_on:
+      - zookeeper
+      - clickhouse1
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+      nproc:
+        soft: 131072
+        hard: 131072
+    volumes:
+      - ./conf/clickhouse2/config.xml:/etc/clickhouse-server/config.xml
+      - ./conf/clickhouse2/users.xml:/etc/clickhouse-server/users.xml
+      - ./conf/clickhouse2/config.d:/etc/clickhouse-server/config.d
+      - ./conf/clickhouse2/users.d:/etc/clickhouse-server/users.d
+      - ./conf/clickhouse2/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+  clickhouse3:
+    image: yandex/clickhouse-server:21.7.8.58
+    container_name: clickhouse3
+    hostname: clickhouse3
+    depends_on:
+      - zookeeper
+      - clickhouse1
+      - clickhouse2
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+      nproc:
+        soft: 131072
+        hard: 131072
+    volumes:
+      - ./conf/clickhouse3/config.xml:/etc/clickhouse-server/config.xml
+      - ./conf/clickhouse3/users.xml:/etc/clickhouse-server/users.xml
+      - ./conf/clickhouse3/config.d:/etc/clickhouse-server/config.d
+      - ./conf/clickhouse3/users.d:/etc/clickhouse-server/users.d
+      - ./conf/clickhouse3/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d

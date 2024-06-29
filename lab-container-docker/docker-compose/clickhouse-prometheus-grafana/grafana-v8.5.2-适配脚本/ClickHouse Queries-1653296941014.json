@@ -1,0 +1,985 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Helps to visualize most frequent, slowest, failed queries.Shows queries rate per second, table with last queries",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 4,
+  "iteration": 1653296031084,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "content": "1 - successful start of query execution\n\n2 - successful end of query execution\n\n3 - exception before start of query execution\n\n4 - exception while query execution",
+        "mode": "markdown"
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "refId": "A"
+        }
+      ],
+      "title": "Types",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 5,
+        "y": 0
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "builderOptions": {
+            "database": "system",
+            "fields": [],
+            "filters": [],
+            "groupBy": [],
+            "metrics": [
+              {
+                "aggregation": "count",
+                "alias": "total",
+                "field": "query_id"
+              }
+            ],
+            "mode": "trend",
+            "orderBy": [],
+            "table": "query_log_all",
+            "timeField": "event_time",
+            "timeFieldType": "DateTime"
+          },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "format": 0,
+          "meta": {
+            "builderOptions": {
+              "database": "system",
+              "fields": [],
+              "filters": [],
+              "groupBy": [],
+              "metrics": [
+                {
+                  "aggregation": "count",
+                  "alias": "total",
+                  "field": "query_id"
+                }
+              ],
+              "mode": "trend",
+              "orderBy": [],
+              "table": "query_log_all",
+              "timeField": "event_time",
+              "timeFieldType": "DateTime"
+            }
+          },
+          "queryType": "sql",
+          "rawSql": "SELECT \n  $__timeInterval(event_time) as time,  \n  count(query_id) total \nFROM $table\nWHERE \n  $__timeFilter(event_time)\n  AND type in ($type)\n  AND initial_user in ($user)\n  AND hasAny(databases, [$contain_db]) = 1\n  AND is_initial_query in ($is_init_query)\n  AND('$query_type' = 'all' or(positionCaseInsensitive(query, '$query_type') >= 1))\nGROUP BY time \nORDER BY time ASC",
+          "refId": "A"
+        }
+      ],
+      "title": "Reqs total by type: $type; user: $user; query type: $query_type",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 9,
+        "x": 15,
+        "y": 0
+      },
+      "id": 12,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "builderOptions": {
+            "database": "system",
+            "fields": [
+              "query"
+            ],
+            "filters": [],
+            "limit": 100,
+            "mode": "list",
+            "orderBy": [],
+            "table": "query_log_all"
+          },
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "expand": true,
+          "format": 0,
+          "hide": false,
+          "meta": {
+            "builderOptions": {
+              "database": "system",
+              "fields": [
+                "query"
+              ],
+              "filters": [],
+              "limit": 100,
+              "mode": "list",
+              "orderBy": [],
+              "table": "query_log_all"
+            }
+          },
+          "queryType": "sql",
+          "rawSql": "SELECT\n    $__timeInterval(event_time) as time,\n    avg(query_duration_ms)  select_duration\nFROM $table\nWHERE\n    $__timeFilter(event_time)\n    AND type = 2\n    AND hasAny(databases, [$contain_db]) = 1\n    AND is_initial_query in ($is_init_query)\n    AND positionCaseInsensitive(query,  trim('select')) >= 1\n    AND initial_user in ($user)\nGROUP BY time\nORDER BY time asc",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "format": 0,
+          "hide": false,
+          "meta": {
+            "builderOptions": {
+              "fields": [],
+              "limit": 100,
+              "mode": "list"
+            }
+          },
+          "queryType": "sql",
+          "rawSql": "SELECT\n    $__timeInterval(event_time) as time,\n    avg(query_duration_ms)  insert_duration\nFROM $table\nWHERE\n    $__timeFilter(event_time)\n    AND type = 2\n    AND has(databases, '$except_db') = 0\n    AND is_initial_query in ($is_init_query)\n    AND positionCaseInsensitive(query,  trim('insert into')) = 1\n    AND initial_user in ($user)\nGROUP BY time\nORDER BY time asc",
+          "refId": "B"
+        }
+      ],
+      "title": "AVG Query duration by user: $user",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "duration"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "ms"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "result"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 141
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "read_bytes"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "memory_usage"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "read_rows"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "tables"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 264
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "id": 8,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "duration"
+          }
+        ]
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "format": 1,
+          "meta": {
+            "builderOptions": {
+              "fields": [],
+              "limit": 100,
+              "mode": "list"
+            }
+          },
+          "queryType": "sql",
+          "rawSql": "SELECT\n    event_time,\n    user,\n    databases,\n    tables,\n    query_duration_ms duration,\n    memory_usage,\n    read_rows,\n    read_bytes,\n    if(exception!='', 'fail', 'success') result,\n    query\nFROM $table\nWHERE $__timeFilter(event_time)\n    AND type in ($type)\n    AND initial_user in ($user)\n    AND hasAny(databases, [$contain_db]) = 1\n    AND is_initial_query in ($is_init_query)\n    AND('$query_type' = 'all' or(positionCaseInsensitive(query,  '$query_type') >= 1))\nORDER BY duration desc, memory_usage DESC\nLIMIT 50",
+          "refId": "A"
+        }
+      ],
+      "title": "Top 50 slow Query by type: $type; user: $user; query type: $query_type",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "count"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 7,
+        "x": 0,
+        "y": 22
+      },
+      "id": 4,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "format": 1,
+          "meta": {
+            "builderOptions": {
+              "fields": [],
+              "limit": 100,
+              "mode": "list"
+            }
+          },
+          "queryType": "sql",
+          "rawSql": "SELECT\n    query AS query,\n    avg(query_duration_ms) avg_duration,\n    count() count\nFROM $table\nWHERE\n    $__timeFilter(event_time)\n    AND type in ($type)\n    AND initial_user in ($user)\n    AND hasAny(databases, [$contain_db]) = 1\n    AND query_duration_ms >= $slow_query_duration_ms\n    AND is_initial_query in ($is_init_query)\n    AND('$query_type' = 'all' or(positionCaseInsensitive(query,  '$query_type') >= 1))\nGROUP BY query\nORDER BY avg_duration desc\nLIMIT $top",
+          "refId": "A"
+        }
+      ],
+      "title": "Top slow queries by type: $type; user: $user; query type: $query_type",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "count"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 7,
+        "x": 7,
+        "y": 22
+      },
+      "id": 5,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "format": 1,
+          "meta": {
+            "builderOptions": {
+              "fields": [],
+              "limit": 100,
+              "mode": "list"
+            }
+          },
+          "queryType": "sql",
+          "rawSql": "SELECT\n    query,\n    avg(memory_usage) avg_usage,\n    count() count\nFROM $table\nWHERE\n    $__timeFilter(event_time)\n    AND type in ($type)\n    AND initial_user in ($user)\n    AND hasAny(databases, [$contain_db]) = 1\n    AND is_initial_query in ($is_init_query)\n    AND('$query_type' = 'all' or(positionCaseInsensitive(query,  '$query_type') >= 1))\nGROUP BY query\nORDER BY avg_usage desc\nLIMIT $top",
+          "refId": "A"
+        }
+      ],
+      "title": "Top memory usage by type: $type; user: $user; query type: $query_type",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "PDEE91DDB90597936"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "displayMode": "auto",
+            "inspect": true
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 10,
+        "x": 14,
+        "y": 22
+      },
+      "id": 6,
+      "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "8.5.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "PDEE91DDB90597936"
+          },
+          "format": 1,
+          "meta": {
+            "builderOptions": {
+              "fields": [],
+              "limit": 100,
+              "mode": "list"
+            }
+          },
+          "queryType": "sql",
+          "rawSql": "SELECT\n    query,\n    type,\n    count() count\nFROM $table\nWHERE\n    $__timeFilter(event_time)\n    AND type in (3,4)\n    AND initial_user in ($user)\n    AND hasAny(databases, [$contain_db]) = 1\n    AND is_initial_query in ($is_init_query)\n    AND('$query_type' = 'all' or(positionCaseInsensitive(query,  '$query_type') >= 1))\nGROUP BY\n    query,\n    type\nORDER BY count desc\nLIMIT $top",
+          "refId": "A"
+        }
+      ],
+      "title": "Top failed queries by user: $user; query type: failed",
+      "type": "table"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-clickhouse-datasource",
+          "uid": "PDEE91DDB90597936"
+        },
+        "definition": "select distinct initial_user from system.query_log where event_date >= today()-3 and event_time > toDateTime(today()-3)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "initial user",
+        "multi": true,
+        "name": "user",
+        "options": [],
+        "query": "select distinct initial_user from system.query_log where event_date >= today()-3 and event_time > toDateTime(today()-3)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "hide": 0,
+        "includeAll": true,
+        "label": "type",
+        "multi": true,
+        "name": "type",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "1",
+            "value": "1"
+          },
+          {
+            "selected": false,
+            "text": "2",
+            "value": "2"
+          },
+          {
+            "selected": false,
+            "text": "3",
+            "value": "3"
+          },
+          {
+            "selected": false,
+            "text": "4",
+            "value": "4"
+          }
+        ],
+        "query": "1,2,3,4",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "5",
+          "value": "5"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "top elements",
+        "multi": false,
+        "name": "top",
+        "options": [
+          {
+            "selected": true,
+            "text": "5",
+            "value": "5"
+          },
+          {
+            "selected": false,
+            "text": "10",
+            "value": "10"
+          },
+          {
+            "selected": false,
+            "text": "15",
+            "value": "15"
+          },
+          {
+            "selected": false,
+            "text": "20",
+            "value": "20"
+          },
+          {
+            "selected": false,
+            "text": "25",
+            "value": "25"
+          },
+          {
+            "selected": false,
+            "text": "30",
+            "value": "30"
+          }
+        ],
+        "query": "5,10,15,20,25,30",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "demo"
+          ],
+          "value": [
+            "demo"
+          ]
+        },
+        "datasource": {
+          "type": "grafana-clickhouse-datasource",
+          "uid": "PDEE91DDB90597936"
+        },
+        "definition": "select database from system.databases where name not in ('INFORMATION_SCHEMA','information_schema')",
+        "hide": 0,
+        "includeAll": true,
+        "label": "contain db",
+        "multi": true,
+        "name": "contain_db",
+        "options": [],
+        "query": "select database from system.databases where name not in ('INFORMATION_SCHEMA','information_schema')",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "select",
+          "value": "select"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "query type",
+        "multi": false,
+        "name": "query_type",
+        "options": [
+          {
+            "selected": false,
+            "text": "all",
+            "value": "all"
+          },
+          {
+            "selected": true,
+            "text": "select",
+            "value": "select"
+          },
+          {
+            "selected": false,
+            "text": "insert",
+            "value": "insert"
+          }
+        ],
+        "query": "all,select,insert",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "50",
+          "value": "50"
+        },
+        "hide": 0,
+        "label": "slow query duration ms",
+        "name": "slow_query_duration_ms",
+        "options": [
+          {
+            "selected": true,
+            "text": "50",
+            "value": "50"
+          }
+        ],
+        "query": "50",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "1",
+          "value": "1"
+        },
+        "hide": 0,
+        "includeAll": true,
+        "label": "is init query",
+        "multi": false,
+        "name": "is_init_query",
+        "options": [
+          {
+            "selected": false,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "0",
+            "value": "0"
+          },
+          {
+            "selected": true,
+            "text": "1",
+            "value": "1"
+          }
+        ],
+        "query": "0,1",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "hide": 2,
+        "label": "table",
+        "name": "table",
+        "query": "system.query_log_all",
+        "skipUrlSync": false,
+        "type": "constant"
+      },
+      {
+        "hide": 2,
+        "label": "constant select",
+        "name": "constant_select",
+        "query": "select",
+        "skipUrlSync": false,
+        "type": "constant"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "ClickHouse Queries",
+  "uid": "UYYz0Q_nk",
+  "version": 24,
+  "weekStart": ""
+}

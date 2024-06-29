@@ -1,0 +1,27 @@
+# 更全面的相关配置项详情可以参考 https://github.com/ContentSquare/chproxy/tree/master/config#http_config
+
+log_debug: true
+
+hack_me_please: true
+
+server:
+  http:
+    listen_addr: ":9090"
+    #allowed_networks: ["0.0.0.0/0"]
+
+users:
+  - name: "test"
+    to_cluster: "my"
+    to_user: "default"
+    requests_per_minute: 1
+
+clusters:
+  - name: "my"
+    nodes: ["clickhouse1:8123","clickhouse2:8123","clickhouse3:8123","clickhouse4:8123"]
+    # replicas:
+    #   - name: "s1"
+    #     nodes: ["clickhouse1:8123","clickhouse2:8123"]
+    #   - name: "s2"
+    #     nodes: ["clickhouse3:8123","clickhouse4:8123"]
+    users:
+      - name: "default"

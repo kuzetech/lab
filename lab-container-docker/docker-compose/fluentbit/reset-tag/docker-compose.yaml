@@ -1,0 +1,5 @@
+services:
+  client:
+    image: 'fluent/fluent-bit:2.1.9'
+    volumes:
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf

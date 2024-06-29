@@ -1,0 +1,39 @@
+
+numberOfTaskManagers: 6
+numberOfTaskSlots: 4
+parallelism: 21
+
+taskmanager:
+cpu: 4
+memory: 14Gi
+
+
+内存 14336 MB
+taskmanager.memory.jvm-overhead.min = 192mb 默认
+taskmanager.memory.jvm-overhead.max = 1gb 默认
+taskmanager.memory.jvm-overhead.fraction: 由默认 0.1 调整到 0.06
+taskmanager.memory.jvm-overhead = 14336 * 0.06 = 860 MB
+
+taskmanager.memory.jvm-metaspace.size = 256mb 默认
+taskmanager.memory.flink.size = 14336 - 860 - 256 = 13220 MB
+
+taskmanager.memory.network.min = 64mb 默认
+taskmanager.memory.network.max = infinite 默认
+taskmanager.memory.network.fraction: 由默认 0.1 调整到 0.01
+taskmanager.memory.network = 13220 * 0.01 = 132 MB
+
+taskmanager.memory.managed.fraction: 由默认 0.4 调整到 0.36
+taskmanager.memory.managed = 13220 * 0.36 = 4760 MB
+
+taskmanager.memory.framework.heap.size = 128mb 默认
+taskmanager.memory.framework.off-heap.size = 由默认 128mb 调整到 2048mb
+taskmanager.memory.task.off-heap.size = 0mb 默认
+taskmanager.memory.task.heap.size = 13220 - 128 - 2048 - 132 - 4760 = 6152 MB
+
+
+#### 确保每一个 slot 分配的 task.heap.size 大于 500mb
+              taskmanager.memory.jvm-overhead.fraction: '0.06'
+              taskmanager.memory.network.fraction: '0.01'
+              taskmanager.memory.managed.fraction: '0.36'
+              taskmanager.memory.framework.off-heap.size: 2048MB
+        

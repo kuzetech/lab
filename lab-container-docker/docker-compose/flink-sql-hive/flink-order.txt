@@ -1,0 +1,10 @@
+docker exec -it hive_hive-server_1 /opt/hive/bin/beeline -u jdbc:hive2://hive-server:10000 hive hive
+
+docker exec -it hive_broker_1 /opt/bitnami/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test
+
+docker exec -it hive_broker_1 /opt/bitnami/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning
+
+./sql-client.sh -i /Users/huangsw/script/docker-compose/hive/sql-init.sql
+
+
+

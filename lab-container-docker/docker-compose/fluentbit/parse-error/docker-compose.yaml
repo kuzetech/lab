@@ -1,0 +1,12 @@
+services:
+  client:
+    image: 'fluent/fluent-bit:2.1.9'
+    volumes:
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./parsers.conf:/fluent-bit/etc/parsers.conf
+      - db:/db
+      - ./tlogs:/tlogs
+
+volumes:
+  db: {}
+  

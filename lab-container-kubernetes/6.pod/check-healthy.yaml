@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-liveness-exec
+  labels:
+    test: liveness
+spec:
+  restartPolicy: Always # OnFailure Never
+  containers:
+  - name: liveness
+    image: busybox
+    args:
+    - /bin/sh
+    - -c
+    - touch /tmp/healthy; sleep 30; rm -rf /tmp/healthy; sleep 600
+    livenessProbe: # 影响 Pod 的生命周期
+      exec: # 可以执行命令
+        command:
+        - cat
+        - /tmp/healthy
+      httpGet: # 可以发送 http 请求
+        path: /healthz
+        port: 8080
+        httpHeaders:
+        - name: X-Custom-Header
+          value: Awesome
+      tcpSocket: # 可以发送 TCP 请求
+        port: 8080
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    readinessProbe:  # 判断 Pod 是不是能作为 Service 的 endpoint

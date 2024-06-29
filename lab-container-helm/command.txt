@@ -1,0 +1,18 @@
+helm create mychart
+
+helm install clunky-serval ./mychart
+
+helm install --dry-run --debug --set favoriteDrink=slurm solid-vulture ./mychart 
+
+helm install --dry-run --disable-openapi-validation moldy-jaguar ./mychart
+
+helm template --debug
+
+helm get manifest clunky-serval
+
+helm uninstall clunky-serval
+
+helm upgrade --install clunky-serval
+
+
+

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostpath-demo
+  namespace: demo
+spec:
+  containers:
+  - image: nginx:1.19.2
+    name: container-demo
+    volumeMounts:
+      - mountPath: /test-pd
+        name: hostpath-volume
+  volumes:
+  - name: hostpath-volume 
+    hostPath:
+      path: /data  # 对应宿主机上的绝对路径
+      type: Directory # 可选字段，默认是 Directory

@@ -1,0 +1,48 @@
+{
+    "clickhouse": {
+      "cluster": "my",
+      "hosts": [
+        [
+          "clickhouse1"
+        ],
+        [
+          "clickhouse2"
+        ]
+      ],
+      "port": 9000,
+      "username": "default",
+      "password": "",
+      "db": "default",
+      "secure": false,
+      "insecureSkipVerify": false,
+      "retryTimes": 0
+    },
+  
+    "kafka": {
+      "brokers": "broker:29092",
+      "version": "2.2.1"
+    },
+  
+    "task": {
+      "name": "clickhouse_sinker",
+      "topic": "event_test",
+      "earliest": true,
+      "consumerGroup": "sinker",
+      "parser": "json",
+      "tableName": "test_local",
+      "dims": [],
+      "autoSchema" : true,
+      "excludeColumns": [],
+      "dynamicSchema": {
+        "enable": false,
+        "maxDims": 1024
+      },
+      "shardingKey": "",
+      "shardingPolicy": "",
+      "flushInterval": 3,
+      "bufferSize": 4,
+      "timezone": ""
+    },
+    "logLevel": "info",
+    "logPaths": ["stdout", "stderr"]
+  }

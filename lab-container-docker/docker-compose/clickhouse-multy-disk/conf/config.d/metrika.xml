@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<yandex>
+    <remote_servers>
+        <my>
+            <shard>
+                <internal_replication>true</internal_replication>
+                <replica>
+                    <host>clickhouse</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+        </my>
+    </remote_servers>
+    <zookeeper-servers>
+        <node index="1">
+            <host>zookeeper</host>
+            <port>2181</port> 
+        </node>
+    </zookeeper-servers>
+</yandex>

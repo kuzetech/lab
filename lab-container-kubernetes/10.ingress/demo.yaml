@@ -1,0 +1,35 @@
+# 该文件仅描述了的转发规则
+# 还需要实现 Ingress Controller
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cafe-ingress
+spec:
+  tls:
+  - hosts:
+    - cafe.example.com
+    secretName: cafe-secret
+  rules:
+  - host: cafe.example.com # 必须是一个标准的域名格式
+    http:
+      paths:
+      - path: /tea
+        backend:
+          serviceName: tea-svc
+          servicePort: 80
+      - path: /coffee
+        backend:
+          serviceName: coffee-svc
+          servicePort: 80
+  - host: www.mysite.com
+    http:
+      paths:
+      - backend:
+          serviceName: site-svc
+          servicePort: 80
+  - host: forums.mysite.com
+    http:
+      paths:
+      - backend:
+          serviceName: forums-svc
+          servicePort: 80
