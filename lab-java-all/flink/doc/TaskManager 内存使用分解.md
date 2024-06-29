@@ -51,9 +51,9 @@
         - 作业中单独或者混合使用排序、哈希表、中间结果缓存
           - 没开发过不清楚
         - 作业中仅使用 rocksdb 状态后端
-          - RocksDB 将使用全部管理内存
-          - RocksDB State Backend 的性能在很大程度上取决于它可用的内存量
           - 一个 taskmanager 只会启动一个 RocksDB，所有的 slot 将共用该实例
+          - 管理内存也会平均划分给每个 slot，如果该 slot 被分配了状态任务，这部分内存就会划分给 RocksDB
+          - RocksDB State Backend 的性能在很大程度上取决于它可用的内存量
         - 作业中混合使用排序、哈希表、中间结果缓存、rocksdb 状态后端
           - 没开发过不清楚
           - 很好奇他们之间的内存分配比例
