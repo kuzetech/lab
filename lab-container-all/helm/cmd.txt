@@ -1,0 +1,48 @@
+# 查看内网ingest版本
+helm list|grep ingest
+
+# 添加turbine仓库
+helm repo add turbine https://registry.biubiubiu.io/chartrepo/turbine
+
+# 更新turbin仓库
+helm repo update
+
+# 导出现有ingest values配置
+helm get values ingest > ~/helm/ingest.yaml
+helm get values api > ~/helm/api.yaml
+
+# 修改values配置
+vi ~/helm/ingest.yaml
+
+# 更新版本(若仅更新配置,则版本号要使用原先的版本号)
+helm upgrade -f ~/helm/api.yaml --version 0.9.0-s230208-1411-0e25fa09 turbine-api turbine/turbine-api
+
+helm upgrade -f ~/helm/ingest-2.0.0-s230224-1117-50ec938e.yaml --version 2.0.0-s230224-1117-50ec938e ingest turbine/ingest
+helm upgrade -f ~/helm/ingest-2.0.0-s230317-1724-48c7c085.yaml --version 2.0.0-s230317-1724-48c7c085 ingest turbine/ingest
+
+# 以下为回滚操作
+# 查看历史部署版本
+helm history ingest
+
+# 回滚到指定版本,这里的1指的是上面列出的revision版本
+helm rollback ingest 1
+
+
+helm create mychart
+
+helm install clunky-serval ./mychart
+
+helm install --dry-run --debug --set favoriteDrink=slurm solid-vulture ./mychart 
+
+helm install --dry-run --disable-openapi-validation moldy-jaguar ./mychart
+
+helm template --debug
+
+helm get manifest clunky-serval
+
+helm uninstall clunky-serval
+
+helm upgrade --install clunky-serval
+
+
+

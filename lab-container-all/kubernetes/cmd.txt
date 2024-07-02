@@ -1,0 +1,6 @@
+## 端口转发
+kubectl port-forward svc/alluxio-master 19999:19999
+
+kubectl cp default/alluxio-master-0:/tmp/track.tar.gz /Users/huangsw/code/lab/lab-java-all/flink-state-processor/savepoints/track.tar.gz
+
+kubectl cp new.tar.gz default/alluxio-master-0:/tmp/new.tar.gz

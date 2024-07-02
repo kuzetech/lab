@@ -1,0 +1,5 @@
+## flink 运行命令
+
+flink run -d -p 2 /target/funnydb-ingest-processor-1.0-SNAPSHOT.jar
+flink stop --savepointPath /funnydb-ingest-processor/savepoints b2312cbdcfd8a13f53ee2b66ffb7bd3e
+flink run -d -p 4 --fromSavepoint /funnydb-ingest-processor/savepoints/savepoint-b2312c-0c0c4ce505ac /target/funnydb-ingest-processor-1.0-SNAPSHOT.jar
