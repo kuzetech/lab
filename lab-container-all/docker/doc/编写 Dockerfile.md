@@ -86,3 +86,43 @@ CMD ["nginx","-g","daemon off;"]
     > ADD和COPY指令功能类似，都是从外部往容器内添加文件。但是COPY指令只支持基本的文件和文件夹拷贝功能，ADD则支持更多文件来源类型，比如自动提取 tar 包，并且可以支持源文件为 URL 格式。更推荐你使用COPY指令，因为COPY指令更加透明，仅支持本地文件向容器拷贝，而且使用COPY指令可以更好地利用构建缓存，有效减小镜像体积
 4. WORKDIR
     > 为了使构建过程更加清晰明了，推荐使用 WORKDIR 来指定容器的工作路径，应该尽量避免使用 RUN cd /work/path && do some work 这样的指令
+
+
+## 多阶段构建
+
+通过前面课程的学习，我们知道 Docker 镜像是分层的，并且每一层镜像都会额外占用存储空间，一个 Docker 镜像层数越多，这个镜像占用的存储空间则会越多。镜像构建最重要的一个原则就是要保持镜像体积尽可能小，要实现这个目标通常可以从两个方面入手：
+1. 基础镜像体积应该尽量小
+2. 尽量减少 Dockerfile 的行数，因为 Dockerfile 的每一条指令都会生成一个镜像层
+
+为了减小镜像体积，我们需要借助一个额外的脚本，将镜像的编译过程和运行过程分开。
+1. 编译阶段：负责将我们的代码编译成可执行对象。
+2. 运行时构建阶段：准备应用程序运行的依赖环境，然后将编译后的可执行对象拷贝到镜像中
+
+为了解决这种问题， Docker 在 17.05 推出了多阶段构建（multistage-build）的解决方案。Docker 允许我们在 Dockerfile 中使用多个 FROM 语句，而每个 FROM 语句都可以使用不同基础镜像。最终生成的镜像，是以最后一条 FROM 为准，所以我们可以在一个 Dockerfile 中声明多个 FROM，然后选择性地将一个阶段生成的文件拷贝到另外一个阶段中，从而实现最终的镜像只保留我们需要的环境和文件。多阶段构建的主要使用场景是分离编译环境和运行环境。
+
+下面是构建 golang 程序的案例：  
+```
+FROM golang:1.13 AS builder
+WORKDIR /go/src/github.com/wilhelmguo/multi-stage-demo/
+COPY main.go .
+RUN CGO_ENABLED=0 GOOS=linux go build -o http-server .
+
+FROM alpine:latest  
+WORKDIR /root/
+COPY --from=builder /go/src/github.com/wilhelmguo/multi-stage-demo/http-server .
+CMD ["./http-server"]
+```
+
+### 停止在特定的构建阶段
+
+有时候，我们的构建阶段非常复杂，我们想在代码编译阶段进行调试，但是多阶段构建默认构建 Dockerfile 的所有阶段，为了减少每次调试的构建时间，我们可以使用 target 参数来指定构建停止的阶段。例如，我只想在编译阶段调试 Dockerfile 文件，可以使用如下命令：
+> docker build --target builder -t http-server:latest .
+
+### 从其他镜像拷贝资源
+
+使用多阶段构建时，不仅可以从 Dockerfile 中已经定义的阶段中拷贝文件，还可以使用COPY --from指令从一个指定的镜像中拷贝文件，指定的镜像可以是本地已经存在的镜像，也可以是远程镜像仓库上的镜像。
+
+例如，当我们想要拷贝 nginx 官方镜像的配置文件到我们自己的镜像中时，可以在 Dockerfile 中使用以下指令：
+> COPY --from=nginx:latest /etc/nginx/nginx.conf /etc/local/nginx.conf
+
+从现有镜像中拷贝文件还有一些其他的使用场景。例如，有些工具没有我们使用的操作系统的安装源，或者安装源太老，需要我们自己下载源码并编译这些工具，但是这些工具可能依赖的编译环境非常复杂，而网上又有别人已经编译好的镜像。这时我们就可以使用COPY --from指令从编译好的镜像中将工具拷贝到我们自己的镜像中，很方便地使用这些工具了。
