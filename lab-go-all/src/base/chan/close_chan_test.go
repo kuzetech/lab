@@ -1,4 +1,4 @@
-package closeChan
+package _chan
 
 import (
 	"log"
