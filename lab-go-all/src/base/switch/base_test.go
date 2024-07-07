@@ -1,6 +1,20 @@
 package _switch
 
-import "testing"
+import (
+	"runtime"
+	"testing"
+)
+
+func Test_base(t *testing.T) {
+	switch os := runtime.GOOS; os {
+	case "darwin":
+		t.Log("X")
+	case "linux":
+		t.Log("linux")
+	default:
+		t.Log(os)
+	}
+}
 
 func Test_multiCase(t *testing.T) {
 	var i int = 1
