@@ -1,35 +1,37 @@
 package _chan
 
 import (
-	"log"
+	"fmt"
 	"sync"
 	"testing"
 )
 
+func dataReceiver(ch chan int, wg *sync.WaitGroup, id string) {
+	go func() {
+		// 如果仅接收 data，通道关闭时会返回零值
+		data, ok := <-ch
+		if ok {
+			fmt.Println("通道未关闭，接收到数据", data)
+		} else {
+			fmt.Println("通道关闭，接收到数据")
+		}
+		fmt.Println(id)
+		wg.Done()
+	}()
+}
+
 func Test_close_chan(t *testing.T) {
-	testChan := make(chan struct{})
+	ch := make(chan int, 10)
 
 	var wg sync.WaitGroup
-	wg.Add(1)
+	wg.Add(2)
 
-	go func() {
-		log.Println("启动监听线程")
-		for {
-			select {
-			case <-testChan:
-				log.Println("chan 接收到消息")
-				wg.Done()
-				return
-			}
-		}
-	}()
+	dataReceiver(ch, &wg, "1")
+	dataReceiver(ch, &wg, "2")
 
-	log.Println("准备关闭 chan")
-	// 关闭 chan 时所有监听该管道的程序都能收到事件
-	// 可以继续从管道中获取未消费的元素
-	// 但是不能写入元素到管道不然会报错
-	close(testChan)
+	close(ch)
+
+	// 向关闭的 chan 发送数据会导致 panic
 
 	wg.Wait()
-	log.Println("主线程结束")
 }
