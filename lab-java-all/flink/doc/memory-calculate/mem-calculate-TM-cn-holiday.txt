@@ -1,0 +1,42 @@
+## funnydb-ingest-receive topic 18 个分区
+
+--job.input-parallelism-ratio 16
+--job.output-parallelism-ratio 8
+
+numberOfTaskManagers: 8
+numberOfTaskSlots: 7
+parallelism: 48
+
+taskmanager:
+cpu: 6
+memory: 24Gi
+
+
+内存 24576 MB
+taskmanager.memory.jvm-overhead.min = 192mb 默认
+taskmanager.memory.jvm-overhead.max = 1gb 默认
+taskmanager.memory.jvm-overhead.fraction: 由默认 0.1 调整到 0.04
+taskmanager.memory.jvm-overhead = 24576 * 0.04 = 983 MB
+
+taskmanager.memory.jvm-metaspace.size = 256mb 默认
+taskmanager.memory.flink.size = 24576 - 983 - 256 = 23337 MB
+
+taskmanager.memory.network.min = 64mb 默认
+taskmanager.memory.network.max = infinite 默认
+taskmanager.memory.network.fraction: 由默认 0.1 调整到 0.01
+taskmanager.memory.network = 24576 * 0.01 = 246 MB
+
+taskmanager.memory.managed.fraction: 由默认 0.4 调整到 0.3
+taskmanager.memory.managed = 24576 * 0.25 = 6144 MB
+
+taskmanager.memory.framework.heap.size = 128mb 默认
+taskmanager.memory.framework.off-heap.size = 由默认 128mb 调整到 2048mb
+taskmanager.memory.task.off-heap.size = 0mb 默认
+taskmanager.memory.task.heap.size = 24576 - 128 - 2048 - 246 - 6144 = 16010 MB
+
+
+#### 确保每一个 slot 分配的 task.heap.size 大于 1778，现分配
+              taskmanager.memory.jvm-overhead.fraction: '0.04'
+              taskmanager.memory.network.fraction: '0.01'
+              taskmanager.memory.managed.fraction: '0.3'
+              taskmanager.memory.framework.off-heap.size: 2048MB
