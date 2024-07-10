@@ -1,0 +1,4 @@
+{"level":"info","time":"2024-07-10T20:55:01+08:00","caller":"/Users/kuze/code/lab/lab-go-all/src/logger/zerolog_multi_writer_test.go:74","message":"1111111"}
+{"level":"info","time":"2024-07-10T20:55:04+08:00","caller":"/Users/kuze/code/lab/lab-go-all/src/logger/zerolog_multi_writer_test.go:74","message":"1111111"}
+{"level":"info","time":"2024-07-10T20:55:07+08:00","caller":"/Users/kuze/code/lab/lab-go-all/src/logger/zerolog_multi_writer_test.go:74","message":"1111111"}
+{"level":"info","time":"2024-07-10T20:55:13+08:00","caller":"/Users/kuze/code/lab/lab-go-all/src/logger/zerolog_multi_writer_test.go:74","message":"1111111"}
