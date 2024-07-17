@@ -35,7 +35,7 @@ taskmanager.memory.task.off-heap.size = 0mb 默认
 taskmanager.memory.task.heap.size = 24576 - 128 - 2048 - 246 - 6144 = 16010 MB
 
 
-#### 确保每一个 slot 分配的 task.heap.size 大于 1778，现分配
+#### 每一个 slot 分配的 task.heap.size 为 2287 MB
               taskmanager.memory.jvm-overhead.fraction: '0.04'
               taskmanager.memory.network.fraction: '0.01'
               taskmanager.memory.managed.fraction: '0.3'
