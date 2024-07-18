@@ -18,6 +18,9 @@ require (
 require (
 	github.com/avast/retry-go/v4 v4.6.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
+	github.com/facebookgo/errgroup v0.0.0-20160209021148-779c8d7ef069 // indirect
+	github.com/go-kratos/kratos v1.0.1 // indirect
+	github.com/go-pkgz/syncs v1.3.2 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -25,6 +28,7 @@ require (
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible // indirect
 	github.com/lestrrat-go/strftime v1.0.6 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
+	github.com/marusama/cyclicbarrier v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
