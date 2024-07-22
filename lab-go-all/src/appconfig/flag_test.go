@@ -7,7 +7,10 @@ import (
 )
 
 var b = flag.Bool("b", false, "bool类型参数")
-var s = flag.String("s", "", "string类型参数")
+var s = flag.String("s", "123", "string类型参数")
+
+// 千万不要写成以下的形式，不然永远只会得到默认值
+// var s = *flag.String("s", "123", "string类型参数")
 
 /*
 	-flag 		只支持bool类型
