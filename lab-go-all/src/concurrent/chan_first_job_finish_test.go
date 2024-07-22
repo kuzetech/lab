@@ -15,7 +15,9 @@ func runTask(id int) int {
 func Test_first_finish(t *testing.T) {
 	var taskNum int = 10
 
-	// finishCh := make(chan interface{})  // 使用该行写法可能导致其他的协程运行完成后资源无法释放，因为 chan 阻塞
+	// 使用该行写法可能导致程序结束时，其他协程资源无法释放，因为其他协程阻塞在往 chan 中放数据的过程，但是 chan 没有人消费了
+	// finishCh := make(chan interface{})
+
 	finishCh := make(chan interface{}, taskNum)
 
 	for i := 0; i < taskNum; i++ {
@@ -28,20 +30,4 @@ func Test_first_finish(t *testing.T) {
 
 	time.Sleep(1 * time.Second)
 	fmt.Println(runtime.NumGoroutine())
-}
-
-func Test_all_finish(t *testing.T) {
-	var taskNum int = 10
-
-	finishCh := make(chan interface{})
-
-	for i := 0; i < taskNum; i++ {
-		go func(id int) {
-			finishCh <- runTask(id)
-		}(i)
-	}
-
-	for i := 0; i < taskNum; i++ {
-		fmt.Println("finish task", <-finishCh)
-	}
 }
