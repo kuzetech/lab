@@ -1,14 +1,17 @@
 package com.kuzetech.bigdata.kafka.utils;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.IsolationLevel;
 
+import java.util.Locale;
 import java.util.Properties;
 
 public class ConsumerUtil {
 
     private static Properties GenerateNormalProperties() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", "localhost:9092");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put("group.id", "test");
 
         props.put("session.timeout.ms", 6 * 1000);
@@ -31,6 +34,14 @@ public class ConsumerUtil {
     public static KafkaConsumer<String, String> CreateManualCommit() {
         Properties props = GenerateNormalProperties();
         props.put("enable.auto.commit", false);
+        return new KafkaConsumer<>(props);
+    }
+
+    public static KafkaConsumer<String, String> CreateReadCommitted() {
+        Properties props = GenerateNormalProperties();
+        props.put("enable.auto.commit", true);
+        props.put("auto.commit.interval.ms", 3000);
+        props.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, IsolationLevel.READ_COMMITTED.toString().toLowerCase(Locale.ROOT));
         return new KafkaConsumer<>(props);
     }
 }

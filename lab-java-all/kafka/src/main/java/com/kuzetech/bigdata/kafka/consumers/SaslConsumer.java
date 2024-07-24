@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.kafka;
+package com.kuzetech.bigdata.kafka.consumers;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
