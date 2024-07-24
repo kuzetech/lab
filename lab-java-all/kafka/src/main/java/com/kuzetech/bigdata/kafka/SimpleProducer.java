@@ -1,11 +1,10 @@
 package com.kuzetech.bigdata.kafka;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +13,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Hello world!
- *
- */
+@Slf4j
 public class SimpleProducer {
 
-    public static final Logger logger = LoggerFactory.getLogger(SimpleProducer.class);
-
-    public static void main( String[] args ){
+    public static void main(String[] args) {
 
         Properties props = new Properties();
 
@@ -44,9 +38,9 @@ public class SimpleProducer {
 
 
         /*
-        * Kafka 拦截器分为生产者拦截器和消费者拦截器
-        * 需要继承 ProducerInterceptor 和 ConsumerInterceptor
-        * */
+         * Kafka 拦截器分为生产者拦截器和消费者拦截器
+         * 需要继承 ProducerInterceptor 和 ConsumerInterceptor
+         * */
         // 添加拦截器
         List interceptors = new ArrayList<>();
         interceptors.add("com.kuze.bigdata.AddTimestampInterceptor");
@@ -54,16 +48,16 @@ public class SimpleProducer {
         props.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, interceptors);
 
         /*
-        * 如果生产者和 broker 配置了不同的压缩算法会导致 broker 需要解压后重新按照算法压缩
-        * broker 端配置参数也是 compression.type ，并且默认值是 producer，这表示 Broker 端会采用 Producer 端使用的压缩算法
-        * Kafka 会将启用了哪种压缩算法封装进消息集合中，这样当 Consumer 读取到消息集合时，它自然就知道了这些消息使用的是哪种压缩算法
-        * 整个流程就是 Producer 端压缩、Broker 端保持、Consumer 端解压缩
-        *
-        * 吞吐量方面：LZ4  > Snappy > zstd 和 GZIP
-        * 压缩比方面，zstd > LZ4    > GZIP > Snappy
-        * 在 CPU 使用率方面，各个算法表现得差不多，
-        * 只是在压缩时 Snappy 算法使用的 CPU 较多一些，而在解压缩时 GZIP 算法则可能使用更多的 CPU
-        * */
+         * 如果生产者和 broker 配置了不同的压缩算法会导致 broker 需要解压后重新按照算法压缩
+         * broker 端配置参数也是 compression.type ，并且默认值是 producer，这表示 Broker 端会采用 Producer 端使用的压缩算法
+         * Kafka 会将启用了哪种压缩算法封装进消息集合中，这样当 Consumer 读取到消息集合时，它自然就知道了这些消息使用的是哪种压缩算法
+         * 整个流程就是 Producer 端压缩、Broker 端保持、Consumer 端解压缩
+         *
+         * 吞吐量方面：LZ4  > Snappy > zstd 和 GZIP
+         * 压缩比方面，zstd > LZ4    > GZIP > Snappy
+         * 在 CPU 使用率方面，各个算法表现得差不多，
+         * 只是在压缩时 Snappy 算法使用的 CPU 较多一些，而在解压缩时 GZIP 算法则可能使用更多的 CPU
+         * */
         // 开启 lz4 压缩
         props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "lz4");
 
@@ -85,12 +79,12 @@ public class SimpleProducer {
             // 该方法会阻塞直到结果返回或者超时
             producer.send(record).get(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            logger.error("发送过程中被打断", e);
+            log.error("发送过程中被打断", e);
         } catch (ExecutionException e) {
-            logger.error("发送过程中出现异常", e);
+            log.error("发送过程中出现异常", e);
         } catch (TimeoutException e) {
-            logger.error("发送超时", e);
-        }finally {
+            log.error("发送超时", e);
+        } finally {
             producer.close();
         }
 

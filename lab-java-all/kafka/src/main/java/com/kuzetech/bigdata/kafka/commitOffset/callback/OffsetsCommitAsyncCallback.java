@@ -1,5 +1,6 @@
-package com.kuzetech.bigdata.kafka.commitManual;
+package com.kuzetech.bigdata.kafka.commitOffset.callback;
 
+import com.kuzetech.bigdata.kafka.commitOffset.exception.AsyncCommitOffsetsConsecutiveErrorException;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.clients.consumer.OffsetCommitCallback;
 import org.apache.kafka.common.TopicPartition;

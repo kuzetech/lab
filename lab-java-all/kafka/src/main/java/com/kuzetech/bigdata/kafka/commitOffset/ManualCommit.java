@@ -1,21 +1,18 @@
-package com.kuzetech.bigdata.kafka.commitManual;
+package com.kuzetech.bigdata.kafka.commitOffset;
 
+import com.kuzetech.bigdata.kafka.commitOffset.callback.OffsetsCommitAsyncCallback;
+import com.kuzetech.bigdata.kafka.commitOffset.exception.AsyncCommitOffsetsConsecutiveErrorException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-/**
- * Hello world!
- */
-public class SimpleConsumer {
-
-    public static final Logger logger = LoggerFactory.getLogger(SimpleConsumer.class);
+@Slf4j
+public class ManualCommit {
 
     public static void main(String[] args) {
 
@@ -91,10 +88,10 @@ public class SimpleConsumer {
             } catch (Exception e) {
                 // 处理异常
                 if (e instanceof AsyncCommitOffsetsConsecutiveErrorException) {
-                    logger.error("program will close", e);
+                    log.error("program will close", e);
                     break;
                 } else {
-                    logger.error("consume message error", e);
+                    log.error("consume message error", e);
                 }
 
             } finally {

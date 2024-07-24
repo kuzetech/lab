@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.kafka.commitManual;
+package com.kuzetech.bigdata.kafka.commitOffset.exception;
 
 public class AsyncCommitOffsetsConsecutiveErrorException extends RuntimeException {
 

@@ -1,33 +1,27 @@
-package com.kuzetech.bigdata.kafka.commitManual;
+package com.kuzetech.bigdata.kafka.commitOffset;
 
-import org.apache.kafka.clients.consumer.*;
+import com.kuzetech.bigdata.kafka.commitOffset.callback.OffsetsCommitAsyncCallback;
+import com.kuzetech.bigdata.kafka.commitOffset.exception.AsyncCommitOffsetsConsecutiveErrorException;
+import com.kuzetech.bigdata.kafka.utils.ConsumerUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Hello world!
  */
-public class BatchCommitConsumer {
-
-    public static final Logger logger = LoggerFactory.getLogger(BatchCommitConsumer.class);
+@Slf4j
+public class BatchCommit {
 
     public static void main(String[] args) {
-
-        Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 10000);
-        props.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 3000);
-        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 1000 * 60 * 5);
-
-        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
-
+        KafkaConsumer<String, String> consumer = ConsumerUtil.CreateManualCommit();
         Map<TopicPartition, OffsetAndMetadata> offsets = new HashMap<>();
         int count = 0;
 
@@ -46,10 +40,10 @@ public class BatchCommitConsumer {
                 }
             } catch (Exception e) {
                 if (e instanceof AsyncCommitOffsetsConsecutiveErrorException) {
-                    logger.error("program will close", e);
+                    log.error("program will close", e);
                     break;
                 } else {
-                    logger.error("consume message error", e);
+                    log.error("consume message error", e);
                 }
             } finally {
                 try {
