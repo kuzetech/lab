@@ -1,5 +1,6 @@
 ## 端口转发
 kubectl port-forward svc/alluxio-master 19999:19999
+kubectl port-forward svc/kafka-headless 9092:9092
 
 kubectl cp default/alluxio-master-0:/tmp/track.tar.gz /Users/huangsw/code/lab/lab-java-all/flink-state-processor/savepoints/track.tar.gz
 
