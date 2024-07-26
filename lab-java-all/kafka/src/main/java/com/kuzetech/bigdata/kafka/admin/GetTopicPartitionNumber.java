@@ -14,7 +14,7 @@ import java.util.concurrent.ExecutionException;
 public class GetTopicPartitionNumber {
 
     public static void main(String[] args) throws InterruptedException {
-        String topic = "test";
+        String topic = "funnydb-flink-track-events";
         String server = "localhost:9092";
 
         Properties props = new Properties();
@@ -27,6 +27,7 @@ public class GetTopicPartitionNumber {
                 System.err.println("Failed to retrieve partition information for the specified topic.");
                 return;
             }
+
             System.out.println("Number of Partitions: " + topicDescription.partitions().size());
         } catch (ExecutionException e) {
             if (e.getCause() instanceof UnknownTopicOrPartitionException) {
