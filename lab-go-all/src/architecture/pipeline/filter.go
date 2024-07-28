@@ -1,4 +1,4 @@
-package pipe_filter
+package pipeline
 
 type Request interface{}
 type Response interface{}

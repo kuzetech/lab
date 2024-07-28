@@ -1,9 +1,14 @@
-package pipe_filter
+package pipeline
 
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
+
+/*
+	垂直的 pipeline 架构，意味着没有分支
+
+*/
 
 func Test_straight_pipeline(t *testing.T) {
 	pipeline := NewStraightPipeline(

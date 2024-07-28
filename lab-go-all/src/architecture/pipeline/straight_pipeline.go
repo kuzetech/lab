@@ -1,4 +1,4 @@
-package pipe_filter
+package pipeline
 
 type StraightPipeline struct {
 	Name    string
