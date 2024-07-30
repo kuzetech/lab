@@ -1,4 +1,4 @@
-package json
+package _jsoniter
 
 import (
 	"encoding/json"
