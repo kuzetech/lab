@@ -1,6 +1,7 @@
 package com.kuzetech.bigdata.flinkstate;
 
 import com.kuzetech.bigdata.flinkstate.mutation.MutationReaderFunction;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
@@ -16,20 +17,28 @@ import org.apache.flink.util.Collector;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReadMutationJob {
+@Slf4j
+public class ReadMutationCountJob {
 
     public static void main(String[] args) throws Exception {
+        String spPath = "/Users/huangsw/code/lab/lab-java-all/flink-state-processor/savepoints/dev-mutation";
+        if (args.length > 0) {
+            spPath = args[0];
+        }
+
+        final int outputCount = args.length > 1 ? Integer.parseInt(args[1]) : 10000;
+
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                "/Users/huangsw/code/lab/lab-java-all/flink-state-processor/savepoints/dev-mutation",
+                spPath,
                 new EmbeddedRocksDBStateBackend(true));
 
         DataStream<Tuple2<String, Integer>> mutationState = savepoint.readKeyedState(
                 OperatorIdentifier.forUid("mutation-state-process"),
                 new MutationReaderFunction());
-
 
         SingleOutputStreamOperator<Tuple3<String, Integer, Integer>> result = mutationState
                 .map(o -> Tuple3.of(o.f0, 1, o.f1), Types.TUPLE(Types.STRING, Types.INT, Types.INT))
@@ -47,21 +56,25 @@ public class ReadMutationJob {
                         } else {
                             t.f1 += e.f1;
                             t.f2 += e.f2;
-                            if (t.f1 >= 5000) {
+                            if (t.f1 >= outputCount) {
                                 m.remove(e.f0);
                                 collector.collect(t);
                             } else {
                                 m.put(e.f0, t);
                             }
                         }
+                    }
 
+                    @Override
+                    public void close() throws Exception {
+                        super.close();
+                        m.forEach((k, v) -> log.info("未发送到下游的数据: {}", v));
                     }
                 });
 
-
         result.print();
 
-        env.execute("ReadMutationJob");
+        env.execute("ReadMutationCountJob");
     }
 
 
