@@ -5,3 +5,6 @@ kubectl port-forward svc/kafka-headless 9092:9092
 kubectl cp default/alluxio-master-0:/tmp/track.tar.gz /Users/huangsw/code/lab/lab-java-all/flink-state-processor/savepoints/track.tar.gz
 
 kubectl cp kafka-1.0-SNAPSHOT.jar default/kafka-0:/tmp/kafka.jar
+
+
+kubectl cp test2.sh default/kafka-0:/opt/bitnami/kafka/bin/test.sh
