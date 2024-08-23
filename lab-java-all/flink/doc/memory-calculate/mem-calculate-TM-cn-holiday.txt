@@ -9,22 +9,22 @@ parallelism: 48
 
 taskmanager:
 cpu: 6
-memory: 26Gi
+memory: 25Gi
 
 
-内存 26624 MB
+内存 25600 MB
 taskmanager.memory.jvm-overhead.min = 192mb 默认
 taskmanager.memory.jvm-overhead.max = 1gb 默认
 taskmanager.memory.jvm-overhead.fraction: 默认 0.1
-taskmanager.memory.jvm-overhead = 26624 * 0.03 = 798 MB
+taskmanager.memory.jvm-overhead = 25600 * 0.03 = 798 MB
 
 taskmanager.memory.jvm-metaspace.size = 256mb 默认
-taskmanager.memory.flink.size = 26624 - 798 - 256 = 25570 MB
+taskmanager.memory.flink.size = 25600 - 798 - 256 = 24546 MB
 
 taskmanager.memory.network.min = 64mb 默认
 taskmanager.memory.network.max = infinite 默认
 taskmanager.memory.network.fraction: 默认 0.1
-taskmanager.memory.network = 25570 * 0.01 = 256 MB
+taskmanager.memory.network = 24546 * 0.01 = 256 MB
 
 taskmanager.memory.managed.fraction: 默认 0.4
 taskmanager.memory.managed = 25570 * 0.2 = 5114 MB
