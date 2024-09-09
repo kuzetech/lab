@@ -7,11 +7,29 @@ docker logs -f server 2>&1 | grep INFO
 
 docker exec -it clickhouse1 tail -f /var/log/clickhouse-server/clickhouse-server.log 2>&1 | grep executeQuery
 
+docker build -t temp:0.0.1 . 
+
 docker run -it --rm --name test --entrypoint /bin/bash registry.biubiubiu.io/funnydb/funnydb-ingest-processor:1.2.1-240109-1844-2cec8c12
 docker run --rm -it --name test                        registry.biubiubiu.io/turbine/ingest:2.0.0-s230209-1522-3f2b7d34 bash
+docker run -d -p 8082:8080 --name tomcat tomcat:latest
+docker run --rm --name rate100 temp:0.0.2 --rate=100
+docker run -d --name  temp:0.0.5
 
 docker cp test:/maxmind-geoip2-city.mmdb /Users/huangsw/code/funny/turbine/sources/ingest/geoip2/maxmind-geoip2-city.mmdb
 docker cp test:/maxmind-geoip2-country.mmdb /Users/huangsw/code/funny/turbine/sources/ingest/geoip2/maxmind-geoip2-country.mmdb
 docker cp test:/maxmind-geoip2-isp.mmdb /Users/huangsw/code/funny/turbine/sources/ingest/geoip2/maxmind-geoip2-isp.mmdb
+
+sudo docker run \
+  --volume=/:/rootfs:ro \
+  --volume=/var/run:/var/run:ro \
+  --volume=/sys:/sys:ro \
+  --volume=/var/lib/docker/:/var/lib/docker:ro \
+  --volume=/dev/disk/:/dev/disk:ro \
+  --publish=8080:8080 \
+  --detach=true \
+  --name=cadvisor \
+  --privileged \
+  --device=/dev/kmsg \
+  lagoudocker/cadvisor:v0.37.0
 
 
