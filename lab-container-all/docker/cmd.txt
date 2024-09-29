@@ -14,10 +14,11 @@ docker run --rm -it --name test                        registry.biubiubiu.io/tur
 docker run -d -p 8082:8080 --name tomcat tomcat:latest
 docker run --rm --name rate100 temp:0.0.2 --rate=100
 docker run -d --name  temp:0.0.5
+docker run -it --rm --name test2 --entrypoint /bin/sh registry.biubiubiu.io/funnydb/geoip:2024-09-20
 
-docker cp test:/maxmind-geoip2-city.mmdb /Users/huangsw/code/funny/turbine/sources/ingest/geoip2/maxmind-geoip2-city.mmdb
-docker cp test:/maxmind-geoip2-country.mmdb /Users/huangsw/code/funny/turbine/sources/ingest/geoip2/maxmind-geoip2-country.mmdb
-docker cp test:/maxmind-geoip2-isp.mmdb /Users/huangsw/code/funny/turbine/sources/ingest/geoip2/maxmind-geoip2-isp.mmdb
+docker cp test2:/geoip/maxmind-geoip2-city.mmdb /Users/huangsw/Downloads/maxmind-geoip2-city.mmdb
+docker cp test2:/geoip/maxmind-geoip2-country.mmdb /Users/huangsw/Downloads/maxmind-geoip2-country.mmdb
+docker cp test2:/geoip/maxmind-geoip2-isp.mmdb /Users/huangsw/Downloads/maxmind-geoip2-isp.mmdb
 
 sudo docker run \
   --volume=/:/rootfs:ro \

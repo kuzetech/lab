@@ -19,6 +19,7 @@ require (
 	github.com/aaronjan/hunch v1.1.3 // indirect
 	github.com/avast/retry-go/v4 v4.6.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/facebookgo/errgroup v0.0.0-20160209021148-779c8d7ef069 // indirect
 	github.com/go-kratos/kratos v1.0.1 // indirect
 	github.com/go-pkgz/syncs v1.3.2 // indirect
