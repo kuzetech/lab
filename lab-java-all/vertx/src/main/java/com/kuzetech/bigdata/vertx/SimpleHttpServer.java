@@ -1,9 +1,10 @@
 package com.kuzetech.bigdata.vertx;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpClosedException;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.LoggerHandler;
+import io.vertx.ext.web.handler.BodyHandler;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -15,7 +16,7 @@ public class SimpleHttpServer {
         Router router = Router.router(vertx);
 
         router.route()
-                .handler(LoggerHandler.create())
+                .handler(BodyHandler.create().setBodyLimit(100 * 1024 * 1024))
                 .handler(c -> {
                     log.info(c.request().remoteAddress().hostAddress());
                     c.response().setChunked(true);
@@ -25,7 +26,11 @@ public class SimpleHttpServer {
                         c.response().end("1111111");
                     });
                 }).failureHandler(c -> {
-                    log.error("出现异常", c.failure());
+                    if (c.failure() instanceof HttpClosedException) {
+                        log.error("HttpClosedException");
+                    } else {
+                        log.error("出现异常", c.failure());
+                    }
                     c.response().end("error");
                 });
 
