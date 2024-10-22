@@ -28,7 +28,6 @@
         <module>sentry</module>
         <module>flink19</module>
         <module>flink-dynamic-rule</module>
-        <module>lab-work</module>
     </modules>
 
     <!--      子项目默认都会继承这一部分配置，并且可以覆盖      -->
