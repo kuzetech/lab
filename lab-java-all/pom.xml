@@ -27,7 +27,8 @@
         <module>flink17-state-processor</module>
         <module>flink19-dynamic-rule</module>
         <module>flink20-sql</module>
-        <module>flink17-stream</module>
+        <module>flink17-stream-work</module>
+        <module>flink17-steam</module>
     </modules>
 
     <!--      子项目默认都会继承这一部分配置，并且可以覆盖      -->
