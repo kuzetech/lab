@@ -14,20 +14,20 @@
         <module>design</module>
         <module>spark</module>
         <module>lab</module>
-        <module>kafka</module>
         <module>vertx</module>
-        <module>flink17-stream</module>
         <module>concurrent</module>
         <module>etcd</module>
         <module>apollo</module>
         <module>rule-engine</module>
+        <module>kafka</module>
         <module>kafka-streams</module>
         <module>redis</module>
         <module>picocli</module>
-        <module>flink17-state-processor</module>
         <module>sentry</module>
+        <module>flink17-state-processor</module>
         <module>flink19-dynamic-rule</module>
         <module>flink20-sql</module>
+        <module>flink17-stream</module>
     </modules>
 
     <!--      子项目默认都会继承这一部分配置，并且可以覆盖      -->
