@@ -25,16 +25,15 @@ under the License.
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.kuzetech.bigdata.flink20</groupId>
-    <artifactId>flink20-sql</artifactId>
+    <groupId>com.kuzetech.bigdata.flink17</groupId>
+    <artifactId>flink17-stream</artifactId>
     <packaging>jar</packaging>
-    <name>flink20-sql</name>
+    <name>flink17-stream</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <flink.version>1.20.0</flink.version>
+        <flink.version>1.17.1</flink.version>
         <target.java.version>11</target.java.version>
-        <scala.binary.version>2.12</scala.binary.version>
         <maven.compiler.source>${target.java.version}</maven.compiler.source>
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
         <log4j.version>2.17.1</log4j.version>
@@ -42,11 +41,10 @@ under the License.
 
     <repositories>
         <repository>
-            <id>apache.snapshots</id>
-            <name>Apache Development Snapshot Repository</name>
-            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+            <id>central</id>
+            <url>https://maven.aliyun.com/repository/central</url>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
@@ -54,24 +52,31 @@ under the License.
         </repository>
     </repositories>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <url>https://maven.aliyun.com/repository/central</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
     <dependencies>
         <!-- Apache Flink dependencies -->
         <!-- These dependencies are provided, because they should not be packaged into the JAR file. -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-planner-loader</artifactId>
+            <artifactId>flink-streaming-java</artifactId>
             <version>${flink.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-api-java-bridge</artifactId>
-            <version>${flink.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-sql-client</artifactId>
+            <artifactId>flink-clients</artifactId>
             <version>${flink.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -81,41 +86,24 @@ under the License.
             <version>${flink.version}</version>
             <scope>provided</scope>
         </dependency>
-
-        <!-- Add format dependencies here. -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-json</artifactId>
+            <artifactId>flink-statebackend-rocksdb</artifactId>
             <version>${flink.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Add connector dependencies here. -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-base</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka</artifactId>
-            <version>3.3.0-1.20</version>
-        </dependency>
-
-
-        <!-- Add test dependencies here. -->
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-test-utils</artifactId>
             <version>${flink.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-test-utils</artifactId>
-            <version>${flink.version}</version>
-            <scope>test</scope>
+            <groupId>org.apache.bahir</groupId>
+            <artifactId>flink-connector-redis_2.12</artifactId>
+            <version>1.1.0</version>
         </dependency>
-
 
         <!-- Add logging framework, to produce console output when running in the IDE. -->
         <!-- These dependencies are excluded from the application JAR by default. -->
@@ -136,6 +124,18 @@ under the License.
             <artifactId>log4j-core</artifactId>
             <version>${log4j.version}</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <!-- Add other lib dependencies here. -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>5.1.2</version>
+        </dependency>
+        <!--      模拟数据生成工具      -->
+        <dependency>
+            <groupId>net.datafaker</groupId>
+            <artifactId>datafaker</artifactId>
         </dependency>
     </dependencies>
 
@@ -192,7 +192,7 @@ under the License.
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.kuzetech.bigdata.flink20.DataGenToPrint</mainClass>
+                                    <mainClass>com.kuzetech.bigdata.flink17.kafka.MultipleOutputTopicApp</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

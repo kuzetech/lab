@@ -16,7 +16,7 @@
         <module>lab</module>
         <module>kafka</module>
         <module>vertx</module>
-        <module>flink</module>
+        <module>flink17-stream</module>
         <module>concurrent</module>
         <module>etcd</module>
         <module>apollo</module>
@@ -24,10 +24,9 @@
         <module>kafka-streams</module>
         <module>redis</module>
         <module>picocli</module>
-        <module>flink-state-processor</module>
+        <module>flink17-state-processor</module>
         <module>sentry</module>
-        <module>flink19</module>
-        <module>flink-dynamic-rule</module>
+        <module>flink19-dynamic-rule</module>
         <module>flink20-sql</module>
     </modules>
 
