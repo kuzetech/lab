@@ -1,4 +1,4 @@
-package http
+package _httpclient
 
 import (
 	"bytes"

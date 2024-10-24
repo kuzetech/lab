@@ -6,6 +6,9 @@ import (
 	"testing"
 )
 
+// easyjson 采用代码生成的方法替代了原生 json 包的反射方式
+
+// 相关使用方式如下：
 // go get -u github.com/mailru/easyjson/...
 // go install github.com/mailru/easyjson/...
 // easyjson -all person.go
