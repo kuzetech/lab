@@ -1,4 +1,4 @@
-package flowcontroller
+package ratelimit
 
 import (
 	"context"
