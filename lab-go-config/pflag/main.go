@@ -7,12 +7,6 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-// pflag 包与 flag 包的工作原理甚至是代码实现都是类似的，下面是 pflag 相对 flag 的一些优势：
-// 支持更加精细的参数类型：例如，flag 只支持 uint 和 uint64，而 pflag 额外支持 uint8、uint16、int32 等类型。
-// 支持更多参数类型：ip、ip mask、ip net、count、以及所有类型的 slice 类型。
-// 兼容标准 flag 库的 Flag 和 FlagSet：pflag 更像是对 flag 的扩展。
-// 原生支持更丰富的功能：支持 shorthand、deprecated、hidden 等高级功能。
-
 func main() {
 	// 定义命令行参数对应的变量
 	var cliName = flag.StringP("name", "n", "nick", "Input Your Name")
