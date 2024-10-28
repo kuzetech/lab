@@ -6,32 +6,29 @@ import (
 	"time"
 )
 
+// 这里无法使用 printAll(items ...any) 这样的方法
+func printAll(a string, b int) {
+	fmt.Println(a, b)
+}
+
 func main() {
 	// create a scheduler
 	s, err := gocron.NewScheduler()
 	if err != nil {
-		// handle error
+		panic(err)
 	}
 
 	// add a job to the scheduler
 	j, err := s.NewJob(
-		gocron.DurationJob(
-			10*time.Second,
-		),
-		gocron.NewTask(
-			func(a string, b int) {
-				// do things
-				fmt.Println(fmt.Sprintf("%s - %d", a, b))
-			},
-			"hello",
-			1,
-		),
+		gocron.DurationJob(5*time.Second),
+		gocron.NewTask(printAll, "hello", 1),
 	)
 	if err != nil {
-		// handle error
+		panic(err)
 	}
+
 	// each job has a unique id
-	fmt.Println(j.ID())
+	fmt.Println("JobId = ", j.ID())
 
 	// start the scheduler
 	s.Start()
@@ -42,6 +39,6 @@ func main() {
 	// when you're done, shut it down
 	err = s.Shutdown()
 	if err != nil {
-		// handle error
+		panic(err)
 	}
 }
