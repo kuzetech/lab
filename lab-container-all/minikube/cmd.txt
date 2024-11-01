@@ -1,0 +1,8 @@
+## 常用命令
+minikube start
+minikube stop
+minikube delete
+minikube status
+
+## 加载本地镜像
+minikube image load registry.biubiubiu.io/funnydb/funnydb-statistician-cron:1.0.0
