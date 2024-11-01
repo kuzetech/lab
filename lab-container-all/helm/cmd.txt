@@ -27,7 +27,6 @@ helm history ingest
 # 回滚到指定版本,这里的1指的是上面列出的revision版本
 helm rollback ingest 1
 
-
 helm create mychart
 
 helm install clunky-serval ./mychart
@@ -43,6 +42,3 @@ helm get manifest clunky-serval
 helm uninstall clunky-serval
 
 helm upgrade --install clunky-serval
-
-
-
