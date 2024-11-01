@@ -1,0 +1,8 @@
+ck_endpoints: localhost:9000
+ck_username: demo
+ck_password: demo
+concurrent_query_num: 1
+statistician_database: demo
+scheduling_minute_interval: 5
+query_delay_minutes: 5
+query_statistical_minutes: 5
