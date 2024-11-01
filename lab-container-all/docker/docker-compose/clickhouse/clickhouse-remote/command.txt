@@ -1,6 +1,0 @@
-pip install zk-shell
-
-cp file:///Users/huangsw/script/docker-compose/clickhouse-zk-metadata/conf/cluster.xml /profile-cluster
-cp file:///Users/huangsw/script/docker-compose/clickhouse-zk-metadata/conf/macros1.xml /profile-macros1
-cp file:///Users/huangsw/script/docker-compose/clickhouse-zk-metadata/conf/macros2.xml /profile-macros2
-cp file:///Users/huangsw/script/docker-compose/clickhouse-zk-metadata/conf/remote.xml /profile-remote
