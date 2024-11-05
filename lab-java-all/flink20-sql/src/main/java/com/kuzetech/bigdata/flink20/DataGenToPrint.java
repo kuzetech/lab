@@ -19,28 +19,13 @@
 package com.kuzetech.bigdata.flink20;
 
 import org.apache.flink.connector.datagen.table.DataGenConnectorOptions;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.*;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 public class DataGenToPrint {
 
     public static void main(String[] args) throws Exception {
-
-        /*EnvironmentSettings envSettings = EnvironmentSettings
-                .newInstance()
-                .inStreamingMode()
-                //.inBatchMode()
-                .build();
-        TableEnvironment tableEnv = TableEnvironment.create(envSettings);
-        // 默认的命名空间
-        tableEnv.useCatalog("default_catalog");
-        tableEnv.useDatabase("default_database");*/
-
-
-        StreamExecutionEnvironment execEnvironment = StreamExecutionEnvironment.getExecutionEnvironment();
-        execEnvironment.setParallelism(1);
-        StreamTableEnvironment tableEnv = StreamTableEnvironment.create(execEnvironment);
+        StreamTableEnvironment tableEnv = LaunchUtil.GetDefaultStreamTableEnvironment();
 
         tableEnv.createTemporaryTable("GenTable", TableDescriptor.forConnector("datagen")
                 .schema(Schema.newBuilder()

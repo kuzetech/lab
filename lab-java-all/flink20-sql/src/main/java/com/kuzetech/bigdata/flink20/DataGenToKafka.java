@@ -19,7 +19,6 @@
 package com.kuzetech.bigdata.flink20;
 
 import org.apache.flink.connector.datagen.table.DataGenConnectorOptions;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.DataTypes;
 import org.apache.flink.table.api.Schema;
 import org.apache.flink.table.api.Table;
@@ -29,10 +28,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 public class DataGenToKafka {
 
     public static void main(String[] args) throws Exception {
-
-        StreamExecutionEnvironment execEnvironment = StreamExecutionEnvironment.getExecutionEnvironment();
-        execEnvironment.setParallelism(1);
-        StreamTableEnvironment tableEnv = StreamTableEnvironment.create(execEnvironment);
+        StreamTableEnvironment tableEnv = LaunchUtil.GetDefaultStreamTableEnvironment();
 
         tableEnv.createTemporaryTable("GenTable", TableDescriptor.forConnector("datagen")
                 .schema(Schema.newBuilder()
