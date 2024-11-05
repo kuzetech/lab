@@ -19,10 +19,8 @@
 package com.kuzetech.bigdata.flink20;
 
 import org.apache.flink.connector.datagen.table.DataGenConnectorOptions;
-import org.apache.flink.table.api.DataTypes;
-import org.apache.flink.table.api.Schema;
-import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.TableDescriptor;
+import org.apache.flink.table.api.*;
+import org.apache.flink.table.api.bridge.java.StreamStatementSet;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 public class DataGenToKafka {
@@ -70,8 +68,13 @@ public class DataGenToKafka {
 
         Table genTable = tableEnv.from("GenTable");
 
-        genTable.insertInto("NormalKafkaTable").execute();
-        genTable.insertInto("UpsertKafkaTable").execute();
+        TablePipeline normalPipeline = genTable.insertInto("NormalKafkaTable");
+        TablePipeline upsertPipeline = genTable.insertInto("UpsertKafkaTable");
+
+        StreamStatementSet statementSet = tableEnv.createStatementSet();
+        statementSet.add(normalPipeline);
+        statementSet.add(upsertPipeline);
+        statementSet.execute();
 
     }
 }
