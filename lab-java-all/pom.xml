@@ -16,7 +16,6 @@
         <module>lab</module>
         <module>vertx</module>
         <module>concurrent</module>
-        <module>etcd</module>
         <module>apollo</module>
         <module>rule-engine</module>
         <module>kafka</module>
@@ -29,6 +28,7 @@
         <module>flink20-sql</module>
         <module>flink17-stream-work</module>
         <module>flink17-steam</module>
+        <module>flink20-stream-eagle</module>
     </modules>
 
     <!--      子项目默认都会继承这一部分配置，并且可以覆盖      -->
