@@ -24,10 +24,10 @@
         <module>picocli</module>
         <module>sentry</module>
         <module>flink17-state-processor</module>
-        <module>flink19-dynamic-rule</module>
-        <module>flink20-sql</module>
         <module>flink17-stream-work</module>
         <module>flink17-steam</module>
+        <module>flink19-dynamic-rule</module>
+        <module>flink20-sql</module>
         <module>flink20-stream-eagle</module>
     </modules>
 
