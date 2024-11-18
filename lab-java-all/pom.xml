@@ -14,6 +14,7 @@
         <module>design</module>
         <module>spark</module>
         <module>lab</module>
+        <module>concurrent</module>
         <module>vertx</module>
         <module>apollo</module>
         <module>rule-engine</module>
@@ -26,7 +27,6 @@
         <module>flink19-dynamic-rule</module>
         <module>flink20-sql</module>
         <module>flink20-stream-eagle</module>
-        <module>concurrent</module>
     </modules>
 
     <!--      子项目默认都会继承这一部分配置，并且可以覆盖      -->
@@ -40,6 +40,32 @@
         <scala.version>2.12</scala.version>
         <log4j2.version>2.17.2</log4j2.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://maven.aliyun.com/repository/central</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <url>https://maven.aliyun.com/repository/central</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
 
     <!--      子项目声明后会继承这一部分配置，包含 scope      -->

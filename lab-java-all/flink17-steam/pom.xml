@@ -27,7 +27,7 @@ under the License.
 
     <artifactId>flink17-steam</artifactId>
     <packaging>jar</packaging>
-    <name>Flink Quickstart Job</name>
+    <name>flink17-steam</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

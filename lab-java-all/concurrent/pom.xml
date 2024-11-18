@@ -13,7 +13,7 @@
     <name>concurrent</name>
 
     <properties>
-        <compiler.version>22</compiler.version>
+        <compiler.version>21</compiler.version>
         <maven.compiler.source>${compiler.version}</maven.compiler.source>
         <maven.compiler.target>${compiler.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,6 +21,7 @@
     </properties>
 
     <dependencies>
+
     </dependencies>
 
     <build>
