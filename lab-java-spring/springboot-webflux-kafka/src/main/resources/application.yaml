@@ -1,0 +1,14 @@
+server:
+  port: 8080
+  shutdown: graceful
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  application:
+    name: springboot-webflux-kafka
+  kafka:
+    template:
+      observation-enabled: true
+    producer:
+      bootstrap-servers: localhost:9092
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
