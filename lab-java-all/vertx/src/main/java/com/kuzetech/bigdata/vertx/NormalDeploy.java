@@ -8,7 +8,7 @@ import io.vertx.ext.web.handler.BodyHandler;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class SimpleHttpServer {
+public class NormalDeploy {
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
 
