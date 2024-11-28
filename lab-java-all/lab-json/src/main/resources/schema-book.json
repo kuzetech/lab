@@ -49,5 +49,6 @@
     "id",
     "name",
     "price"
-  ]
+  ],
+  "additionalProperties": false
 }

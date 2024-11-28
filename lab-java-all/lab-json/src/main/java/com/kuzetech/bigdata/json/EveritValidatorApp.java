@@ -20,7 +20,7 @@ public class EveritValidatorApp {
         }
 
         JSONObject dataNode;
-        try (InputStream inputStream = EveritValidatorApp.class.getClassLoader().getResourceAsStream("data-book-err.json")) {
+        try (InputStream inputStream = EveritValidatorApp.class.getClassLoader().getResourceAsStream("data-book-extra.json")) {
             assert inputStream != null;
             dataNode = new JSONObject(new JSONTokener(inputStream));
         } catch (Exception e) {
