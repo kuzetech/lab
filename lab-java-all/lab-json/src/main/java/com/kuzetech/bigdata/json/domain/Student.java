@@ -1,16 +1,16 @@
 package com.kuzetech.bigdata.json.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Student {
     private int id;
     private String name;
-    private double money;
+    @JsonProperty(required = true)
+    private Double money;
 }

@@ -27,7 +27,7 @@ public class VertxValidatorApp {
         Validator validator = Validator.create(schema, jsonSchemaOptions);
 
         Object dataNode;
-        try (InputStream inputStream = VertxValidatorApp.class.getClassLoader().getResourceAsStream("data-student.json")) {
+        try (InputStream inputStream = VertxValidatorApp.class.getClassLoader().getResourceAsStream("data-student-err.json")) {
             assert inputStream != null;
             dataNode = Json.decodeValue(Buffer.buffer(inputStream.readAllBytes()));
         } catch (Exception e) {
