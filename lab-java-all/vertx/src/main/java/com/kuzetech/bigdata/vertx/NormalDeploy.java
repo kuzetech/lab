@@ -3,7 +3,6 @@ package com.kuzetech.bigdata.vertx;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -13,28 +12,23 @@ public class NormalDeploy {
 
         HttpServer server = vertx.createHttpServer();
         Router router = Router.router(vertx);
-        router.route().handler(c -> {
-            c.response().setChunked(true);
-            c.next();
-        });
 
         router.route("/health").handler(c -> {
-            c.response().write("health");
-            c.next();
+            c.fail(400);
         });
 
-        router.route("/ingest/*").handler(c -> {
-            c.response().write("ingest");
+        router.route("/ingest/*").failureHandler(c -> {
+            c.response().setChunked(true);
+            c.response().write("1");
             c.next();
+        }).failureHandler(c -> {
+            c.response().write("2");
+            c.end();
         });
 
         router.route("/ingest/:project").handler(c -> {
-            String project = c.pathParam("project");
-            c.response().write(project);
-            c.next();
+            c.fail(401);
         });
-
-        router.route().handler(RoutingContext::end);
 
 
         server.requestHandler(router).listen(8080, "0.0.0.0").onComplete(res -> {
