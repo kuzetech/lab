@@ -1,10 +1,9 @@
 package com.kuzetech.bigdata.vertx;
 
 import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpClosedException;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -14,25 +13,29 @@ public class NormalDeploy {
 
         HttpServer server = vertx.createHttpServer();
         Router router = Router.router(vertx);
+        router.route().handler(c -> {
+            c.response().setChunked(true);
+            c.next();
+        });
 
-        router.route()
-                .handler(BodyHandler.create().setBodyLimit(100 * 1024 * 1024))
-                .handler(c -> {
-                    log.info(c.request().remoteAddress().hostAddress());
-                    c.response().setChunked(true);
-                    c.response().write("2222222");
-                    c.vertx().setTimer(1000, timeId -> {
-                        log.info(String.valueOf(timeId));
-                        c.response().end("1111111");
-                    });
-                }).failureHandler(c -> {
-                    if (c.failure() instanceof HttpClosedException) {
-                        log.error("HttpClosedException");
-                    } else {
-                        log.error("出现异常", c.failure());
-                    }
-                    c.response().end("error");
-                });
+        router.route("/health").handler(c -> {
+            c.response().write("health");
+            c.next();
+        });
+
+        router.route("/ingest/*").handler(c -> {
+            c.response().write("ingest");
+            c.next();
+        });
+
+        router.route("/ingest/:project").handler(c -> {
+            String project = c.pathParam("project");
+            c.response().write(project);
+            c.next();
+        });
+
+        router.route().handler(RoutingContext::end);
+
 
         server.requestHandler(router).listen(8080, "0.0.0.0").onComplete(res -> {
             if (res.succeeded()) {
