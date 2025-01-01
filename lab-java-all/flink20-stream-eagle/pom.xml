@@ -114,8 +114,7 @@ under the License.
     </dependencies>
 
     <build>
-        <plugins>
-
+        <plugins>ß
             <!-- Java Compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

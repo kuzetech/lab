@@ -18,9 +18,15 @@
 
 package com.kuzetech.bigdata.flink20;
 
+import com.kuzetech.bigdata.flink20.utils.FlinkUtils;
+import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
 public class DataStreamJob {
 
 	public static void main(String[] args) throws Exception {
-		System.out.println(1111);
+		ParameterTool parameterTool = ParameterTool.fromPropertiesFile(args[0]);
+		StreamExecutionEnvironment env = FlinkUtils.initEnv(parameterTool);
+
 	}
 }
