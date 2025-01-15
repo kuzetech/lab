@@ -25,7 +25,7 @@ taskmanager.memory.network.fraction: 由默认 0.1 调整到 0.02
 taskmanager.memory.network = 12032 * 0.02 = 241 MB
 
 #### 需要大于 4600 MB
-taskmanager.memory.managed.fraction: 由默认 0.4 调整到 0.35
+taskmanager.memory.managed.fraction: 默认 0.4
 taskmanager.memory.managed = 12032 * 0.4 = 4813 MB
 
 taskmanager.memory.framework.heap.size = 128mb 默认
