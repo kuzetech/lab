@@ -15,7 +15,7 @@ spec:
     memory: 2Gi
   taskManagerResource:
     cpu: 2
-    memory: 4Gi
+    memory: 6Gi
   parallelism: 9
   programArgs: |-
     --job.output-parallelism-ratio 4
