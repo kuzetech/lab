@@ -18,6 +18,6 @@ func Test_no_exist(t *testing.T) {
 	// 特别注意：访问的 key 不存在时会返回零值
 	assertions.Equal(0, noExistValue)
 
-	var m1 = map[string]Student{}
-	assertions.Equal(Student{}, m1["aaa"])
+	m1 := make(map[string]*Student)
+	assertions.Nil(m1["aaa"])
 }

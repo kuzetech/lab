@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -19,6 +20,11 @@ func main() {
 	// 如果路径有多个匹配，则采用匹配路径最长的那个进行处理
 	http.HandleFunc("/test/a/b/c", func(writer http.ResponseWriter, request *http.Request) {
 		writer.Write([]byte("1111"))
+	})
+
+	http.HandleFunc("/test/get", func(writer http.ResponseWriter, request *http.Request) {
+		log.Println(request.URL.RawQuery)
+		writer.Write([]byte("ok"))
 	})
 
 	// 如果没有找到则返回 404
