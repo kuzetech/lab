@@ -23,6 +23,10 @@ func main() {
 	})
 
 	http.HandleFunc("/test/get", func(writer http.ResponseWriter, request *http.Request) {
+		http.Redirect(writer, request, fmt.Sprintf("%s?%s", "/test/get/result", request.URL.RawQuery), http.StatusFound)
+	})
+
+	http.HandleFunc("/test/get/result", func(writer http.ResponseWriter, request *http.Request) {
 		log.Println(request.URL.RawQuery)
 		writer.Write([]byte("ok"))
 	})
