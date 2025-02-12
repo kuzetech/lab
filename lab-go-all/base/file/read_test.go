@@ -2,6 +2,7 @@ package file
 
 import (
 	"bufio"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"log"
 	"os"
@@ -39,5 +40,9 @@ func Test_read(t *testing.T) {
 			break
 		}
 	}
+}
 
+func Test_readAll_not_exist(t *testing.T) {
+	_, err := os.ReadFile("/a/b/not-exist.txt")
+	assert.True(t, os.IsNotExist(err))
 }
