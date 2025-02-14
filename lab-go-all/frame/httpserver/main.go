@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -15,12 +16,22 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(response))
 }
 
+func showHeaderHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println(r.Header)
+	// 设置状态码
+	w.WriteHeader(http.StatusOK) // 200 状态码
+	// 响应内容
+	response := "success"
+	w.Write([]byte(response))
+}
+
 func main() {
 	// 绑定路由
 	http.HandleFunc("/", handler)
+	http.HandleFunc("/header", showHeaderHandler)
 
 	// 启动 HTTP 服务器
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
 		fmt.Println("Error starting server:", err)
 	}
