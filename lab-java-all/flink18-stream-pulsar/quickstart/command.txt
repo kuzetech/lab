@@ -1,0 +1,13 @@
+sudo mkdir -p ./data/zookeeper ./data/bookkeeper
+
+sudo chmod -R 777 data
+
+docker exec -it broker bash
+
+bin/pulsar-admin topics create persistent://public/default/my-topic
+
+bin/pulsar-client produce my-topic --messages 'Hello Pulsar!'
+
+bin/pulsar-client consume my-topic -s 'my-subscription' -p Earliest -n 0
+
+bin/pulsar-client produce my-topic --messages "$(seq -s, -f 'Message NO.%g' 1 10)"
