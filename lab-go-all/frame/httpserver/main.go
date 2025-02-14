@@ -25,10 +25,20 @@ func showHeaderHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(response))
 }
 
+func showRawQueryHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println(r.URL.RawQuery)
+	// 设置状态码
+	w.WriteHeader(http.StatusOK) // 200 状态码
+	// 响应内容
+	response := "success"
+	w.Write([]byte(response))
+}
+
 func main() {
 	// 绑定路由
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/header", showHeaderHandler)
+	http.HandleFunc("/raw", showRawQueryHandler)
 
 	// 启动 HTTP 服务器
 	err := http.ListenAndServe(":8081", nil)
