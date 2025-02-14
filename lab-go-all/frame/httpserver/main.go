@@ -38,7 +38,7 @@ func main() {
 	// 绑定路由
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/header", showHeaderHandler)
-	http.HandleFunc("/raw", showRawQueryHandler)
+	http.HandleFunc("/parameter/show", showRawQueryHandler)
 
 	// 启动 HTTP 服务器
 	err := http.ListenAndServe(":8081", nil)
