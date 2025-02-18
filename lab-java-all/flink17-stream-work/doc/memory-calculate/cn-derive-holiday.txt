@@ -12,7 +12,7 @@ spec:
     taskmanager.memory.jvm-overhead.fraction: '0.20'
     taskmanager.numberOfTaskSlots: '3'
   jobManagerResource:
-    cpu: 0.3
+    cpu: 0.5
     memory: 2Gi
   taskManagerResource:
     cpu: 3

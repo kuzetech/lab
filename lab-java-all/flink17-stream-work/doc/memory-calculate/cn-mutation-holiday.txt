@@ -23,4 +23,4 @@ spec:
     --kafka.eos.transaction.timeout.ms 900000
 
 
-整体的话，每台 taskmanager 增加 1C，维持总共 3 台，因此总资源增加 3C
+整体的话，每台 taskmanager 增加 1C2G，维持总共 3 台，因此总资源增加 3C6G
