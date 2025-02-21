@@ -10,7 +10,7 @@ public class BaseConsumer {
     public static void main(String[] args) throws PulsarClientException {
         try (
                 PulsarClient client = PulsarClient.builder()
-                        .serviceUrl("pulsar://localhost:6650")
+                        .serviceUrl("pulsar://10.102.163.96:30340")
                         .build();
 
                 Consumer<byte[]> consumer = client.newConsumer()
