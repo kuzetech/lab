@@ -1,4 +1,10 @@
+pulsar-admin topics list public/default
+
 pulsar-admin topics create persistent://public/default/my-topic
+
+pulsar-admin topics stats persistent://public/default/my-topic
+
+pulsar-admin topics subscriptions persistent://public/default/my-topic
 
 pulsar-client produce my-topic --messages 'Hello Pulsar!'
 

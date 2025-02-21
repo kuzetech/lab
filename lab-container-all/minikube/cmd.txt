@@ -6,3 +6,12 @@ minikube status
 
 ## 加载本地镜像
 minikube image load registry.biubiubiu.io/funnydb/funnydb-statistician-cron:1.0.0
+
+
+
+minikube image load apachepulsar/pulsar-all:4.0.2
+minikube image load apachepulsar/pulsar-manager:v0.4.0
+minikube image load quay.io/prometheus-operator/prometheus-config-reloader:v0.77.2
+minikube image load quay.io/kiwigrid/k8s-sidecar:1.28.0
+minikube image load docker.io/curlimages/curl:7.85.0
+minikube image load quay.io/prometheus/prometheus:v2.55.0
