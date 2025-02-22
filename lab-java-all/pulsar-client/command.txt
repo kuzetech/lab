@@ -1,6 +1,16 @@
+docker run -it \
+-p 6650:6650 \
+-p 8080:8080 \
+--mount source=pulsardata,target=/pulsar/data \
+--mount source=pulsarconf,target=/pulsar/conf \
+apachepulsar/pulsar:4.0.2 \
+bin/pulsar standalone
+
 pulsar-admin topics list public/default
 
 pulsar-admin topics create persistent://public/default/my-topic
+
+pulsar-admin topics create-partitioned-topic apache/pulsar/test-topic -p 4
 
 pulsar-admin topics stats persistent://public/default/my-topic
 

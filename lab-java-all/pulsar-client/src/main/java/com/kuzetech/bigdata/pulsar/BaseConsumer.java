@@ -10,11 +10,11 @@ public class BaseConsumer {
     public static void main(String[] args) throws PulsarClientException {
         try (
                 PulsarClient client = PulsarClient.builder()
-                        .serviceUrl("pulsar://10.102.163.96:30340")
+                        .serviceUrl("pulsar://localhost:6650")
                         .build();
 
                 Consumer<byte[]> consumer = client.newConsumer()
-                        .topic("my-topic")
+                        .topic("public/default/my-topic")
                         .subscriptionName("my-subscription")
                         .subscribe();
 
