@@ -2,6 +2,8 @@ package com.kuzetech.bigdata.flink18;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.connector.base.DeliveryGuarantee;
+import org.apache.flink.connector.pulsar.sink.PulsarSink;
 import org.apache.flink.connector.pulsar.source.PulsarSource;
 import org.apache.flink.connector.pulsar.source.enumerator.cursor.StartCursor;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -15,14 +17,22 @@ public class DataStreamJob {
         PulsarSource<String> source = PulsarSource.builder()
                 .setServiceUrl("pulsar://localhost:6650")
                 .setStartCursor(StartCursor.earliest())
-                .setTopics("my-topic")
+                .setTopics("public/default/part-topic")
                 .setDeserializationSchema(new SimpleStringSchema())
                 .setSubscriptionName("flink-subscription")
                 .build();
 
         DataStreamSource<String> input = env.fromSource(source, WatermarkStrategy.noWatermarks(), "Pulsar Source");
 
-        input.print();
+        PulsarSink<String> sink = PulsarSink.builder()
+                .setServiceUrl("pulsar://localhost:6650")
+                .setAdminUrl("pulsar://localhost:8080")
+                .setTopics("public/default/sink-topic")
+                .setSerializationSchema(new SimpleStringSchema())
+                .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+                .build();
+
+        input.sinkTo(sink);
 
         env.execute("Flink Java API Skeleton");
     }

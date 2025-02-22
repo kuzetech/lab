@@ -10,7 +10,8 @@ pulsar-admin topics list public/default
 
 pulsar-admin topics create persistent://public/default/my-topic
 
-pulsar-admin topics create-partitioned-topic apache/pulsar/test-topic -p 4
+pulsar-admin topics create-partitioned-topic public/default/part-topic -p 4
+pulsar-admin topics create-partitioned-topic public/default/sink-topic -p 4
 
 pulsar-admin topics stats persistent://public/default/my-topic
 
