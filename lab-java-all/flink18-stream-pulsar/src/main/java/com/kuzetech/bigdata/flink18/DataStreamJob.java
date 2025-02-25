@@ -17,7 +17,7 @@ public class DataStreamJob {
         PulsarSource<String> source = PulsarSource.builder()
                 .setServiceUrl("pulsar://localhost:6650")
                 .setStartCursor(StartCursor.earliest())
-                .setTopics("public/default/part-topic")
+                .setTopics("public/default/source-topic")
                 .setDeserializationSchema(new SimpleStringSchema())
                 .setSubscriptionName("flink-subscription")
                 .build();

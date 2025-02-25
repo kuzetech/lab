@@ -1,9 +1,3 @@
-sudo mkdir -p ./data/zookeeper ./data/bookkeeper
-
-sudo chmod -R 777 data
-
-docker exec -it broker bash
-
 pulsar-admin topics list public/default
 
 pulsar-admin topics create persistent://public/default/my-topic
@@ -11,11 +5,13 @@ pulsar-admin topics create persistent://public/default/my-topic
 pulsar-admin topics create-partitioned-topic public/default/source-topic -p 4
 pulsar-admin topics create-partitioned-topic public/default/sink-topic -p 4
 
-pulsar-admin topics stats persistent://public/default/my-topic
+pulsar-admin topics stats persistent://public/default/sink-topic-partition-1
+
+pulsar-admin topics delete-partitioned-topic persistent://public/default/sink-topic
 
 pulsar-admin topics subscriptions persistent://public/default/my-topic
 
-pulsar-client produce my-topic --messages 'Hello Pulsar!'
+pulsar-client produce source-topic --messages 'Hello Pulsar!'
 
 pulsar-client consume my-topic -s 'my-subscription' -p Earliest -n 0
 
