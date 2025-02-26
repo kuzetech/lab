@@ -14,7 +14,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <target.java.version>11</target.java.version>
+        <target.java.version>17</target.java.version>
         <pulsar.version>4.0.2</pulsar.version>
     </properties>
 
