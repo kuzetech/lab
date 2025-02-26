@@ -15,7 +15,7 @@ public class BaseConsumer {
 
                 Consumer<byte[]> consumer = client.newConsumer()
                         .topic("public/default/sink-topic")
-                        .subscriptionName("my-subscription")
+                        .subscriptionName("client-subscription")
                         .subscribe();
 
         ) {

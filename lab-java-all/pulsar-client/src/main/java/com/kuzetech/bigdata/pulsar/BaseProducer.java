@@ -12,7 +12,7 @@ public class BaseProducer {
                         .build();
 
                 Producer<byte[]> producer = client.newProducer()
-                        .topic("public/default/part-topic")
+                        .topic("public/default/source-topic")
                         .create();
         ) {
             for (int i = 0; i < 100; i++) {
