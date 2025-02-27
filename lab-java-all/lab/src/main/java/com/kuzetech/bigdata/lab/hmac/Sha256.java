@@ -13,7 +13,34 @@ public class Sha256 {
 
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeyException {
 
-        String strContent = "{\"batchId\": \"123\",\"messages\":[{\"type\": \"Event\",\"data\": {\"#event\": \"login\",\"#identify\": \"user-fake428566\",\"#log_id\": \"f6399633-ce17-494e-a943-cec1873d5bdd\",\"#operate\": \"set\",\"#time\": 1699609490679,\"properties\": {\"#device_id\": \"device-fake1548091\",\"level\": 4509781237501530015,\"sex\": \"男\",\"user_last_login_time\": 1699609490679}}}]}";
+        String strContent = "{\n" +
+                "    \"batchId\": \"123\",\n" +
+                "    \"messages\": [\n" +
+                "        {\n" +
+                "            \"type\": \"Event\",\n" +
+                "            \"data\": {\n" +
+                "                \"#event\": \"#device_login\",\n" +
+                "                \"#log_id\": \"638a4d25-09f7-4364-8cc6-8713277d30b4\",\n" +
+                "                \"#time\": 1740637303355,\n" +
+                "                \"#sdk_type\": \"Unity\",\n" +
+                "                \"#sdk_version\": \"0.9.11\",\n" +
+                "                \"#simulator\": false,\n" +
+                "                \"#network\": \"4g\",\n" +
+                "                \"#carrier\": \"\",\n" +
+                "                \"#system_language\": \"zh_CN\",\n" +
+                "                \"#zone_offset\": 8,\n" +
+                "                \"#channel\": \"\",\n" +
+                "                \"#os_platform\": \"android\",\n" +
+                "                \"#device_id\": \"acb8b97b-c4e7-4a24-91c2-eefafdcc50cc\",\n" +
+                "                \"#os_version\": \"12\",\n" +
+                "                \"#device_model\": \"GM1900\",\n" +
+                "                \"#manufacturer\": \"OnePlus\",\n" +
+                "                \"#screen_height\": 832,\n" +
+                "                \"#screen_width\": 1080\n" +
+                "            }\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
         System.out.println(extracted("demo", "123", "123", strContent.getBytes(StandardCharsets.UTF_8)));
     }
 
