@@ -1,27 +1,29 @@
-package com.kuzetech.bigdata.pulsar;
+package com.kuzetech.bigdata.pulsar.consumer;
 
+import com.kuzetech.bigdata.pulsar.PulsarUtil;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 
-public class BaseConsumer {
+import java.util.concurrent.CompletableFuture;
+
+public class AsyncConsumer {
 
     public static void main(String[] args) throws PulsarClientException {
         try (
                 PulsarClient client = PulsarUtil.getCommonPulsarClient();
                 Consumer<byte[]> consumer = PulsarUtil.getCommonConsumer(client, "sink-topic")
         ) {
-            while (true) {
-                Message<byte[]> msg = consumer.receive();
+            CompletableFuture<Message<byte[]>> messageFuture = consumer.receiveAsync();
+            messageFuture.thenAccept((Message<byte[]> msg) -> {
+                System.out.println("Message received: " + new String(msg.getData()));
                 try {
-                    System.out.println("Message received: " + new String(msg.getData()));
                     consumer.acknowledge(msg);
-                } catch (Exception e) {
+                } catch (PulsarClientException e) {
                     consumer.negativeAcknowledge(msg);
-                    break;
                 }
-            }
+            });
         }
     }
 }
