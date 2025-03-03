@@ -20,7 +20,7 @@ public class BatchIndexAckConsumer {
                 Message<byte[]> msg = consumer.receive();
                 try {
                     System.out.println("Message received: " + new String(msg.getData()));
-                    // 对批消息中的任意一条消息进行确认时，是否会导致该批次的所有消息都被确认，该点还需要确认
+                    // 对批消息中的前几条消息进行确认时，不会导致该批次的所有消息都被确认，但下次重启消费时会重复消费数据
                     consumer.acknowledge(msg);
                 } catch (Exception e) {
                     // 对批消息中的任意一条消息进行否认确认时，都会导致该批次的所有消息被重新发送
