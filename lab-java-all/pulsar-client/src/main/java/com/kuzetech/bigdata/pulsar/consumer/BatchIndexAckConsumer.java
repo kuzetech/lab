@@ -1,6 +1,7 @@
 package com.kuzetech.bigdata.pulsar.consumer;
 
-import com.kuzetech.bigdata.pulsar.PulsarUtil;
+import com.kuzetech.bigdata.pulsar.util.ConsumerUtil;
+import com.kuzetech.bigdata.pulsar.util.PulsarUtil;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.PulsarClient;
@@ -11,7 +12,7 @@ public class BatchIndexAckConsumer {
     public static void main(String[] args) throws PulsarClientException {
         try (
                 PulsarClient client = PulsarUtil.getCommonPulsarClient();
-                Consumer<byte[]> consumer = PulsarUtil.getBatchIndexAcknowledgmentConsumer(client, "sink-topic")
+                Consumer<byte[]> consumer = ConsumerUtil.getBatchIndexAcknowledgmentConsumer(client, "sink-topic")
         ) {
             for (int i = 0; i < 10; i++) {
                 // 当生产者发送一条批消息，该消息会作为多条消息的集合被独立存储，在被消费时又作为一个整体被发送到消费端
