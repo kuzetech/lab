@@ -40,7 +40,40 @@ public class PulsarUtil {
                 // 消费者自动确认机制
                 .acknowledgmentGroupTime(100, TimeUnit.MILLISECONDS)
                 .maxAcknowledgmentGroupSize(1000)
-                .ackTimeout(0, TimeUnit.SECONDS) // 消息未确认的超时时间，设置为 0 默认关闭。
+                // 消息确认超时机制，似乎无法控制重发消息的时间
+                .ackTimeout(0, TimeUnit.SECONDS) // 消息未确认的超时时间，设置为 0 默认关闭
+                .ackTimeoutTickTime(1, TimeUnit.SECONDS) // 推测是检查消息确认超时的频率
+                // 否定确认重试机制，比起超时机制，否认确认可以更精确地控制单个消息的重新发送时间，并且可以避免在超时机制中，因数据处理较慢超过超时阈值而引起重新发送无效的情况
+                .negativeAckRedeliveryDelay(1, TimeUnit.MINUTES) // 当应用程序使用negativeAcknowledge方法时，失败的消息会在该时间后重新发送
+                // 压实机制，注意不等于压缩
+                .readCompacted(false) // 如果启用，消费者会从压实的主题中读取消息，而不是读取主题的完整消息积压。消费者只能看到压缩主题中每个键的最新值
+                .enableRetry(false) // 消费者级别的自动重试
+                // 用于启动消费者的死信机制
+                .deadLetterPolicy(DeadLetterPolicy.builder() // 默认情况下，某些消息可能会多次重新发送，甚至可能永远都在重试中
+                        .maxRedeliverCount(10) // 消息具有最大重新发送计数
+                        //.retryLetterTopic() // 失败的消息会被发送到的重试队列
+                        .deadLetterTopic("{TopicName}-{Subscription}-DLQ") // 失败的消息会被发送到的死信队列
+                        //.initialSubscriptionName() // 死信队列订阅名，不设置的话订阅将不会被创建，并且 broker 需要允许 allowAutoSubscriptionCreation 否则创建失败
+                        .build())
+                .subscribe();
+    }
+
+    public static Consumer<byte[]> getRetryConsumer(PulsarClient client, String topic) throws PulsarClientException {
+        return client.newConsumer()
+                .topic("public/default/" + topic)
+                .subscriptionInitialPosition(SubscriptionInitialPosition.Latest)
+                .subscriptionName("client-subscription")
+                .enableRetry(true)
+                .subscribe();
+    }
+
+    public static Consumer<byte[]> getBatchIndexAcknowledgmentConsumer(PulsarClient client, String topic) throws PulsarClientException {
+        return client.newConsumer()
+                .topic("public/default/" + topic)
+                .subscriptionInitialPosition(SubscriptionInitialPosition.Latest)
+                .subscriptionName("client-subscription")
+                // ensure batch index acknowledgment is enabled on the broker side
+                .enableBatchIndexAcknowledgment(true)
                 .subscribe();
     }
 
