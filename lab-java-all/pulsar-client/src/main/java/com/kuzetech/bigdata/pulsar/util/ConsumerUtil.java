@@ -6,6 +6,15 @@ import java.util.concurrent.TimeUnit;
 
 public class ConsumerUtil {
 
+    public static Consumer<byte[]> getSimpleConsumer(PulsarClient client, String topic) throws PulsarClientException {
+        return client.newConsumer()
+                .topic("public/default/" + topic)
+                .subscriptionName("lab-consumer-simple")
+                .subscriptionType(SubscriptionType.Exclusive) // 定义订阅模式，订阅模式分为独占、故障转移、共享、键共享，注意默认为独占
+                .subscriptionInitialPosition(SubscriptionInitialPosition.Earliest)
+                .subscribe();
+    }
+
     public static Consumer<byte[]> getCommonConsumer(PulsarClient client, String topic) throws PulsarClientException {
         return client.newConsumer()
                 .consumerName("lab-consumer")

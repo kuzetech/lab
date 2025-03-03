@@ -23,4 +23,14 @@ public class ProducerUtil {
                 .topic("public/default/" + topic)
                 .create();
     }
+
+    public static Producer<byte[]> getAsyncProducer(PulsarClient client, String topic) throws PulsarClientException {
+        return client.newProducer()
+                // 默认开启
+                //.enableBatching(true)
+                .producerName("lab-producer-async")
+                .batchingMaxPublishDelay(100, TimeUnit.MILLISECONDS)
+                .topic("public/default/" + topic)
+                .create();
+    }
 }
