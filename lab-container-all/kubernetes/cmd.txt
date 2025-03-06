@@ -7,4 +7,4 @@ kubectl cp default/alluxio-master-0:/tmp/track.tar.gz /Users/huangsw/code/lab/la
 kubectl cp kafka-1.0-SNAPSHOT.jar default/kafka-0:/tmp/kafka.jar
 
 
-kubectl cp test2.sh default/kafka-0:/opt/bitnami/kafka/bin/test.sh
+kubectl cp test.sh default/clickhouse-0-0:/test.sh
