@@ -14,7 +14,7 @@ public class SimpleProducer {
     public static void main(String[] args) throws PulsarClientException, InterruptedException {
         try (
                 PulsarClient client = PulsarUtil.getCommonPulsarClient();
-                Producer<byte[]> producer = ProducerUtil.getSimpleProducer(client, "test2");
+                Producer<byte[]> producer = ProducerUtil.getSimpleProducer(client, "funnydb-ingest-receive");
         ) {
             String data = "{\n" +
                     "  \"type\": \"Event\",\n" +
@@ -53,6 +53,7 @@ public class SimpleProducer {
 
             for (int i = 0; i < 10000; i++) {
                 producer.newMessage()
+                        .key(String.valueOf(i))
                         .value(content)
                         .properties(properties)
                         .sendAsync();
