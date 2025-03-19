@@ -15,6 +15,16 @@ public class ConsumerUtil {
                 .subscribe();
     }
 
+    public static Consumer<byte[]> getSimpleBatchIndexAcknowledgmentConsumer(PulsarClient client, String topic) throws PulsarClientException {
+        return client.newConsumer()
+                .topic("public/default/" + topic)
+                .subscriptionName("lab-consumer-simple-batch")
+                .subscriptionType(SubscriptionType.Exclusive) // 定义订阅模式，订阅模式分为独占、故障转移、共享、键共享，注意默认为独占
+                .subscriptionInitialPosition(SubscriptionInitialPosition.Earliest)
+                .enableBatchIndexAcknowledgment(true)
+                .subscribe();
+    }
+
     public static Consumer<byte[]> getCommonConsumer(PulsarClient client, String topic) throws PulsarClientException {
         return client.newConsumer()
                 .consumerName("lab-consumer")

@@ -38,4 +38,14 @@ public class ProducerUtil {
                 .topic("public/default/" + topic)
                 .create();
     }
+
+    public static Producer<byte[]> getFiveSecondBatchProducer(PulsarClient client, String topic) throws PulsarClientException {
+        return client.newProducer()
+                // 默认开启
+                //.enableBatching(true)
+                .producerName("lab-producer-batch")
+                .batchingMaxPublishDelay(5, TimeUnit.SECONDS)
+                .topic("public/default/" + topic)
+                .create();
+    }
 }

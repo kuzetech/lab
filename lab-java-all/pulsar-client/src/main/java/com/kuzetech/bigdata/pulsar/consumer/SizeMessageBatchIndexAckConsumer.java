@@ -7,19 +7,17 @@ import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 
-public class SingleMessageConsumer {
+public class SizeMessageBatchIndexAckConsumer {
 
     public static void main(String[] args) throws PulsarClientException {
         try (
                 PulsarClient client = PulsarUtil.getCommonPulsarClient();
-                Consumer<byte[]> consumer = ConsumerUtil.getSimpleConsumer(client, "async-topic")
+                Consumer<byte[]> consumer = ConsumerUtil.getSimpleBatchIndexAcknowledgmentConsumer(client, "test2")
         ) {
-            Message<byte[]> msg = consumer.receive();
-            try {
+            for (int i = 0; i < 2; i++) {
+                Message<byte[]> msg = consumer.receive();
                 System.out.println("Message received: " + new String(msg.getData()));
                 consumer.acknowledge(msg);
-            } catch (Exception e) {
-                consumer.negativeAcknowledge(msg);
             }
         }
     }
