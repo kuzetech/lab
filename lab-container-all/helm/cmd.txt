@@ -29,7 +29,7 @@ helm history ingest
 # 回滚到指定版本,这里的1指的是上面列出的revision版本
 helm rollback ingest 1
 
-# 卸载
+# 安装
 helm install --dry-run --debug --set favoriteDrink=slurm solid-vulture ./mychart 
 helm install --dry-run --disable-openapi-validation moldy-jaguar ./mychart
 helm install clunky-serval ./mychart
