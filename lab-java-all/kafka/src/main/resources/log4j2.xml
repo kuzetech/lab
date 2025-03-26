@@ -45,7 +45,7 @@
         <logger name="org.springframework" level="INFO"/>
         <logger name="org.mybatis" level="INFO"/>
         <!-- 设置全局日志级别 -->
-        <root level="Debug">
+        <root level="Info">
             <appender-ref ref="Console"/>
             <!--<appender-ref ref="SingleLog"/>-->
             <!--<appender-ref ref="RollingFileInfo"/>-->
