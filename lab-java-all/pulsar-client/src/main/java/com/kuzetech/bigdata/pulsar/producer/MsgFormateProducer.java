@@ -7,23 +7,22 @@ import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
-public class SimpleProducer {
+public class MsgFormateProducer {
     public static void main(String[] args) throws PulsarClientException, InterruptedException {
         try (
                 PulsarClient client = PulsarUtil.getCommonPulsarClient();
                 Producer<byte[]> producer = ProducerUtil.getSimpleProducer(client, "funnydb-ingest-receive");
         ) {
-            String data = "{\n" +
+            byte[] testContent = "aaaa".getBytes(StandardCharsets.UTF_8);
+
+            String template = "{\n" +
                     "  \"type\": \"Event\",\n" +
                     "  \"ip\": \"0:0:0:0:0:0:0:1\",\n" +
                     "  \"app\": \"demo\",\n" +
                     "  \"data\": {\n" +
                     "    \"#event\": \"#device_login\",\n" +
                     "    \"#log_id\": \"638a4d25-09f7-4364-8cc6-8713277d30b4\",\n" +
-                    "    \"#time\": %d,\n" +
                     "    \"#sdk_type\": \"Unity\",\n" +
                     "    \"#sdk_version\": \"0.9.11\",\n" +
                     "    \"#simulator\": false,\n" +
@@ -39,25 +38,26 @@ public class SimpleProducer {
                     "    \"#manufacturer\": \"OnePlus\",\n" +
                     "    \"#screen_height\": 832,\n" +
                     "    \"#screen_width\": 1080\n" +
+                    "    \"#time\": %d\n" +
                     "  },\n" +
                     "  \"access_id\": \"demo\",\n" +
                     "  \"ingest_time\": 1741257985601\n" +
                     "}";
 
 
-            byte[] content = data.getBytes(StandardCharsets.UTF_8);
-
-            Map<String, String> properties = new HashMap<>();
-            properties.put("log_id", "638a4d25-09f7-4364-8cc6-8713277d30b4");
-            properties.put("app", "demo");
-            properties.put("event", "#device_login");
-
-            for (int i = 0; i < 10000; i++) {
-                producer.newMessage()
-                        .key(String.valueOf(i))
-                        .value(content)
-                        .properties(properties)
-                        .sendAsync();
+            for (int i = 0; i < 100000; i++) {
+                if (i % 10 == 0) {
+                    producer.newMessage()
+                            .value(testContent)
+                            .sendAsync();
+                } else {
+                    String result = String.format(template, System.currentTimeMillis());
+                    byte[] content = result.getBytes(StandardCharsets.UTF_8);
+                    producer.newMessage()
+                            .value(content)
+                            .sendAsync();
+                }
+                Thread.sleep(5000);
             }
         }
     }
