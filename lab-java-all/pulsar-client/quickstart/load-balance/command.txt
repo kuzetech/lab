@@ -1,0 +1,13 @@
+docker exec -it broker-1 bash
+docker exec -it broker-2 bash
+
+bin/pulsar-admin topics create-partitioned-topic persistent://public/default/topic-manual -p 20
+bin/pulsar-admin topics partitioned-lookup persistent://public/default/topic-manual
+
+bin/pulsar-perf produce persistent://public/default/topic-manual -r 100 -bm 1 -mk random -m 6000
+bin/pulsar-perf consume persistent://public/default/topic-manual -sp Earliest
+
+bin/pulsar-admin namespaces bundles public/default
+bin/pulsar-admin namespaces unload public/default -b 0x10000000_0x20000000 -d broker-2:8080
+bin/pulsar-admin namespaces split-bundle --bundle 0x00000000_0x08000000 public/default
+
