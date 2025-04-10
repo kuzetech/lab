@@ -14,7 +14,7 @@ public class AllMessageConsumer {
     public static void main(String[] args) throws PulsarClientException {
         try (
                 PulsarClient client = PulsarUtil.getCommonPulsarClient();
-                Consumer<byte[]> consumer = ConsumerUtil.getSimpleConsumer(client, "async-topic")
+                Consumer<byte[]> consumer = ConsumerUtil.getSimpleConsumer(client, "test")
         ) {
             while (true) {
                 Message<byte[]> msg = consumer.receive(1, TimeUnit.SECONDS);
@@ -22,7 +22,7 @@ public class AllMessageConsumer {
                     break;
                 }
                 try {
-                    System.out.println("Message received: " + new String(msg.getData()));
+                    System.out.printf("Message key = %s, content = %s%n", msg.getKey(), new String(msg.getData()));
                     consumer.acknowledge(msg);
                 } catch (Exception e) {
                     consumer.negativeAcknowledge(msg);
