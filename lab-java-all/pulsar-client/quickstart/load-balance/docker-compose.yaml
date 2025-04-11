@@ -91,6 +91,10 @@ services:
       - brokerDeduplicationEnabled=true
       - defaultRetentionTimeInMinutes=60
       - defaultRetentionSizeInMB=204800
+      - transactionCoordinatorEnabled=true
+      - allowAutoTopicCreation=true
+      - allowAutoTopicCreationType=partitioned
+      - defaultNumPartitions=9
     depends_on:
       zookeeper:
         condition: service_healthy
@@ -125,6 +129,10 @@ services:
       - brokerDeduplicationEnabled=true
       - defaultRetentionTimeInMinutes=60
       - defaultRetentionSizeInMB=204800
+      - transactionCoordinatorEnabled=true
+      - allowAutoTopicCreation=true
+      - allowAutoTopicCreationType=partitioned
+      - defaultNumPartitions=9
     depends_on:
       zookeeper:
         condition: service_healthy
