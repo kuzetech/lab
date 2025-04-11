@@ -8,3 +8,5 @@ kubectl cp kafka-1.0-SNAPSHOT.jar default/kafka-0:/tmp/kafka.jar
 
 
 kubectl cp test.sh default/clickhouse-0-0:/test.sh
+
+kubectl run hsw --image=registry-vpc.cn-shanghai.aliyuncs.com/funnydb/pulsar-all:4.0.2 --restart=Never -it -- /bin/sh
