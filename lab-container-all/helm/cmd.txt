@@ -39,4 +39,4 @@ helm install funnydb-statistician-cron /Users/huangsw/code/funny/funnydb/misc/fu
 # 卸载
 helm uninstall funnydb-statistician-cron
 
-
+helm cm-push charts/kafka https://registry.sofunny.io/chartrepo/turbine
