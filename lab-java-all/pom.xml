@@ -29,7 +29,6 @@
         <module>flink20-stream-eagle</module>
         <module>sentry</module>
         <module>lab-json</module>
-        <module>flink18-stream-pulsar</module>
         <module>pulsar-client</module>
     </modules>
 
