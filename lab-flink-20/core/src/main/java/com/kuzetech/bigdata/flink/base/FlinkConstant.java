@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink;
+package com.kuzetech.bigdata.flink.base;
 
 public class FlinkConstant {
 

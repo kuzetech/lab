@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink;
+package com.kuzetech.bigdata.flink.base;
 
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.*;
@@ -8,8 +8,8 @@ import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.ExecutionCheckpointingOptions;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-import static com.kuzetech.bigdata.flink.FlinkConstant.CHECKPOINT_STORAGE_TYPE_FILESYSTEM;
-import static com.kuzetech.bigdata.flink.FlinkConstant.STATE_BACKEND_TYPE_ROCKSDB;
+import static com.kuzetech.bigdata.flink.base.FlinkConstant.CHECKPOINT_STORAGE_TYPE_FILESYSTEM;
+import static com.kuzetech.bigdata.flink.base.FlinkConstant.STATE_BACKEND_TYPE_ROCKSDB;
 import static org.apache.flink.configuration.CoreOptions.DEFAULT_PARALLELISM;
 import static org.apache.flink.configuration.RestOptions.BIND_PORT;
 import static org.apache.flink.configuration.StateRecoveryOptions.SAVEPOINT_IGNORE_UNCLAIMED_STATE;

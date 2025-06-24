@@ -39,3 +39,7 @@ build/
 
 ### Docker ###
 /quicklystart/**/data
+
+### Flink ###
+/quicklystart/checkpoints
+/quicklystart/savepoints

@@ -1,5 +1,6 @@
 package com.kuzetech.bigdata.flink.pulsar;
 
+import com.kuzetech.bigdata.flink.base.JobConfig;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -7,7 +8,7 @@ import org.apache.flink.api.java.utils.ParameterTool;
 
 @Getter
 @Setter
-public class PulsarConfig {
+public class PulsarConfig extends JobConfig {
 
     public static final String DEFAULT_PULSAR_SERVICE_URL = "pulsar://localhost:6650";
     public static final String DEFAULT_PULSAR_ADMIN_URL = "http://localhost:8080";
@@ -24,9 +25,13 @@ public class PulsarConfig {
      */
     private String startCursor;
 
+    public PulsarConfig(ParameterTool parameterTool) {
+        super(parameterTool);
+    }
+
 
     public static PulsarConfig generateFromParameterTool(ParameterTool parameterTool) {
-        PulsarConfig config = new PulsarConfig();
+        PulsarConfig config = new PulsarConfig(parameterTool);
         config.setServiceUrl(parameterTool.get("pulsar.service.url", DEFAULT_PULSAR_SERVICE_URL));
         config.setAdminUrl(parameterTool.get("pulsar.admin.url", DEFAULT_PULSAR_ADMIN_URL));
 

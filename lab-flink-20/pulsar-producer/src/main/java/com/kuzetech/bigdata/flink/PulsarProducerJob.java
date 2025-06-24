@@ -18,12 +18,16 @@
 
 package com.kuzetech.bigdata.flink;
 
+import com.kuzetech.bigdata.flink.base.FlinkUtil;
+import com.kuzetech.bigdata.flink.fake.FakeUser;
 import com.kuzetech.bigdata.flink.pulsar.PulsarConfig;
 import com.kuzetech.bigdata.flink.pulsar.PulsarMessage;
 import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
+import com.kuzetech.bigdata.flink.source.FakeUserParallelSource;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.pulsar.source.PulsarSourceBuilder;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -37,13 +41,14 @@ public class PulsarProducerJob {
 
 		final PulsarConfig pulsarConfig = PulsarConfig.generateFromParameterTool(parameterTool);
 
-		PulsarSourceBuilder<PulsarMessage> pulsarSourceBaseBuilder = PulsarUtil.buildPulsarSourceBaseBuilder(pulsarConfig);
+		SingleOutputStreamOperator<FakeUser> source = env.addSource(new FakeUserParallelSource())
+				.uid("source")
+				.name("source");
 
-		SingleOutputStreamOperator<PulsarMessage> input =
-				env.fromSource(pulsarSourceBaseBuilder.build(), WatermarkStrategy.noWatermarks(), "source")
-						.uid("source")
-						.name("source");
+		source.print();
 
-		env.execute("PulsarCommonJob");
+		// PulsarSourceBuilder<PulsarMessage> pulsarSourceBaseBuilder = PulsarUtil.buildPulsarSourceBaseBuilder(pulsarConfig);
+
+		env.execute(pulsarConfig.getJobName());
 	}
 }
