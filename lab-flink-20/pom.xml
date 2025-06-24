@@ -10,7 +10,8 @@
 	<modules>
 		<module>core</module>
 		<module>pulsar-producer</module>
-	</modules>
+        <module>pulsar-consumer</module>
+    </modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

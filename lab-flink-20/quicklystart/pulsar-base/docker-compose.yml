@@ -64,12 +64,12 @@ services:
       - managedLedgerDefaultEnsembleSize=1
       - managedLedgerDefaultWriteQuorum=1
       - managedLedgerDefaultAckQuorum=1
-      - allowAutoTopicCreation=true
+      - allowAutoTopicCreation=false
       - allowAutoTopicCreationType=partitioned
+      - defaultNumPartitions=9
       - brokerDeleteInactiveTopicsEnabled=false
       - brokerDeduplicationEnabled=true
       - transactionCoordinatorEnabled=true
-      - defaultNumPartitions=3
       - advertisedAddress=broker
       - advertisedListeners=external:pulsar://127.0.0.1:6650
       - PULSAR_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=256m
@@ -82,3 +82,13 @@ services:
       - "6650:6650"
       - "8080:8080"
     command: bash -c "bin/apply-config-from-env.py conf/broker.conf && exec bin/pulsar broker"
+
+  pulsar-init-transaction:
+    container_name: pulsar-init-transaction
+    hostname: pulsar-init-transaction
+    image: apachepulsar/pulsar:4.0.2
+    command: >
+      bash -c "bin/pulsar initialize-transaction-coordinator-metadata -cs zookeeper:2181 -c kuze"
+    depends_on:
+      broker:
+        condition: service_started

@@ -32,7 +32,7 @@ public class PulsarUtil {
                 .setConfig(PulsarSourceOptions.PULSAR_ENABLE_SOURCE_METRICS, true)
                 .setServiceUrl(config.getServiceUrl())
                 .setStartCursor(getJobStartCursor(completeTopicName, config.getStartCursor()))
-                .setTopics(completeTopicName)
+                .setTopics(config.getSourceTopic())
                 .setDeserializationSchema(new PulsarSourceMessageDeserializationSchema())
                 .setSubscriptionName(config.getSubscriber());
     }
