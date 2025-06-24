@@ -27,7 +27,7 @@ import org.apache.flink.connector.pulsar.source.PulsarSourceBuilder;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-public class PulsarCommonJob {
+public class PulsarProducerJob {
 
 	public static void main(String[] args) throws Exception {
 

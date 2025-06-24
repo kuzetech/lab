@@ -9,7 +9,7 @@
 	<name>Flink Quickstart Job</name>
 	<modules>
 		<module>core</module>
-		<module>pulsar</module>
+		<module>pulsar-producer</module>
 	</modules>
 
 	<properties>
