@@ -39,6 +39,7 @@ public class PulsarUtil {
 
     public static PulsarSinkBuilder<PulsarSourceMessage> buildPulsarSinkBaseBuilder(PulsarConfig config) {
         return PulsarSink.builder()
+                .setConfig(PulsarSinkOptions.PULSAR_TOPIC_METADATA_REFRESH_INTERVAL, DEFAULT_PULSAR_PARTITION_DISCOVERY_INTERVAL_MS)
                 .setConfig(PulsarSinkOptions.PULSAR_ENABLE_SINK_METRICS, true)
                 .setServiceUrl(config.getServiceUrl())
                 .setAdminUrl(config.getAdminUrl())

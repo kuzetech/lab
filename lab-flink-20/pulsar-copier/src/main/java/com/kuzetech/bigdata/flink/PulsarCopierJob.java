@@ -24,13 +24,12 @@ import com.kuzetech.bigdata.flink.pulsar.PulsarSourceMessage;
 import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.connector.pulsar.sink.PulsarSinkBuilder;
 import org.apache.flink.connector.pulsar.source.PulsarSourceBuilder;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-import java.nio.charset.StandardCharsets;
-
-public class PulsarConsumerJob {
+public class PulsarCopierJob {
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -45,9 +44,9 @@ public class PulsarConsumerJob {
                 .uid("source")
                 .name("source");
 
-        SingleOutputStreamOperator<String> contentStream = sourceStream.map(msg -> new String(msg.getData(), StandardCharsets.UTF_8));
+        PulsarSinkBuilder<PulsarSourceMessage> sinkBuilder = PulsarUtil.buildPulsarSinkBaseBuilder(pulsarConfig);
 
-        contentStream.print()
+        sourceStream.sinkTo(sinkBuilder.build())
                 .uid("sink")
                 .name("sink");
 

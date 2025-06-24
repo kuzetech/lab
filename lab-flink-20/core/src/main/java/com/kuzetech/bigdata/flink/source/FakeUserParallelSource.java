@@ -12,7 +12,7 @@ public class FakeUserParallelSource implements ParallelSourceFunction<FakeUser> 
     public void run(SourceContext<FakeUser> ctx) throws Exception {
         while (isRunning) {
             ctx.collect(FakeUser.generateUser());
-            Thread.sleep(1000);
+            Thread.sleep(50);
         }
     }
 
