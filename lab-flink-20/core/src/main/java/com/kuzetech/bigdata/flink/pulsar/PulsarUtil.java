@@ -1,6 +1,10 @@
 package com.kuzetech.bigdata.flink.pulsar;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.flink.connector.base.DeliveryGuarantee;
+import org.apache.flink.connector.pulsar.sink.PulsarSink;
+import org.apache.flink.connector.pulsar.sink.PulsarSinkBuilder;
+import org.apache.flink.connector.pulsar.sink.PulsarSinkOptions;
 import org.apache.flink.connector.pulsar.source.PulsarSource;
 import org.apache.flink.connector.pulsar.source.PulsarSourceBuilder;
 import org.apache.flink.connector.pulsar.source.PulsarSourceOptions;
@@ -21,7 +25,7 @@ public class PulsarUtil {
         return "persistent://public/default/" + simpleName;
     }
 
-    public static PulsarSourceBuilder<PulsarMessage> buildPulsarSourceBaseBuilder(PulsarConfig config) {
+    public static PulsarSourceBuilder<PulsarSourceMessage> buildPulsarSourceBaseBuilder(PulsarConfig config) {
         String completeTopicName = getDefaultCompleteTopicName(config.getSourceTopic());
         return PulsarSource.builder()
                 .setConfig(PulsarSourceOptions.PULSAR_PARTITION_DISCOVERY_INTERVAL_MS, DEFAULT_PULSAR_PARTITION_DISCOVERY_INTERVAL_MS)
@@ -29,13 +33,23 @@ public class PulsarUtil {
                 .setServiceUrl(config.getServiceUrl())
                 .setStartCursor(getJobStartCursor(completeTopicName, config.getStartCursor()))
                 .setTopics(completeTopicName)
-                .setDeserializationSchema(new PulsarMessageDeserializationSchema())
+                .setDeserializationSchema(new PulsarSourceMessageDeserializationSchema())
                 .setSubscriptionName(config.getSubscriber());
+    }
+
+    public static PulsarSinkBuilder<PulsarSourceMessage> buildPulsarSinkBaseBuilder(PulsarConfig config) {
+        return PulsarSink.builder()
+                .setConfig(PulsarSinkOptions.PULSAR_ENABLE_SINK_METRICS, true)
+                .setServiceUrl(config.getServiceUrl())
+                .setAdminUrl(config.getAdminUrl())
+                .setTopics(config.getSinkTopic())
+                .setSerializationSchema(new PulsarSourceMessageSerializationSchema())
+                .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE);
     }
 
 
     private static StartCursor getJobStartCursor(String completeTopicName, String startCursor) {
-        if (StringUtils.isBlank(startCursor)){
+        if (StringUtils.isBlank(startCursor)) {
             return StartCursor.earliest();
         }
         if (PULSAR_START_CURSOR_EARLIEST.equalsIgnoreCase(startCursor)) {

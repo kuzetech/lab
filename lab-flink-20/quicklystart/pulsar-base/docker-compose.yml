@@ -66,6 +66,9 @@ services:
       - managedLedgerDefaultAckQuorum=1
       - allowAutoTopicCreation=true
       - allowAutoTopicCreationType=partitioned
+      - brokerDeleteInactiveTopicsEnabled=false
+      - brokerDeduplicationEnabled=true
+      - transactionCoordinatorEnabled=true
       - defaultNumPartitions=3
       - advertisedAddress=broker
       - advertisedListeners=external:pulsar://127.0.0.1:6650

@@ -18,37 +18,43 @@
 
 package com.kuzetech.bigdata.flink;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
 import com.kuzetech.bigdata.flink.fake.FakeUser;
+import com.kuzetech.bigdata.flink.json.ObjectMapperInstance;
 import com.kuzetech.bigdata.flink.pulsar.PulsarConfig;
-import com.kuzetech.bigdata.flink.pulsar.PulsarMessage;
+import com.kuzetech.bigdata.flink.pulsar.PulsarSourceMessage;
 import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
 import com.kuzetech.bigdata.flink.source.FakeUserParallelSource;
-import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.connector.pulsar.source.PulsarSourceBuilder;
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.connector.pulsar.sink.PulsarSinkBuilder;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 public class PulsarProducerJob {
 
-	public static void main(String[] args) throws Exception {
+    private static final ObjectMapper OBJECT_MAPPER = ObjectMapperInstance.getInstance();
 
-		ParameterTool parameterTool = ParameterTool.fromArgs(args);
+    public static void main(String[] args) throws Exception {
 
-		final StreamExecutionEnvironment env = FlinkUtil.initEnv(parameterTool);
+        ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
-		final PulsarConfig pulsarConfig = PulsarConfig.generateFromParameterTool(parameterTool);
+        final StreamExecutionEnvironment env = FlinkUtil.initEnv(parameterTool);
 
-		SingleOutputStreamOperator<FakeUser> source = env.addSource(new FakeUserParallelSource())
-				.uid("source")
-				.name("source");
+        final PulsarConfig pulsarConfig = PulsarConfig.generateFromParameterTool(parameterTool);
 
-		source.print();
+        SingleOutputStreamOperator<FakeUser> sourceStream = env.addSource(new FakeUserParallelSource())
+                .uid("source")
+                .name("source");
 
-		// PulsarSourceBuilder<PulsarMessage> pulsarSourceBaseBuilder = PulsarUtil.buildPulsarSourceBaseBuilder(pulsarConfig);
+        SingleOutputStreamOperator<PulsarSourceMessage> msgStream = sourceStream.map(u -> new PulsarSourceMessage(OBJECT_MAPPER.writeValueAsBytes(u)));
 
-		env.execute(pulsarConfig.getJobName());
-	}
+        PulsarSinkBuilder<PulsarSourceMessage> sinkBuilder = PulsarUtil.buildPulsarSinkBaseBuilder(pulsarConfig);
+
+        msgStream.sinkTo(sinkBuilder.build())
+                .uid("sink")
+                .name("sink");
+
+        env.execute(pulsarConfig.getJobName());
+    }
 }
