@@ -44,6 +44,7 @@ public class PulsarUtil {
                 .setServiceUrl(config.getServiceUrl())
                 .setAdminUrl(config.getAdminUrl())
                 .setTopics(config.getSinkTopic())
+                .setProducerName(config.getProducerName())
                 .setSerializationSchema(new PulsarSourceMessageSerializationSchema())
                 .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE);
     }

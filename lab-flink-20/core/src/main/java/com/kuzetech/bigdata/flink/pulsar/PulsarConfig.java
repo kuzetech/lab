@@ -16,8 +16,9 @@ public class PulsarConfig extends JobConfig {
     private String serviceUrl;
     private String adminUrl;
     private String sourceTopic;
-    private String sinkTopic;
     private String subscriber;
+    private String sinkTopic;
+    private String producerName;
 
     /**
      * pulsar 订阅进度初始化位置
@@ -40,6 +41,7 @@ public class PulsarConfig extends JobConfig {
         config.setStartCursor(parameterTool.get("pulsar.consumer.start.cursor"));
 
         config.setSinkTopic(parameterTool.get("pulsar.producer.topic"));
+        config.setProducerName(parameterTool.get("pulsar.producer.name"));
         return config;
     }
 
