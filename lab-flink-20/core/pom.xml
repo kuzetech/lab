@@ -13,6 +13,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.apache.flink-connector-pulsar</groupId>
             <artifactId>flink-connector-pulsar</artifactId>
         </dependency>

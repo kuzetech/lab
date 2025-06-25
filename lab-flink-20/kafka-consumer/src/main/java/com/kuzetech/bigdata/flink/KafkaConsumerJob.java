@@ -19,29 +19,29 @@
 package com.kuzetech.bigdata.flink;
 
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
-import com.kuzetech.bigdata.flink.pulsar.PulsarConfig;
-import com.kuzetech.bigdata.flink.pulsar.PulsarSourceMessage;
-import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
+import com.kuzetech.bigdata.flink.kafka.KafkaConfig;
+import com.kuzetech.bigdata.flink.kafka.KafkaSourceMessage;
+import com.kuzetech.bigdata.flink.kafka.KafkaUtil;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.connector.pulsar.source.PulsarSourceBuilder;
+import org.apache.flink.connector.kafka.source.KafkaSourceBuilder;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import java.nio.charset.StandardCharsets;
 
-public class PulsarConsumerJob {
+public class KafkaConsumerJob {
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
         final StreamExecutionEnvironment env = FlinkUtil.initEnv(parameterTool);
 
-        final PulsarConfig pulsarConfig = PulsarConfig.generateFromParameterTool(parameterTool);
+        final KafkaConfig kafkaConfig = KafkaConfig.generateFromParameterTool(parameterTool);
 
-        PulsarSourceBuilder<PulsarSourceMessage> sourceBuilder = PulsarUtil.buildSourceBaseBuilder(pulsarConfig);
+        KafkaSourceBuilder<KafkaSourceMessage> sourceBuilder = KafkaUtil.buildSourceBaseBuilder(kafkaConfig);
 
-        SingleOutputStreamOperator<PulsarSourceMessage> sourceStream = env.fromSource(sourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source")
+        SingleOutputStreamOperator<KafkaSourceMessage> sourceStream = env.fromSource(sourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source")
                 .uid("source")
                 .name("source");
 
@@ -51,6 +51,6 @@ public class PulsarConsumerJob {
                 .uid("sink")
                 .name("sink");
 
-        env.execute(pulsarConfig.getJobName());
+        env.execute(kafkaConfig.getJobName());
     }
 }

@@ -21,7 +21,7 @@ public class PulsarConfig extends JobConfig {
     private String producerName;
 
     /**
-     * pulsar 订阅进度初始化位置
+     * 订阅进度初始化位置
      * 样例值为 earliest 或 latest，也可以具体指定分区进度 3727:17363:0,3749:4465:1"
      */
     private String startCursor;

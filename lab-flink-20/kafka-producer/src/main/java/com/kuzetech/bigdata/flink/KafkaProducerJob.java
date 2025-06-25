@@ -18,39 +18,42 @@
 
 package com.kuzetech.bigdata.flink;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
-import com.kuzetech.bigdata.flink.pulsar.PulsarConfig;
-import com.kuzetech.bigdata.flink.pulsar.PulsarSourceMessage;
-import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
-import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import com.kuzetech.bigdata.flink.fake.FakeUser;
+import com.kuzetech.bigdata.flink.json.ObjectMapperInstance;
+import com.kuzetech.bigdata.flink.kafka.KafkaConfig;
+import com.kuzetech.bigdata.flink.kafka.KafkaSourceMessage;
+import com.kuzetech.bigdata.flink.kafka.KafkaUtil;
+import com.kuzetech.bigdata.flink.source.FakeUserParallelSource;
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.connector.pulsar.source.PulsarSourceBuilder;
+import org.apache.flink.connector.kafka.sink.KafkaSinkBuilder;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-import java.nio.charset.StandardCharsets;
+public class KafkaProducerJob {
 
-public class PulsarConsumerJob {
+    private static final ObjectMapper OBJECT_MAPPER = ObjectMapperInstance.getInstance();
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
         final StreamExecutionEnvironment env = FlinkUtil.initEnv(parameterTool);
 
-        final PulsarConfig pulsarConfig = PulsarConfig.generateFromParameterTool(parameterTool);
+        final KafkaConfig kafkaConfig = KafkaConfig.generateFromParameterTool(parameterTool);
 
-        PulsarSourceBuilder<PulsarSourceMessage> sourceBuilder = PulsarUtil.buildSourceBaseBuilder(pulsarConfig);
-
-        SingleOutputStreamOperator<PulsarSourceMessage> sourceStream = env.fromSource(sourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source")
+        SingleOutputStreamOperator<FakeUser> sourceStream = env.addSource(new FakeUserParallelSource())
                 .uid("source")
                 .name("source");
 
-        SingleOutputStreamOperator<String> contentStream = sourceStream.map(msg -> new String(msg.getData(), StandardCharsets.UTF_8));
+        SingleOutputStreamOperator<KafkaSourceMessage> msgStream = sourceStream.map(u -> new KafkaSourceMessage(OBJECT_MAPPER.writeValueAsBytes(u)));
 
-        contentStream.print()
+        KafkaSinkBuilder<KafkaSourceMessage> sinkBuilder = KafkaUtil.buildSinkBaseBuilder(kafkaConfig);
+
+        msgStream.sinkTo(sinkBuilder.build())
                 .uid("sink")
                 .name("sink");
 
-        env.execute(pulsarConfig.getJobName());
+        env.execute(kafkaConfig.getJobName());
     }
 }

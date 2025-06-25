@@ -1,24 +1,3 @@
-## 通用参数
---job.name PulsarProducerJob
---execution.checkpointing.dir file:///Users/huangsw/code/lab/lab-flink-20/quicklystart/checkpoints/PulsarProducerJob
---execution.checkpointing.interval 10000
---taskmanager.numberOfTaskSlots 6
---parallelism.default 2
---rest.bind-port 9999
-
-## pulsar 相关
---pulsar.service.url pulsar://localhost:6650
---pulsar.admin.url http://localhost:8080
---pulsar.consumer.topic source
---pulsar.consumer.subscriber xxxx
---pulsar.consumer.start.cursor earliest
---pulsar.producer.topic sink
---pulsar.producer.name xxxx
-
-## savepoint 相关
---execution.state-recovery.path file:///Users/huangsw/code/lab/lab-flink-20/quicklystart/checkpoints/PulsarProducerJob
---execution.state-recovery.ignore-unclaimed-state true
-
 ## pulsar 案例启动案例
 --job.name
 PulsarProducerJob
@@ -30,6 +9,8 @@ file:///Users/huangsw/code/lab/lab-flink-20/quicklystart/checkpoints/PulsarProdu
 6
 --parallelism.default
 2
+--rest.bind-port
+9990
 --pulsar.service.url
 pulsar://localhost:6650
 --pulsar.admin.url
@@ -42,8 +23,6 @@ flink-consumer
 earliest
 --pulsar.producer.topic
 source
---rest.bind-port
-9990
 --pulsar.producer.name
 flink-consumer
 
@@ -57,6 +36,8 @@ file:///Users/huangsw/code/lab/lab-flink-20/quicklystart/checkpoints/PulsarCopie
 6
 --parallelism.default
 2
+--rest.bind-port
+9991
 --pulsar.service.url
 pulsar://localhost:6650
 --pulsar.admin.url
@@ -69,8 +50,6 @@ flink-copier
 earliest
 --pulsar.producer.topic
 sink
---rest.bind-port
-9991
 --pulsar.producer.name
 flink-copier
 
@@ -84,6 +63,8 @@ file:///Users/huangsw/code/lab/lab-flink-20/quicklystart/checkpoints/PulsarConsu
 6
 --parallelism.default
 2
+--rest.bind-port
+9992
 --pulsar.service.url
 pulsar://localhost:6650
 --pulsar.admin.url
@@ -96,5 +77,3 @@ flink-consumer
 earliest
 --pulsar.producer.topic
 sink
---rest.bind-port
-9992

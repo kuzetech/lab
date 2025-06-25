@@ -12,16 +12,27 @@
         <module>pulsar-producer</module>
         <module>pulsar-consumer</module>
         <module>pulsar-copier</module>
+        <module>kafka-producer</module>
+        <module>kafka-consumer</module>
+        <module>kafka-copier</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <flink.version>1.20.1</flink.version>
-        <target.java.version>11</target.java.version>
-        <scala.binary.version>2.12</scala.binary.version>
         <maven.compiler.source>${target.java.version}</maven.compiler.source>
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
+        <target.java.version>11</target.java.version>
+        <scala.binary.version>2.12</scala.binary.version>
+        <flink.version>1.20.1</flink.version>
+        <flink-connector-kafka.version>3.3.0-1.20</flink-connector-kafka.version>
+        <flink-connector-pulsar.version>34f217b697</flink-connector-pulsar.version>
         <log4j.version>2.17.1</log4j.version>
+        <lombok.version>1.18.32</lombok.version>
+        <junit.version>4.13.1</junit.version>
+        <assertj-core.version>2.6.0</assertj-core.version>
+        <okhttp.version>4.10.0</okhttp.version>
+        <jackson.version>2.14.1</jackson.version>
+        <datafaker.version>1.9.0</datafaker.version>
     </properties>
 
     <repositories>
@@ -75,7 +86,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.32</version>
+            <version>${lombok.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -98,13 +109,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>2.6.0</version>
+            <version>${assertj-core.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -114,32 +125,32 @@
             <dependency>
                 <groupId>org.apache.flink</groupId>
                 <artifactId>flink-connector-kafka</artifactId>
-                <version>3.3.0-1.20</version>
+                <version>${flink-connector-kafka.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.apache.flink-connector-pulsar</groupId>
                 <artifactId>flink-connector-pulsar</artifactId>
-                <version>34f217b697</version>
+                <version>${flink-connector-pulsar.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>
-                <version>4.10.0</version>
+                <version>${okhttp.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.14.1</version>
+                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.dataformat</groupId>
                 <artifactId>jackson-dataformat-yaml</artifactId>
-                <version>2.14.1</version>
+                <version>${jackson.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.datafaker</groupId>
                 <artifactId>datafaker</artifactId>
-                <version>1.9.0</version>
+                <version>${datafaker.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

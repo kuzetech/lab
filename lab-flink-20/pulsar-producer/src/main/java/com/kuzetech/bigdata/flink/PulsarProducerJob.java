@@ -49,7 +49,7 @@ public class PulsarProducerJob {
 
         SingleOutputStreamOperator<PulsarSourceMessage> msgStream = sourceStream.map(u -> new PulsarSourceMessage(OBJECT_MAPPER.writeValueAsBytes(u)));
 
-        PulsarSinkBuilder<PulsarSourceMessage> sinkBuilder = PulsarUtil.buildPulsarSinkBaseBuilder(pulsarConfig);
+        PulsarSinkBuilder<PulsarSourceMessage> sinkBuilder = PulsarUtil.buildSinkBaseBuilder(pulsarConfig);
 
         msgStream.sinkTo(sinkBuilder.build())
                 .uid("sink")

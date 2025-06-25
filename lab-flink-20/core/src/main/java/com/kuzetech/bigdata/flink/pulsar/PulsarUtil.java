@@ -25,7 +25,7 @@ public class PulsarUtil {
         return "persistent://public/default/" + simpleName;
     }
 
-    public static PulsarSourceBuilder<PulsarSourceMessage> buildPulsarSourceBaseBuilder(PulsarConfig config) {
+    public static PulsarSourceBuilder<PulsarSourceMessage> buildSourceBaseBuilder(PulsarConfig config) {
         String completeTopicName = getDefaultCompleteTopicName(config.getSourceTopic());
         return PulsarSource.builder()
                 .setConfig(PulsarSourceOptions.PULSAR_PARTITION_DISCOVERY_INTERVAL_MS, DEFAULT_PULSAR_PARTITION_DISCOVERY_INTERVAL_MS)
@@ -37,7 +37,7 @@ public class PulsarUtil {
                 .setSubscriptionName(config.getSubscriber());
     }
 
-    public static PulsarSinkBuilder<PulsarSourceMessage> buildPulsarSinkBaseBuilder(PulsarConfig config) {
+    public static PulsarSinkBuilder<PulsarSourceMessage> buildSinkBaseBuilder(PulsarConfig config) {
         return PulsarSink.builder()
                 .setConfig(PulsarSinkOptions.PULSAR_TOPIC_METADATA_REFRESH_INTERVAL, DEFAULT_PULSAR_PARTITION_DISCOVERY_INTERVAL_MS)
                 .setConfig(PulsarSinkOptions.PULSAR_ENABLE_SINK_METRICS, true)

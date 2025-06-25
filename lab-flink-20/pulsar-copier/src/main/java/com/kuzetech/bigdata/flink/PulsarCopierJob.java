@@ -38,13 +38,13 @@ public class PulsarCopierJob {
 
         final PulsarConfig pulsarConfig = PulsarConfig.generateFromParameterTool(parameterTool);
 
-        PulsarSourceBuilder<PulsarSourceMessage> sourceBuilder = PulsarUtil.buildPulsarSourceBaseBuilder(pulsarConfig);
+        PulsarSourceBuilder<PulsarSourceMessage> sourceBuilder = PulsarUtil.buildSourceBaseBuilder(pulsarConfig);
 
         SingleOutputStreamOperator<PulsarSourceMessage> sourceStream = env.fromSource(sourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source")
                 .uid("source")
                 .name("source");
 
-        PulsarSinkBuilder<PulsarSourceMessage> sinkBuilder = PulsarUtil.buildPulsarSinkBaseBuilder(pulsarConfig);
+        PulsarSinkBuilder<PulsarSourceMessage> sinkBuilder = PulsarUtil.buildSinkBaseBuilder(pulsarConfig);
 
         sourceStream.sinkTo(sinkBuilder.build())
                 .uid("sink")
