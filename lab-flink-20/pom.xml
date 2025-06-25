@@ -15,6 +15,7 @@
         <module>kafka-producer</module>
         <module>kafka-consumer</module>
         <module>kafka-copier</module>
+        <module>pulsar-transaction-validator</module>
     </modules>
 
     <properties>

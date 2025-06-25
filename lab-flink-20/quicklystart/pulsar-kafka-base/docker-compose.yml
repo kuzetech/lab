@@ -1,0 +1,131 @@
+version: '3'
+services:
+  # Start zookeeper
+  zookeeper:
+    image: apachepulsar/pulsar:4.0.2
+    container_name: zookeeper
+    restart: on-failure
+    volumes:
+      - ./data/zookeeper:/pulsar/data/zookeeper
+    environment:
+      - metadataStoreUrl=zk:zookeeper:2181
+      - PULSAR_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=512m
+    command: >
+      bash -c "bin/apply-config-from-env.py conf/zookeeper.conf && \
+             bin/generate-zookeeper-config.sh conf/zookeeper.conf && \
+             exec bin/pulsar zookeeper"
+    healthcheck:
+      test: [ "CMD", "bin/pulsar-zookeeper-ruok.sh" ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  # Init cluster metadata
+  pulsar-init:
+    container_name: pulsar-init
+    hostname: pulsar-init
+    image: apachepulsar/pulsar:4.0.2
+    command: >
+      bash -c "bin/pulsar initialize-cluster-metadata --cluster kuze --zookeeper zookeeper:2181 --configuration-store zookeeper:2181 --web-service-url http://broker:8080 --broker-service-url pulsar://broker:6650"
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+
+  # Start bookie
+  bookie:
+    image: apachepulsar/pulsar:4.0.2
+    container_name: bookie
+    restart: on-failure
+    environment:
+      - clusterName=kuze
+      - zkServers=zookeeper:2181
+      - metadataServiceUri=metadata-store:zk:zookeeper:2181
+      - advertisedAddress=bookie
+      - BOOKIE_MEM=-Xms1024m -Xmx1024m -XX:MaxDirectMemorySize=1024m
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+      pulsar-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./data/bookkeeper:/pulsar/data/bookkeeper
+    command: bash -c "bin/apply-config-from-env.py conf/bookkeeper.conf && exec bin/pulsar bookie"
+
+  # Start broker
+  broker:
+    image: apachepulsar/pulsar:4.0.2
+    container_name: broker
+    hostname: broker
+    restart: on-failure
+    environment:
+      - metadataStoreUrl=zk:zookeeper:2181
+      - zookeeperServers=zookeeper:2181
+      - clusterName=kuze
+      - managedLedgerDefaultEnsembleSize=1
+      - managedLedgerDefaultWriteQuorum=1
+      - managedLedgerDefaultAckQuorum=1
+      - allowAutoTopicCreation=false
+      - allowAutoTopicCreationType=partitioned
+      - defaultNumPartitions=9
+      - brokerDeleteInactiveTopicsEnabled=false
+      - brokerDeduplicationEnabled=true
+      - transactionCoordinatorEnabled=true
+      - advertisedAddress=broker
+      - advertisedListeners=external:pulsar://127.0.0.1:6650
+      - PULSAR_MEM=-Xms1024m -Xmx1024m -XX:MaxDirectMemorySize=512m
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+      bookie:
+        condition: service_started
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+    command: bash -c "bin/apply-config-from-env.py conf/broker.conf && exec bin/pulsar broker"
+
+  pulsar-init-transaction:
+    container_name: pulsar-init-transaction
+    hostname: pulsar-init-transaction
+    image: apachepulsar/pulsar:4.0.2
+    command: >
+      bash -c "bin/pulsar initialize-transaction-coordinator-metadata -cs zookeeper:2181 -c kuze"
+    depends_on:
+      broker:
+        condition: service_started
+
+  kafka:
+    image: bitnami/kafka:3.3.2
+    user: root
+    ports:
+      - "9092:9092"
+      - "127.0.0.1:9093:9093"
+    environment:
+      ### 通用配置
+      # 允许使用kraft，即Kafka替代Zookeeper
+      - KAFKA_ENABLE_KRAFT=yes
+      # kafka角色，做broker，也要做controller
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      # 指定供外部使用的控制类请求信息
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      # 定义kafka服务端socket监听端口
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      # 定义安全协议
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      # 使用Kafka时的集群id，集群内的Kafka都要用这个id做初始化，生成一个UUID即可
+      - KAFKA_KRAFT_CLUSTER_ID=LelM2dIFQkiUFvXCEcqRWA
+      # 集群地址
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      # 允许使用PLAINTEXT监听器，默认false，不建议在生产环境使用
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      # 设置broker最大内存，和初始内存
+      - KAFKA_HEAP_OPTS=-Xmx512M -Xms256M
+      # 不允许自动创建主题
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_CFG_NODE_ID=1
+      ### broker配置
+      # 定义外网访问地址（宿主机ip地址和端口）, host.docker.internal not work
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      # broker.id，必须唯一
+      - KAFKA_BROKER_ID=1
+    volumes:
+      - ./data/kafka:/bitnami/kafka
