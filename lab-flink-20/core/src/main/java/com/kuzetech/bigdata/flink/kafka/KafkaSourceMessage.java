@@ -1,5 +1,6 @@
 package com.kuzetech.bigdata.flink.kafka;
 
+import com.kuzetech.bigdata.flink.base.CommonSourceMessage;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,30 +16,18 @@ import java.util.Map;
 @NoArgsConstructor
 @Setter
 @Getter
-public class KafkaSourceMessage implements Serializable {
-
-    private Map<String, String> properties;
-    private byte[] key;
-    private byte[] data;
+public class KafkaSourceMessage extends CommonSourceMessage implements Serializable {
 
     public KafkaSourceMessage(ConsumerRecord<byte[], byte[]> record) {
-        properties = parseHeader(record.headers());
-        this.key = record.key();
-        this.data = record.value();
+        super(CommonSourceMessage.SOURCE_KEY_KAFKA, parseHeader(record.headers()), record.key(), record.value());
     }
 
     public KafkaSourceMessage(byte[] data) {
-        this.data = data;
+        super(CommonSourceMessage.SOURCE_KEY_KAFKA, data);
     }
 
-    public String getHeaderItem(String key) {
-        if (properties != null) {
-            properties.get(key);
-        }
-        return null;
-    }
 
-    public Map<String, String> parseHeader(Headers headers) {
+    private static Map<String, String> parseHeader(Headers headers) {
         if (headers == null) {
             return null;
         }
@@ -48,6 +37,4 @@ public class KafkaSourceMessage implements Serializable {
         }
         return headerMap;
     }
-
-
 }

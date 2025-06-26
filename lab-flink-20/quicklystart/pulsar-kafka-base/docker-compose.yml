@@ -96,6 +96,8 @@ services:
   kafka:
     image: bitnami/kafka:3.3.2
     user: root
+    container_name: kafka
+    hostname: kafka
     ports:
       - "9092:9092"
       - "127.0.0.1:9093:9093"
