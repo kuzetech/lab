@@ -5,6 +5,10 @@ import net.datafaker.providers.base.Options;
 
 public class FakeUtil {
 
+    public enum Event {
+        LOGIN, CHARGE, PLAY
+    }
+
     public enum Day {
         MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
     }
@@ -26,6 +30,10 @@ public class FakeUtil {
 
     public static Day generateDay() {
         return GLOBAL_FAKER_OPTIONS.option(Day.class);
+    }
+
+    public static Event generateEvent() {
+        return GLOBAL_FAKER_OPTIONS.option(Event.class);
     }
 
 }

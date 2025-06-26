@@ -22,6 +22,9 @@ public class PulsarUtil {
     public static final String PULSAR_START_CURSOR_LATEST = "latest";
 
     public static String getDefaultCompleteTopicName(String simpleName) {
+        if (simpleName.startsWith("persistent:")) {
+            return simpleName;
+        }
         return "persistent://public/default/" + simpleName;
     }
 
