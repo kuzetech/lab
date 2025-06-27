@@ -26,7 +26,9 @@ public class PrintCountWindowFunction implements WindowFunction<Long, String, St
         String windowEndStr = windowEnd.format(formatter);
 
         Long count = input.iterator().next();
-        String result = String.format("Window Start: %s, Window End: %s, Event is %s, Total is: %d", windowStartStr, windowEndStr, key, count);
-        out.collect(result);
+        if (count > 0) {
+            String result = String.format("Window Start: %s, Window End: %s, Event is %s, Total is: %d", windowStartStr, windowEndStr, key, count);
+            out.collect(result);
+        }
     }
 }
