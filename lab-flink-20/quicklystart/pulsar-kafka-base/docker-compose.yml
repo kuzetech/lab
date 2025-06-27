@@ -64,7 +64,7 @@ services:
       - managedLedgerDefaultEnsembleSize=1
       - managedLedgerDefaultWriteQuorum=1
       - managedLedgerDefaultAckQuorum=1
-      - allowAutoTopicCreation=false
+      - allowAutoTopicCreation=true
       - allowAutoTopicCreationType=partitioned
       - defaultNumPartitions=9
       - brokerDeleteInactiveTopicsEnabled=false

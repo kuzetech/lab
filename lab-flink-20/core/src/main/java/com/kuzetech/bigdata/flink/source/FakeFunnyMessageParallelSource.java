@@ -12,7 +12,7 @@ public class FakeFunnyMessageParallelSource implements ParallelSourceFunction<Co
     public void run(SourceContext<CommonSourceMessage> ctx) throws Exception {
         while (isRunning) {
             ctx.collect(CommonSourceMessage.generateMessage());
-            Thread.sleep(50);
+            Thread.sleep(100);
         }
     }
 

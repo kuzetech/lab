@@ -15,7 +15,7 @@ file:///Users/huangsw/code/lab/lab-flink-20/quicklystart/checkpoints/KafkaProduc
 localhost:9092
 --kafka.consumer.topic
 source
---pulsar.consumer.subscriber
+--kafka.consumer.subscriber
 flink-producer
 --kafka.consumer.client.id.prefix
 flink-producer-prefix

@@ -75,7 +75,7 @@ public class PulsarTransactionValidateJob {
 
 
         pulsarSourceStream.union(kafkaSourceStream)
-                .keyBy(o -> o.getHeaderItem("event"))
+                .keyBy(o -> o.getHeaderItem("event") == null ? "" : o.getHeaderItem("event"))
                 .window(TumblingEventTimeWindows.of(Time.seconds(60)))
                 .allowedLateness(Time.minutes(5))
                 .aggregate(new MessageCountAggregateFunction(), new PrintCountWindowFunction())
