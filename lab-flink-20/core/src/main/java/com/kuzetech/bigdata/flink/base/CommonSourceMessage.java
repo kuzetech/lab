@@ -5,6 +5,7 @@ import com.kuzetech.bigdata.flink.json.JsonUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
@@ -14,6 +15,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Setter
 @Getter
+@ToString
 public class CommonSourceMessage implements Serializable {
     public static final String SOURCE_KEY_KAFKA = "kafka";
     public static final String SOURCE_KEY_PULSAR = "pulsar";
@@ -47,7 +49,7 @@ public class CommonSourceMessage implements Serializable {
 
     public String getHeaderItem(String key) {
         if (properties != null) {
-            properties.get(key);
+            return properties.get(key);
         }
         return null;
     }

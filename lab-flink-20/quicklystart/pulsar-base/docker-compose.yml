@@ -71,16 +71,13 @@ services:
       - brokerDeduplicationEnabled=true
       - transactionCoordinatorEnabled=true
       - advertisedAddress=broker
-      - advertisedListeners=external:pulsar://127.0.0.1:6650
+      - advertisedListeners=external:pulsar://broker:6650
       - PULSAR_MEM=-Xms1024m -Xmx1024m -XX:MaxDirectMemorySize=512m
     depends_on:
       zookeeper:
         condition: service_healthy
       bookie:
         condition: service_started
-    ports:
-      - "6650:6650"
-      - "8080:8080"
     command: bash -c "bin/apply-config-from-env.py conf/broker.conf && exec bin/pulsar broker"
 
   pulsar-init-transaction:
@@ -92,3 +89,20 @@ services:
     depends_on:
       broker:
         condition: service_started
+
+  proxy:
+    image: apachepulsar/pulsar:4.0.2
+    container_name: proxy
+    hostname: proxy
+    restart: on-failure
+    environment:
+      - clusterName=kuze
+      - metadataStoreUrl=zk:zookeeper:2181
+      - configurationMetadataStoreUrl=zk:zookeeper:2181
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+    depends_on:
+      broker:
+        condition: service_started
+    command: bash -c "bin/apply-config-from-env.py conf/proxy.conf && exec bin/pulsar proxy"
