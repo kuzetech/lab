@@ -12,6 +12,10 @@
     <name>fastjson-simple</name>
 
     <dependencies>
-
+        <dependency>
+            <groupId>com.kuzetech.bigdata.json</groupId>
+            <artifactId>core</artifactId>
+            <version>${parent.version}</version>
+        </dependency>
     </dependencies>
 </project>
