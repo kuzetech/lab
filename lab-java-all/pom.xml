@@ -15,7 +15,6 @@
         <module>spark</module>
         <module>lab</module>
         <module>concurrent</module>
-        <module>vertx</module>
         <module>apollo</module>
         <module>rule-engine</module>
         <module>kafka</module>
