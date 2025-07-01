@@ -27,7 +27,6 @@
         <module>flink20-sql</module>
         <module>flink20-stream-eagle</module>
         <module>sentry</module>
-        <module>lab-json</module>
         <module>pulsar-client</module>
     </modules>
 
