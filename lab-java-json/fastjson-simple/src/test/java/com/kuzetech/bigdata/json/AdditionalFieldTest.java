@@ -33,4 +33,14 @@ public class AdditionalFieldTest {
         System.out.println(annotationObject);
         System.out.println(JSON.toJSONString(annotationObject));
     }
+
+    @Test
+    public void testNullUnwrappedMap() {
+        FastjsonAnnotationObject annotationObject = new FastjsonAnnotationObject();
+        annotationObject.setName("test");
+        annotationObject.setExtraFields(null);
+
+        System.out.println(annotationObject);
+        System.out.println(JSON.toJSONString(annotationObject));
+    }
 }
