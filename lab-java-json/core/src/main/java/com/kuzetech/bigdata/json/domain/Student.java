@@ -1,13 +1,13 @@
 package com.kuzetech.bigdata.json.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class Student {
     private int id;
     private String name;

@@ -3,14 +3,17 @@ package com.kuzetech.bigdata.json;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.kuzetech.bigdata.json.util.JacksonUtil;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class BigNumberApp {
-    public static void main(String[] args) {
+class BigNumberTest {
+
+    @Test
+    public void test() {
         try (
-                InputStream inputStream = BigNumberApp.class.getClassLoader().getResourceAsStream("data-big-number.json");
+                InputStream inputStream = BigNumberTest.class.getClassLoader().getResourceAsStream("data/big-number.json");
         ) {
             ObjectNode objectNode = JacksonUtil.BIG_DECIMAL_MAPPER.readValue(inputStream, ObjectNode.class);
             JsonNode jsonNode = objectNode.get("pay_sum_out");
@@ -20,7 +23,5 @@ public class BigNumberApp {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
-
 }

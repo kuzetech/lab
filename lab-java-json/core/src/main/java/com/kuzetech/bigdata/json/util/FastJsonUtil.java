@@ -1,10 +1,21 @@
 package com.kuzetech.bigdata.json.util;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 
 public class FastJsonUtil {
+
+    public static String toJSONString(Object object) {
+        return JSON.toJSONString(object, SerializerFeature.WriteBigDecimalAsPlain);
+    }
+
+    public static byte[] toJSONBytes(Object object) {
+        return JSON.toJSONBytes(object, SerializerFeature.WriteBigDecimalAsPlain);
+    }
 
     //Map转成实体对象
     public static Object mapToObject(Map<String, Object> map, Class<?> clazz) {

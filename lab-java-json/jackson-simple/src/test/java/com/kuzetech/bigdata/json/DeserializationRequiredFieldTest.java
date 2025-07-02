@@ -2,9 +2,12 @@ package com.kuzetech.bigdata.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuzetech.bigdata.json.domain.User;
+import org.junit.jupiter.api.Test;
 
-public class RequiredApp {
-    public static void main(String[] args) {
+class DeserializationRequiredFieldTest {
+
+    @Test
+    public void test() {
         ObjectMapper mapper = new ObjectMapper();
 
         // 正确的 JSON 示例
