@@ -13,6 +13,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class FastjsonAnnotationObject {
 
+    // @JSONField(serialize = false, deserialize = false)
     private Integer id;
     @JSONField(name = "name")
     private String name;
