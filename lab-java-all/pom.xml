@@ -27,7 +27,6 @@
         <module>flink20-sql</module>
         <module>flink20-stream-eagle</module>
         <module>sentry</module>
-        <module>pulsar-client</module>
     </modules>
 
     <!--      子项目默认都会继承这一部分配置，并且可以覆盖      -->
