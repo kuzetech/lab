@@ -1,0 +1,108 @@
+version: '3'
+services:
+  # Start zookeeper
+  zookeeper:
+    image: apachepulsar/pulsar:4.0.2
+    container_name: zookeeper
+    restart: on-failure
+    volumes:
+      - ./data/zookeeper:/pulsar/data/zookeeper
+    environment:
+      - metadataStoreUrl=zk:zookeeper:2181
+      - PULSAR_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=512m
+    command: >
+      bash -c "bin/apply-config-from-env.py conf/zookeeper.conf && \
+             bin/generate-zookeeper-config.sh conf/zookeeper.conf && \
+             exec bin/pulsar zookeeper"
+    healthcheck:
+      test: [ "CMD", "bin/pulsar-zookeeper-ruok.sh" ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  # Init cluster metadata
+  pulsar-init:
+    container_name: pulsar-init
+    hostname: pulsar-init
+    image: apachepulsar/pulsar:4.0.2
+    command: >
+      bash -c "bin/pulsar initialize-cluster-metadata --cluster kuze --zookeeper zookeeper:2181 --configuration-store zookeeper:2181 --web-service-url http://broker:8080 --broker-service-url pulsar://broker:6650"
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+
+  # Start bookie
+  bookie:
+    image: apachepulsar/pulsar:4.0.2
+    container_name: bookie
+    restart: on-failure
+    environment:
+      - clusterName=kuze
+      - zkServers=zookeeper:2181
+      - metadataServiceUri=metadata-store:zk:zookeeper:2181
+      - advertisedAddress=bookie
+      - BOOKIE_MEM=-Xms1024m -Xmx1024m -XX:MaxDirectMemorySize=1024m
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+      pulsar-init:
+        condition: service_completed_successfully
+    volumes:
+      - ./data/bookkeeper:/pulsar/data/bookkeeper
+    command: bash -c "bin/apply-config-from-env.py conf/bookkeeper.conf && exec bin/pulsar bookie"
+
+  # Start broker
+  broker:
+    image: apachepulsar/pulsar:4.0.2
+    container_name: broker
+    hostname: broker
+    restart: on-failure
+    environment:
+      - metadataStoreUrl=zk:zookeeper:2181
+      - zookeeperServers=zookeeper:2181
+      - clusterName=kuze
+      - managedLedgerDefaultEnsembleSize=1
+      - managedLedgerDefaultWriteQuorum=1
+      - managedLedgerDefaultAckQuorum=1
+      - allowAutoTopicCreation=true
+      - allowAutoTopicCreationType=partitioned
+      - defaultNumPartitions=9
+      - brokerDeleteInactiveTopicsEnabled=false
+      - brokerDeduplicationEnabled=true
+      - transactionCoordinatorEnabled=true
+      - advertisedAddress=broker
+      - advertisedListeners=external:pulsar://broker:6650
+      - PULSAR_MEM=-Xms1024m -Xmx1024m -XX:MaxDirectMemorySize=512m
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+      bookie:
+        condition: service_started
+    command: bash -c "bin/apply-config-from-env.py conf/broker.conf && exec bin/pulsar broker"
+
+  pulsar-init-transaction:
+    container_name: pulsar-init-transaction
+    hostname: pulsar-init-transaction
+    image: apachepulsar/pulsar:4.0.2
+    command: >
+      bash -c "bin/pulsar initialize-transaction-coordinator-metadata -cs zookeeper:2181 -c kuze"
+    depends_on:
+      broker:
+        condition: service_started
+
+  proxy:
+    image: apachepulsar/pulsar:4.0.2
+    container_name: proxy
+    hostname: proxy
+    restart: on-failure
+    environment:
+      - clusterName=kuze
+      - metadataStoreUrl=zk:zookeeper:2181
+      - configurationMetadataStoreUrl=zk:zookeeper:2181
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+    depends_on:
+      broker:
+        condition: service_started
+    command: bash -c "bin/apply-config-from-env.py conf/proxy.conf && exec bin/pulsar proxy"
