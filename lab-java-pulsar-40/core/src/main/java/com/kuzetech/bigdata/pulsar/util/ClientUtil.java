@@ -20,8 +20,8 @@ public class ClientUtil {
                 .connectionsPerBroker(1)
                 // 通过日志来打印客户端统计信息的时间间隔
                 .statsInterval(60, TimeUnit.SECONDS)
+                // direct memory 用量
                 .memoryLimit(64, SizeUnit.MEGA_BYTES)
-                .listenerName("external")
                 .build();
     }
 }

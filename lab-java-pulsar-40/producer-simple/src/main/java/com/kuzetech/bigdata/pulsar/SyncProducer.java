@@ -6,14 +6,14 @@ import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 
-public class BaseProducer {
+public class SyncProducer {
     public static void main(String[] args) throws PulsarClientException, InterruptedException {
         try (
                 PulsarClient client = ClientUtil.createDefaultLocalClient();
-                Producer<byte[]> producer = ProducerUtil.getCommonProducer(client, "source-topic");
+                Producer<String> producer = ProducerUtil.getSimpleProducer(client, "source");
         ) {
             for (int i = 0; i < 100; i++) {
-                producer.send(String.valueOf(i).getBytes());
+                producer.send(String.valueOf(i));
                 Thread.sleep(1000);
             }
         }

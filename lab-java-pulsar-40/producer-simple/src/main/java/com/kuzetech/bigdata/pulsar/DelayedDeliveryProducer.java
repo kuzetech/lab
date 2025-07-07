@@ -11,10 +11,10 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class DelayedDeliveryProducer {
-    public static void main(String[] args) throws PulsarClientException, InterruptedException {
+    public static void main(String[] args) throws PulsarClientException {
         try (
                 PulsarClient client = ClientUtil.createDefaultLocalClient();
-                Producer<byte[]> producer = ProducerUtil.getSimpleProducer(client, "source-topic");
+                Producer<String> producer = ProducerUtil.getSimpleProducer(client, "source");
         ) {
             /**
              * 对于消息中间件来说，除了正常生产、发送消息的需求外，有时可能并不希望这条消息马上被消费，而是希望推迟到某个时间点后再投递到消费者中进行消费。
@@ -23,18 +23,17 @@ public class DelayedDeliveryProducer {
              * 例如在电商系统中，订单创建后会有一个等待用户支付的时间窗口，若在该时间窗口内未支付订单则需要在窗口结束后清理掉原有的订单
              */
 
-
             // 固定延迟发送
             producer.newMessage()
                     .deliverAfter(3, TimeUnit.MINUTES)
-                    .value("延迟消息".getBytes(StandardCharsets.UTF_8))
+                    .value("延迟消息")
                     .send();
 
             // 固定时间点发送
             Date date = new Date(2025, 2, 2, 0, 0, 0);
             producer.newMessage()
                     .deliverAt(date.getTime())
-                    .value("定时消息".getBytes(StandardCharsets.UTF_8))
+                    .value("定时消息")
                     .send();
 
             /**

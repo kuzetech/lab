@@ -12,7 +12,7 @@ public class BaseConsumer {
     public static void main(String[] args) throws PulsarClientException {
         try (
                 PulsarClient client = ClientUtil.createDefaultLocalClient();
-                Consumer<byte[]> consumer = ConsumerUtil.getCommonConsumer(client, "sink-topic")
+                Consumer<byte[]> consumer = ConsumerUtil.getCommonConsumer(client, "sink")
         ) {
             while (true) {
                 /*

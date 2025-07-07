@@ -10,22 +10,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 
 public class BatchProducer {
-    public static void main(String[] args) throws PulsarClientException, InterruptedException, ExecutionException {
+    public static void main(String[] args) throws PulsarClientException, InterruptedException {
         try (
                 PulsarClient client = ClientUtil.createDefaultLocalClient();
-                Producer<byte[]> producer = ProducerUtil.get10BatchProducer(client, "funnydb-ingest-receive");
+                Producer<String> producer = ProducerUtil.getSimpleBatchProducer(
+                        client,
+                        "funnydb-ingest-receive",
+                        10);
         ) {
-            int count = 0;
             for (int i = 1; i <= 20; i++) {
                 producer.newMessage()
-                        .value(String.valueOf(i).getBytes(StandardCharsets.UTF_8))
+                        .value(String.valueOf(i))
                         .sendAsync();
-                count++;
-                if (count % 10 == 0) {
-                    count = 0;
-                    System.out.println("sent messages batch");
-                    Thread.sleep(3000);
-                }
             }
 
             Thread.sleep(3000);

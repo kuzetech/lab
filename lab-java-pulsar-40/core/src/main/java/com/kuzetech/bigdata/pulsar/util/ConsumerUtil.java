@@ -8,8 +8,8 @@ public class ConsumerUtil {
 
     public static Consumer<byte[]> getSimpleConsumer(PulsarClient client, String topic) throws PulsarClientException {
         return client.newConsumer()
-                .topic("public/default/" + topic)
                 .subscriptionName("lab-consumer-simple")
+                .topic(TopicUtil.getDefaultCompleteTopic(topic))
                 .subscriptionType(SubscriptionType.Exclusive) // 定义订阅模式，订阅模式分为独占、故障转移、共享、键共享，注意默认为独占
                 .subscriptionInitialPosition(SubscriptionInitialPosition.Earliest)
                 .subscribe();
@@ -17,8 +17,8 @@ public class ConsumerUtil {
 
     public static Consumer<byte[]> getSimpleBatchIndexAcknowledgmentConsumer(PulsarClient client, String topic) throws PulsarClientException {
         return client.newConsumer()
-                .topic("public/default/" + topic)
                 .subscriptionName("lab-consumer-simple-batch")
+                .topic(TopicUtil.getDefaultCompleteTopic(topic))
                 .subscriptionType(SubscriptionType.Exclusive) // 定义订阅模式，订阅模式分为独占、故障转移、共享、键共享，注意默认为独占
                 .subscriptionInitialPosition(SubscriptionInitialPosition.Earliest)
                 .enableBatchIndexAcknowledgment(true)
@@ -27,8 +27,9 @@ public class ConsumerUtil {
 
     public static Consumer<byte[]> getCommonConsumer(PulsarClient client, String topic) throws PulsarClientException {
         return client.newConsumer()
+                .subscriptionName("client-subscription")
                 .consumerName("lab-consumer")
-                .topic("public/default/" + topic)
+                .topic(TopicUtil.getDefaultCompleteTopic(topic))
                 //.topics() // 可以指定一堆 topic
                 //.topicsPattern("persistent:// public/ default/ pattern-topic-.*") // 按照正则表达式的规则匹配一组主题
                 //.patternAutoDiscoveryPeriod(1, TimeUnit.MINUTES) // 和topicsPattern一起使用，表示每隔多长时间重新按照模式匹配主题
@@ -36,7 +37,6 @@ public class ConsumerUtil {
                 .subscriptionType(SubscriptionType.Exclusive) // 定义订阅模式，订阅模式分为独占、故障转移、共享、键共享，注意默认为独占
                 .subscriptionInitialPosition(SubscriptionInitialPosition.Latest)
                 // .subscriptionMode(SubscriptionMode.Durable) // 需要补充作用
-                .subscriptionName("client-subscription")
                 // .priorityLevel(0) // 订阅优先级。共享模式下有效。服务端仅在最高优先级消费者不能接收消息时，才发送给下一级
                 .receiverQueueSize(1000) // 设置消费者接收队列的大小，在应用程序调用Receive方法之前，消费者会在内存中缓存部分消息。该参数用于控制队列中最多缓存的消息数。配置高于默认值的值虽然会提高使用者的吞吐量，但会占用更多的内存。并且当达到限制时，所有接收队列都不能再继续接收数据了。
                 .maxTotalReceiverQueueSizeAcrossPartitions(50000) // 设置多个分区总的最大内存队列缓存长度
@@ -70,18 +70,18 @@ public class ConsumerUtil {
 
     public static Consumer<byte[]> getRetryConsumer(PulsarClient client, String topic) throws PulsarClientException {
         return client.newConsumer()
-                .topic("public/default/" + topic)
-                .subscriptionInitialPosition(SubscriptionInitialPosition.Latest)
                 .subscriptionName("client-subscription")
+                .topic(TopicUtil.getDefaultCompleteTopic(topic))
+                .subscriptionInitialPosition(SubscriptionInitialPosition.Latest)
                 .enableRetry(true)
                 .subscribe();
     }
 
     public static Consumer<byte[]> getBatchIndexAcknowledgmentConsumer(PulsarClient client, String topic) throws PulsarClientException {
         return client.newConsumer()
-                .topic("public/default/" + topic)
-                .subscriptionInitialPosition(SubscriptionInitialPosition.Latest)
                 .subscriptionName("client-subscription")
+                .topic(TopicUtil.getDefaultCompleteTopic(topic))
+                .subscriptionInitialPosition(SubscriptionInitialPosition.Latest)
                 // ensure batch index acknowledgment is enabled on the broker side
                 .enableBatchIndexAcknowledgment(true)
                 .subscribe();

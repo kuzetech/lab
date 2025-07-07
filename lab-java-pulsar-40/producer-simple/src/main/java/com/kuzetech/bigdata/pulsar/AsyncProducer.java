@@ -14,12 +14,12 @@ public class AsyncProducer {
     public static void main(String[] args) throws PulsarClientException, InterruptedException, ExecutionException {
         try (
                 PulsarClient client = ClientUtil.createDefaultLocalClient();
-                Producer<byte[]> producer = ProducerUtil.getAsyncProducer(client, "async-topic");
+                Producer<String> producer = ProducerUtil.getSimpleProducer(client, "source");
         ) {
             CompletableFuture<MessageId>[] futures = new CompletableFuture[5];
 
             for (int i = 0; i < 5; i++) {
-                CompletableFuture<MessageId> future = producer.sendAsync(String.valueOf(i).getBytes());
+                CompletableFuture<MessageId> future = producer.sendAsync(String.valueOf(i));
                 futures[i] = (future);
             }
 
