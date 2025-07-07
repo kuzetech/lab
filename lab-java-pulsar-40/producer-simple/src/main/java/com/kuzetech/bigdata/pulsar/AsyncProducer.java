@@ -1,7 +1,7 @@
 package com.kuzetech.bigdata.pulsar;
 
 import com.kuzetech.bigdata.pulsar.util.ProducerUtil;
-import com.kuzetech.bigdata.pulsar.util.PulsarUtil;
+import com.kuzetech.bigdata.pulsar.util.ClientUtil;
 import org.apache.pulsar.client.api.MessageId;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClient;
@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutionException;
 public class AsyncProducer {
     public static void main(String[] args) throws PulsarClientException, InterruptedException, ExecutionException {
         try (
-                PulsarClient client = PulsarUtil.getCommonPulsarClient();
+                PulsarClient client = ClientUtil.createDefaultLocalClient();
                 Producer<byte[]> producer = ProducerUtil.getAsyncProducer(client, "async-topic");
         ) {
             CompletableFuture<MessageId>[] futures = new CompletableFuture[5];

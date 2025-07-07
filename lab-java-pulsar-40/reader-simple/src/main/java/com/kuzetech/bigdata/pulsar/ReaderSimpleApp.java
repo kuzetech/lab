@@ -1,6 +1,6 @@
 package com.kuzetech.bigdata.pulsar;
 
-import com.kuzetech.bigdata.pulsar.util.PulsarUtil;
+import com.kuzetech.bigdata.pulsar.util.ClientUtil;
 import com.kuzetech.bigdata.pulsar.util.ReaderUtil;
 import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.PulsarClient;
@@ -16,7 +16,7 @@ public class ReaderSimpleApp {
 
     public static void main(String[] args) throws PulsarClientException {
         try (
-                PulsarClient client = PulsarUtil.getCommonPulsarClient()
+                PulsarClient client = ClientUtil.createDefaultLocalClient()
         ) {
             // 内部实现中，读取器也是通过消费者功能封装的，内部使用一个随机命名的订阅名称来对主题进行独占、非持久性订阅，以到达手动定位消息的目的。
             Reader<byte[]> reader = ReaderUtil.getCommonReader(client, "sink-topic");

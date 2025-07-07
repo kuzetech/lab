@@ -1,14 +1,14 @@
 package com.kuzetech.bigdata.pulsar;
 
 import com.kuzetech.bigdata.pulsar.util.ConsumerUtil;
-import com.kuzetech.bigdata.pulsar.util.PulsarUtil;
+import com.kuzetech.bigdata.pulsar.util.ClientUtil;
 import org.apache.pulsar.client.api.*;
 
 public class BatchConsumer {
 
     public static void main(String[] args) throws PulsarClientException {
         try (
-                PulsarClient client = PulsarUtil.getCommonPulsarClient();
+                PulsarClient client = ClientUtil.createDefaultLocalClient();
                 Consumer<byte[]> consumer = ConsumerUtil.getCommonConsumer(client, "sink-topic")
         ) {
             while (true) {

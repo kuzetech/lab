@@ -1,7 +1,7 @@
 package com.kuzetech.bigdata.pulsar;
 
 import com.kuzetech.bigdata.pulsar.util.ProducerUtil;
-import com.kuzetech.bigdata.pulsar.util.PulsarUtil;
+import com.kuzetech.bigdata.pulsar.util.ClientUtil;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class DelayedDeliveryProducer {
     public static void main(String[] args) throws PulsarClientException, InterruptedException {
         try (
-                PulsarClient client = PulsarUtil.getCommonPulsarClient();
+                PulsarClient client = ClientUtil.createDefaultLocalClient();
                 Producer<byte[]> producer = ProducerUtil.getSimpleProducer(client, "source-topic");
         ) {
             /**
