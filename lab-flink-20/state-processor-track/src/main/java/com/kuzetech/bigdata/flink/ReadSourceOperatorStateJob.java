@@ -7,12 +7,12 @@ import org.apache.flink.state.api.SavepointReader;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-public class ReadSourceStateJob {
+public class ReadSourceOperatorStateJob {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        SavepointReader savepoint = SavepointReader.read(env, "file:///Users/huangsw/code/lab/lab-flink-20/state-processor-track/data/savepoint/staging", new HashMapStateBackend());
+        SavepointReader savepoint = SavepointReader.read(env, "file:///Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/savepoint/staging", new HashMapStateBackend());
 
         DataStream<Object> state = savepoint.readUnionState(
                 OperatorIdentifier.forUid("source-event"),

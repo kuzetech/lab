@@ -17,12 +17,16 @@
             <artifactId>flink-state-processor-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.github.apache.flink-connector-pulsar</groupId>
+            <artifactId>flink-connector-pulsar</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.apache.flink-connector-pulsar</groupId>
-            <artifactId>flink-connector-pulsar</artifactId>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
         </dependency>
     </dependencies>
 
@@ -63,7 +67,7 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.kuzetech.bigdata.flink.StateProcessorTrackJob</mainClass>
+                                    <mainClass>com.kuzetech.bigdata.flink.TrackJob</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
