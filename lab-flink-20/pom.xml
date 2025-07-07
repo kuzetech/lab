@@ -17,6 +17,7 @@
         <module>kafka-copier</module>
         <module>pulsar-transaction-validator</module>
         <module>pulsar-transaction-producer</module>
+        <module>state-processor-track</module>
     </modules>
 
     <properties>
@@ -133,6 +134,11 @@
                 <groupId>com.github.apache.flink-connector-pulsar</groupId>
                 <artifactId>flink-connector-pulsar</artifactId>
                 <version>${flink-connector-pulsar.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-state-processor-api</artifactId>
+                <version>${flink.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
