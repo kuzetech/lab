@@ -1,22 +1,23 @@
 package com.kuzetech.bigdata.flink;
 
-import com.xmfunny.funnydb.flink.metadata.MetaDataContent;
 import com.xmfunny.funnydb.flink.pipeline.validator.ValidateEvenStatsResponse;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.runtime.state.hashmap.HashMapStateBackend;
 import org.apache.flink.state.api.OperatorIdentifier;
 import org.apache.flink.state.api.SavepointReader;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
 
-public class ReadEventOperatorStateJob {
-
+public class EventOperatorStateReadJob {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(32);
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                "file:///Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/savepoint/staging",
+                EventOperatorStateBuildJob.NEW_SAVEPOINT_PATH,
                 new HashMapStateBackend());
 
         DataStream<ValidateEvenStatsResponse> validateEvenStatsResponseDataStream = savepoint.readListState(
@@ -24,16 +25,15 @@ public class ReadEventOperatorStateJob {
                 "validateStatsList",
                 TypeInformation.of(ValidateEvenStatsResponse.class));
 
-        validateEvenStatsResponseDataStream.print();
+        DataStream<Long> totalCount = validateEvenStatsResponseDataStream
+                .map(x -> 1L)
+                .returns(Types.LONG)
+                .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
+                .reduce(Long::sum);
 
-        DataStream<MetaDataContent> metaDataContentDataStream = savepoint.readListState(
-                OperatorIdentifier.forUid("event-etl"),
-                "rulesList",
-                TypeInformation.of(MetaDataContent.class));
+        totalCount.print(); //1
 
-        metaDataContentDataStream.print();
-
-        env.execute("ReadIngestEventProcessFunctionJob");
+        env.execute("EventOperatorStateReadJob");
 
     }
 }

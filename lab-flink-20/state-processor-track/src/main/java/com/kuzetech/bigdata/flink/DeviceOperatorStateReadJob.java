@@ -9,15 +9,17 @@ import org.apache.flink.state.api.OperatorIdentifier;
 import org.apache.flink.state.api.SavepointReader;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
 
-public class ReadDeviceOperatorStateJob {
+public class DeviceOperatorStateReadJob {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(32);
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                "file:///Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/savepoint/staging",
+                DeviceOperatorStateBuildJob.NEW_SAVEPOINT_PATH,
                 new EmbeddedRocksDBStateBackend(true));
 
         DataStream<DeviceOperatorKeyedState> deviceOperatorKeyedStateDataStream = savepoint.readKeyedState(
@@ -26,9 +28,15 @@ public class ReadDeviceOperatorStateJob {
                 Types.STRING,
                 TypeInformation.of(DeviceOperatorKeyedState.class));
 
-        deviceOperatorKeyedStateDataStream.print();
+        DataStream<Long> totalCount = deviceOperatorKeyedStateDataStream
+                .map(x -> 1L)
+                .returns(Types.LONG)
+                .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
+                .reduce(Long::sum);
 
-        env.execute("ReadDeviceOperatorStateJob");
+        totalCount.print();
+
+        env.execute("DeviceOperatorStateReadJob");
 
     }
 }
