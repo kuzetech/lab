@@ -18,6 +18,7 @@
         <module>pulsar-transaction-validator</module>
         <module>pulsar-transaction-producer</module>
         <module>state-processor-track</module>
+        <module>savepoint-analyzer</module>
     </modules>
 
     <properties>
@@ -91,6 +92,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.36</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
