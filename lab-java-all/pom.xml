@@ -20,7 +20,6 @@
         <module>kafka</module>
         <module>kafka-streams</module>
         <module>picocli</module>
-        <module>flink17-state-processor</module>
         <module>flink17-stream-work</module>
         <module>flink17-steam</module>
         <module>flink19-dynamic-rule</module>

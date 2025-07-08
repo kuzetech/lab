@@ -1,6 +1,0 @@
-1. 状态迁移任务非常消耗 cpu，由于大部分状态都在 rocksdb 中，需要序列化和反序列化
-2. jobmanager 仅需要 0.5cpu 1g 即可
-3. slot 的数量应该是 cpu 的 2-3 倍，这样才能充分使用 cpu 资源
-4. 迁移任务实际上就是状态的重新读取和写入
-    * 有 ttl 的状态还是需要设置 ttl ，如果想返回过期数据，可以把过期时间拉长
-    * OnReadAndWrite 和 OnCreateAndWrite 似乎没有区别
