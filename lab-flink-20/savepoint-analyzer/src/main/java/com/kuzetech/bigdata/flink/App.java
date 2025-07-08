@@ -18,7 +18,7 @@ public class App {
     public static final int ILLEGAL_METADATA_FILEPATH = -2;
 
     public static void main(String[] args) throws IOException {
-        String savepointDirectory = "/Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/savepoint/staging";
+        String savepointDirectory = "/Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/generate/EventOperatorStateBuildJob";
 
         File metaFile = new File(savepointDirectory + File.separator + "_metadata");
         if (!metaFile.exists() || !metaFile.isFile()) {
