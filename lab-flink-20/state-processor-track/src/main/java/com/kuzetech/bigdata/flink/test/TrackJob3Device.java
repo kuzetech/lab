@@ -1,8 +1,9 @@
-package com.kuzetech.bigdata.flink;
+package com.kuzetech.bigdata.flink.test;
 
 import com.kuzetech.bigdata.flink.domain.DeviceOperatorKeyedState;
 import com.kuzetech.bigdata.flink.function.DeviceOperatorKeyedStateBootstrapper;
 import com.kuzetech.bigdata.flink.function.DeviceOperatorKeyedStateReaderFunction;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
@@ -13,11 +14,12 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import java.io.File;
 
-public class HybridOperatorStateBuildSecondJob {
+@Slf4j
+public class TrackJob3Device {
 
     public static final String OLD_SAVEPOINT_PATH = "file:///Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/savepoint/staging";
-    public static final String NEW_SAVEPOINT_PATH = "file:///Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/generate/HybridOperatorStateBuildSecondJob";
-    public static final String NEW_SAVEPOINT_DIRECTORY = "/Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/generate/HybridOperatorStateBuildSecondJob";
+    public static final String NEW_SAVEPOINT_PATH = "file:///Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/generate/TrackJob3Device";
+    public static final String NEW_SAVEPOINT_DIRECTORY = "/Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/generate/TrackJob3Device";
 
     public static void main(String[] args) throws Exception {
         FileUtils.deleteDirectory(new File(NEW_SAVEPOINT_DIRECTORY));
@@ -42,10 +44,10 @@ public class HybridOperatorStateBuildSecondJob {
                 .transform(new DeviceOperatorKeyedStateBootstrapper());
 
         SavepointWriter
-                .fromExistingSavepoint(env, HybridOperatorStateBuildFirstJob.NEW_SAVEPOINT_PATH, new EmbeddedRocksDBStateBackend(true))
+                .fromExistingSavepoint(env, TrackJob2Event.NEW_SAVEPOINT_PATH, new EmbeddedRocksDBStateBackend(true))
                 .withOperator(OperatorIdentifier.forUid("user-login-device-state"), transformation)
                 .write(NEW_SAVEPOINT_PATH);
 
-        env.execute("HybridOperatorStateBuildSecondJob");
+        env.execute("TrackJob3Device");
     }
 }

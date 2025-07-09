@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink;
+package com.kuzetech.bigdata.flink.test;
 
 import com.xmfunny.funnydb.flink.metadata.MetaDataContent;
 import com.xmfunny.funnydb.flink.pipeline.validator.ValidateEvenStatsResponse;

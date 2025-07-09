@@ -1,7 +1,7 @@
-package com.kuzetech.bigdata.flink;
+package com.kuzetech.bigdata.flink.test;
 
-import com.kuzetech.bigdata.flink.domain.DistinctOperatorKeyedState;
-import com.kuzetech.bigdata.flink.function.DistinctOperatorKeyedStateReaderFunction;
+import com.kuzetech.bigdata.flink.domain.EnrichOperatorKeyedState;
+import com.kuzetech.bigdata.flink.function.EnrichOperatorKeyedStateReaderFunction;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
 
-public class DistinctOperatorStateReadJob {
+public class EnrichOperatorStateReadJob {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -19,24 +19,25 @@ public class DistinctOperatorStateReadJob {
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                DistinctOperatorStateBuildJob.NEW_SAVEPOINT_PATH,
+                // EnrichOperatorStateBuildJob.NEW_SAVEPOINT_PATH,
+                TrackJob4Enrich.NEW_SAVEPOINT_PATH,
                 new EmbeddedRocksDBStateBackend(true));
 
-        DataStream<DistinctOperatorKeyedState> distinctOperatorKeyedStateDataStream = savepoint.readKeyedState(
-                OperatorIdentifier.forUid("filter-distinct"),
-                new DistinctOperatorKeyedStateReaderFunction(),
+        DataStream<EnrichOperatorKeyedState> enrichOperatorKeyedStateDataStream = savepoint.readKeyedState(
+                OperatorIdentifier.forUid("device-info-enrich-state"),
+                new EnrichOperatorKeyedStateReaderFunction(),
                 Types.STRING,
-                TypeInformation.of(DistinctOperatorKeyedState.class));
+                TypeInformation.of(EnrichOperatorKeyedState.class));
 
-        DataStream<Long> totalCount = distinctOperatorKeyedStateDataStream
+        DataStream<Long> totalCount = enrichOperatorKeyedStateDataStream
                 .map(x -> 1L)
                 .returns(Types.LONG)
                 .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
                 .reduce(Long::sum);
 
-        totalCount.print(); // 16662
+        totalCount.print(); // 3916
 
-        env.execute("DistinctOperatorStateReadJob");
+        env.execute("EnrichOperatorStateReadJob");
 
     }
 }

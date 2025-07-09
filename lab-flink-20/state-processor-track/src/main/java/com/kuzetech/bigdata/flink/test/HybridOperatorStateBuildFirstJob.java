@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink;
+package com.kuzetech.bigdata.flink.test;
 
 import com.kuzetech.bigdata.flink.domain.DistinctOperatorKeyedState;
 import com.kuzetech.bigdata.flink.function.DistinctOperatorKeyedStateBootstrapper;

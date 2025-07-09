@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink;
+package com.kuzetech.bigdata.flink.test;
 
 import com.kuzetech.bigdata.flink.domain.DeviceOperatorKeyedState;
 import com.kuzetech.bigdata.flink.function.DeviceOperatorKeyedStateBootstrapper;
