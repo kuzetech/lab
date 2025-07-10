@@ -28,7 +28,7 @@ public class App {
     public static void main(String[] args) throws IOException {
         // String savepointDirectory = "/Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/savepoint/staging";
         // String savepointDirectory = "/Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/generate/TrackJob4Enrich";
-        String savepointDirectory = "/Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/savepoint/track";
+        String savepointDirectory = "/Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/savepoint/17-work";
 
         File metaFile = new File(savepointDirectory + File.separator + "_metadata");
         if (!metaFile.exists() || !metaFile.isFile()) {
