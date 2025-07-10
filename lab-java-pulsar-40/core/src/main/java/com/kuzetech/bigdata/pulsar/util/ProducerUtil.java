@@ -13,6 +13,13 @@ public class ProducerUtil {
                 .create();
     }
 
+    public static Producer<byte[]> getIngestProducer(PulsarClient client, String topic) throws PulsarClientException {
+        return client.newProducer(Schema.BYTES)
+                .producerName("lab-producer-ingest")
+                .topic(TopicUtil.getDefaultCompleteTopic(topic))
+                .create();
+    }
+
     public static Producer<String> getSimpleBatchProducer(PulsarClient client, String topic, Integer batchSize) throws PulsarClientException {
         return client.newProducer(Schema.STRING)
                 .producerName("lab-producer-batch")
