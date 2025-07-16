@@ -26,11 +26,10 @@ public class App {
     public static final int ILLEGAL_METADATA_FILEPATH = -2;
 
     public static void main(String[] args) throws IOException {
-        // String savepointDirectory = "/Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/savepoint/staging";
-        // String savepointDirectory = "/Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/generate/TrackJob4Enrich";
-        String savepointDirectory = "/Users/huangsw/code/lab/lab-flink-20/state-processor-track/temp/savepoint/17-work";
+        String metadataPath =
+                "/Users/huangsw/code/lab/lab-flink-20/savepoint-analyzer/data/track/cn/128/_metadata";
 
-        File metaFile = new File(savepointDirectory + File.separator + "_metadata");
+        File metaFile = new File(metadataPath);
         if (!metaFile.exists() || !metaFile.isFile()) {
             log.error("Metafile {} is not a file or does not exist", metaFile.getPath());
             System.exit(ILLEGAL_METADATA_FILEPATH);
