@@ -1,13 +1,12 @@
 package com.kuzetech.bigdata.flink.work;
 
-import com.kuzetech.bigdata.flink.domain.EnrichOperatorKeyedState;
-import com.kuzetech.bigdata.flink.function.EnrichOperatorKeyedStateBootstrapper;
-import com.kuzetech.bigdata.flink.function.EnrichOperatorKeyedStateReaderFunction;
+import com.kuzetech.bigdata.flink.function.EventOperatorStateBootstrapFunction;
+import com.xmfunny.funnydb.flink.pipeline.validator.ValidateEvenStatsResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
+import org.apache.flink.runtime.state.hashmap.HashMapStateBackend;
 import org.apache.flink.state.api.*;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -24,20 +23,18 @@ public class TrackJob4 {
                 parameterTool.get("old"),
                 new EmbeddedRocksDBStateBackend(true));
 
-        DataStream<EnrichOperatorKeyedState> enrichOperatorKeyedStateDataStream = savepoint.readKeyedState(
-                OperatorIdentifier.forUid("device-info-enrich-state"),
-                new EnrichOperatorKeyedStateReaderFunction(),
-                Types.STRING,
-                TypeInformation.of(EnrichOperatorKeyedState.class));
+        DataStream<ValidateEvenStatsResponse> validateEvenStatsResponseDataStream = savepoint.readListState(
+                OperatorIdentifier.forUid("event-etl"),
+                "validateStatsList",
+                TypeInformation.of(ValidateEvenStatsResponse.class));
 
-        StateBootstrapTransformation<EnrichOperatorKeyedState> transformation = OperatorTransformation
-                .bootstrapWith(enrichOperatorKeyedStateDataStream)
-                .keyBy(o -> o.key)
-                .transform(new EnrichOperatorKeyedStateBootstrapper());
+        StateBootstrapTransformation transformation = OperatorTransformation
+                .bootstrapWith(validateEvenStatsResponseDataStream)
+                .transform(new EventOperatorStateBootstrapFunction());
 
         SavepointWriter
-                .fromExistingSavepoint(env, parameterTool.get("temp"), new EmbeddedRocksDBStateBackend(true))
-                .withOperator(OperatorIdentifier.forUid("device-info-enrich-state"), transformation)
+                .fromExistingSavepoint(env, parameterTool.get("temp"), new HashMapStateBackend())
+                .withOperator(OperatorIdentifier.forUid("event-etl"), transformation)
                 .write(parameterTool.get("new"));
 
         env.execute("TrackJob4");

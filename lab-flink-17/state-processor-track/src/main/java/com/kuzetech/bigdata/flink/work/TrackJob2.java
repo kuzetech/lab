@@ -1,12 +1,13 @@
 package com.kuzetech.bigdata.flink.work;
 
-import com.kuzetech.bigdata.flink.function.EventOperatorStateBootstrapFunction;
-import com.xmfunny.funnydb.flink.pipeline.validator.ValidateEvenStatsResponse;
+import com.kuzetech.bigdata.flink.domain.DistinctOperatorKeyedState;
+import com.kuzetech.bigdata.flink.function.DistinctOperatorKeyedStateBootstrapper;
+import com.kuzetech.bigdata.flink.function.DistinctOperatorKeyedStateReaderFunction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
-import org.apache.flink.runtime.state.hashmap.HashMapStateBackend;
 import org.apache.flink.state.api.*;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -23,18 +24,20 @@ public class TrackJob2 {
                 parameterTool.get("old"),
                 new EmbeddedRocksDBStateBackend(true));
 
-        DataStream<ValidateEvenStatsResponse> validateEvenStatsResponseDataStream = savepoint.readListState(
-                OperatorIdentifier.forUid("event-etl"),
-                "validateStatsList",
-                TypeInformation.of(ValidateEvenStatsResponse.class));
+        DataStream<DistinctOperatorKeyedState> distinctOperatorKeyedStateDataStream = savepoint.readKeyedState(
+                OperatorIdentifier.forUid("filter-distinct"),
+                new DistinctOperatorKeyedStateReaderFunction(),
+                Types.STRING,
+                TypeInformation.of(DistinctOperatorKeyedState.class));
 
-        StateBootstrapTransformation transformation = OperatorTransformation
-                .bootstrapWith(validateEvenStatsResponseDataStream)
-                .transform(new EventOperatorStateBootstrapFunction());
+        StateBootstrapTransformation<DistinctOperatorKeyedState> transformation = OperatorTransformation
+                .bootstrapWith(distinctOperatorKeyedStateDataStream)
+                .keyBy(o -> o.key)
+                .transform(new DistinctOperatorKeyedStateBootstrapper());
 
         SavepointWriter
-                .fromExistingSavepoint(env, parameterTool.get("temp"), new HashMapStateBackend())
-                .withOperator(OperatorIdentifier.forUid("event-etl"), transformation)
+                .fromExistingSavepoint(env, parameterTool.get("temp"), new EmbeddedRocksDBStateBackend(true))
+                .withOperator(OperatorIdentifier.forUid("filter-distinct"), transformation)
                 .write(parameterTool.get("new"));
 
         env.execute("TrackJob2");
