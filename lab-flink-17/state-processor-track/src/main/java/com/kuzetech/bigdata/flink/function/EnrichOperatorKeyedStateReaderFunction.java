@@ -18,16 +18,15 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class EnrichOperatorKeyedStateReaderFunction extends KeyedStateReaderFunction<String, EnrichOperatorKeyedState> {
-
-    static final Time TTL = Time.minutes(30);
+    
     ValueState<DeviceInfoCacheData> deviceInfoLastState;
     ListState<Tuple2<RecordHeaders, TrackEvent>> pendingState;
 
     @Override
     public void open(Configuration configuration) throws Exception {
-        StateTtlConfig ttlConfig = StateTtlConfig.newBuilder(TTL)
+        StateTtlConfig ttlConfig = StateTtlConfig.newBuilder(Time.days(100))
                 .setUpdateType(StateTtlConfig.UpdateType.OnReadAndWrite)
-                .setStateVisibility(StateTtlConfig.StateVisibility.ReturnExpiredIfNotCleanedUp)
+                .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
                 .build();
         ValueStateDescriptor<DeviceInfoCacheData> deviceInfoLastStateDesc = new ValueStateDescriptor<>("device-info-last-state", Types.POJO(DeviceInfoCacheData.class));
         deviceInfoLastStateDesc.enableTimeToLive(ttlConfig);
@@ -46,6 +45,8 @@ public class EnrichOperatorKeyedStateReaderFunction extends KeyedStateReaderFunc
         data.pendingState = StreamSupport
                 .stream(pendingState.get().spliterator(), false)
                 .collect(Collectors.toList());
-        out.collect(data);
+        if (data.deviceInfo != null || !data.pendingState.isEmpty()) {
+            out.collect(data);
+        }
     }
 }

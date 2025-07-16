@@ -10,6 +10,7 @@ import org.apache.flink.state.api.functions.StateBootstrapFunction;
 
 public class EventOperatorStateBootstrapFunction extends StateBootstrapFunction<ValidateEvenStatsResponse> {
 
+    // 即使不使用也需要存在
     private ListState<MetaDataContent> metaDataContentOperatorListState;
     private ListState<ValidateEvenStatsResponse> validateEvenStatsResponseOperatorListState;
 

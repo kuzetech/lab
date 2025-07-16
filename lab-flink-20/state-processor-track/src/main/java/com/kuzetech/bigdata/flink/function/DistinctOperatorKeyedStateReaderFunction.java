@@ -17,9 +17,9 @@ public class DistinctOperatorKeyedStateReaderFunction extends KeyedStateReaderFu
     @Override
     public void open(Configuration configuration) throws Exception {
         StateTtlConfig ttlConfig = StateTtlConfig
-                .newBuilder(Time.minutes(10))
+                .newBuilder(Time.days(1000))
                 .setUpdateType(StateTtlConfig.UpdateType.OnCreateAndWrite)
-                .setStateVisibility(StateTtlConfig.StateVisibility.ReturnExpiredIfNotCleanedUp)
+                .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
                 .build();
         ValueStateDescriptor<Boolean> stateDescriptor = new ValueStateDescriptor<>("log-id-exist", Types.BOOLEAN);
         stateDescriptor.enableTimeToLive(ttlConfig);

@@ -1,27 +1,24 @@
-package com.kuzetech.bigdata.flink.work;
+package com.kuzetech.bigdata.flink.test;
 
 import com.kuzetech.bigdata.flink.domain.EnrichOperatorKeyedState;
-import com.kuzetech.bigdata.flink.function.EnrichOperatorKeyedStateBootstrapper;
 import com.kuzetech.bigdata.flink.function.EnrichOperatorKeyedStateReaderFunction;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
-import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
-import org.apache.flink.state.api.*;
+import org.apache.flink.state.api.OperatorIdentifier;
+import org.apache.flink.state.api.SavepointReader;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-@Slf4j
-public class TrackJob4 {
-    public static void main(String[] args) throws Exception {
-        ParameterTool parameterTool = ParameterTool.fromArgs(args);
+public class EnrichOperatorStateReadJob {
 
+    public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(32);
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                parameterTool.get("old"),
+                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/savepoint/track/staging/256/source",
                 new EmbeddedRocksDBStateBackend(true));
 
         DataStream<EnrichOperatorKeyedState> enrichOperatorKeyedStateDataStream = savepoint.readKeyedState(
@@ -30,16 +27,9 @@ public class TrackJob4 {
                 Types.STRING,
                 TypeInformation.of(EnrichOperatorKeyedState.class));
 
-        StateBootstrapTransformation<EnrichOperatorKeyedState> transformation = OperatorTransformation
-                .bootstrapWith(enrichOperatorKeyedStateDataStream)
-                .keyBy(o -> o.key)
-                .transform(new EnrichOperatorKeyedStateBootstrapper());
+        enrichOperatorKeyedStateDataStream.print();
 
-        SavepointWriter
-                .fromExistingSavepoint(env, parameterTool.get("temp"), new EmbeddedRocksDBStateBackend(true))
-                .withOperator(OperatorIdentifier.forUid("device-info-enrich-state"), transformation)
-                .write(parameterTool.get("new"));
+        env.execute("EnrichOperatorStateReadJob");
 
-        env.execute("TrackJob4");
     }
 }

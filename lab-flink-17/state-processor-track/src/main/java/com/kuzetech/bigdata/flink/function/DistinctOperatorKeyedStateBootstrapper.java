@@ -18,7 +18,7 @@ public class DistinctOperatorKeyedStateBootstrapper extends KeyedStateBootstrapF
         StateTtlConfig ttlConfig = StateTtlConfig
                 .newBuilder(Time.minutes(10))
                 .setUpdateType(StateTtlConfig.UpdateType.OnCreateAndWrite)
-                .setStateVisibility(StateTtlConfig.StateVisibility.ReturnExpiredIfNotCleanedUp)
+                .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
                 .build();
         ValueStateDescriptor<Boolean> stateDescriptor = new ValueStateDescriptor<>("log-id-exist", Types.BOOLEAN);
         stateDescriptor.enableTimeToLive(ttlConfig);

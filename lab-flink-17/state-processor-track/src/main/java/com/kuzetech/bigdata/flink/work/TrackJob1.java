@@ -1,8 +1,8 @@
 package com.kuzetech.bigdata.flink.work;
 
-import com.kuzetech.bigdata.flink.domain.EnrichOperatorKeyedState;
-import com.kuzetech.bigdata.flink.function.EnrichOperatorKeyedStateBootstrapper;
-import com.kuzetech.bigdata.flink.function.EnrichOperatorKeyedStateReaderFunction;
+import com.kuzetech.bigdata.flink.domain.DistinctOperatorKeyedState;
+import com.kuzetech.bigdata.flink.function.DistinctOperatorKeyedStateBootstrapper;
+import com.kuzetech.bigdata.flink.function.DistinctOperatorKeyedStateReaderFunction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
@@ -24,20 +24,20 @@ public class TrackJob1 {
                 parameterTool.get("old"),
                 new EmbeddedRocksDBStateBackend(true));
 
-        DataStream<EnrichOperatorKeyedState> enrichOperatorKeyedStateDataStream = savepoint.readKeyedState(
-                OperatorIdentifier.forUid("device-info-enrich-state"),
-                new EnrichOperatorKeyedStateReaderFunction(),
+        DataStream<DistinctOperatorKeyedState> distinctOperatorKeyedStateDataStream = savepoint.readKeyedState(
+                OperatorIdentifier.forUid("filter-distinct"),
+                new DistinctOperatorKeyedStateReaderFunction(),
                 Types.STRING,
-                TypeInformation.of(EnrichOperatorKeyedState.class));
+                TypeInformation.of(DistinctOperatorKeyedState.class));
 
-        StateBootstrapTransformation<EnrichOperatorKeyedState> transformation = OperatorTransformation
-                .bootstrapWith(enrichOperatorKeyedStateDataStream)
+        StateBootstrapTransformation<DistinctOperatorKeyedState> transformation = OperatorTransformation
+                .bootstrapWith(distinctOperatorKeyedStateDataStream)
                 .keyBy(o -> o.key)
-                .transform(new EnrichOperatorKeyedStateBootstrapper());
+                .transform(new DistinctOperatorKeyedStateBootstrapper());
 
         SavepointWriter
                 .newSavepoint(env, new EmbeddedRocksDBStateBackend(true), parameterTool.getInt("max", 256))
-                .withOperator(OperatorIdentifier.forUid("device-info-enrich-state"), transformation)
+                .withOperator(OperatorIdentifier.forUid("filter-distinct"), transformation)
                 .write(parameterTool.get("new"));
 
         env.execute("TrackJob1");

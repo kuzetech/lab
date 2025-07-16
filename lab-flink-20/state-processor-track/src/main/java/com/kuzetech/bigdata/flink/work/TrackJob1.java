@@ -36,7 +36,7 @@ public class TrackJob1 {
                 .transform(new DistinctOperatorKeyedStateBootstrapper());
 
         SavepointWriter
-                .newSavepoint(env, new EmbeddedRocksDBStateBackend(true), parameterTool.getInt("max", 512))
+                .newSavepoint(env, new EmbeddedRocksDBStateBackend(true), parameterTool.getInt("max", 256))
                 .withOperator(OperatorIdentifier.forUid("filter-distinct"), transformation)
                 .write(parameterTool.get("new"));
 

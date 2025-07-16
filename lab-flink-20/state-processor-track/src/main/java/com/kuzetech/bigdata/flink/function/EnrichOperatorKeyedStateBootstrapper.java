@@ -15,15 +15,14 @@ import org.apache.flink.state.api.functions.KeyedStateBootstrapFunction;
 
 public class EnrichOperatorKeyedStateBootstrapper extends KeyedStateBootstrapFunction<String, EnrichOperatorKeyedState> {
 
-    static final Time TTL = Time.minutes(30);
     ValueState<DeviceInfoCacheData> deviceInfoLastState;
     ListState<Tuple2<RecordHeaders, TrackEvent>> pendingState;
 
     @Override
     public void open(Configuration configuration) throws Exception {
-        StateTtlConfig ttlConfig = StateTtlConfig.newBuilder(TTL)
+        StateTtlConfig ttlConfig = StateTtlConfig.newBuilder(Time.minutes(30))
                 .setUpdateType(StateTtlConfig.UpdateType.OnReadAndWrite)
-                .setStateVisibility(StateTtlConfig.StateVisibility.ReturnExpiredIfNotCleanedUp)
+                .setStateVisibility(StateTtlConfig.StateVisibility.NeverReturnExpired)
                 .build();
         ValueStateDescriptor<DeviceInfoCacheData> deviceInfoLastStateDesc = new ValueStateDescriptor<>("device-info-last-state", Types.POJO(DeviceInfoCacheData.class));
         deviceInfoLastStateDesc.enableTimeToLive(ttlConfig);
