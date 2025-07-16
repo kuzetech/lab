@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class EnrichOperatorKeyedStateReaderFunction extends KeyedStateReaderFunction<String, EnrichOperatorKeyedState> {
-    
+
     ValueState<DeviceInfoCacheData> deviceInfoLastState;
     ListState<Tuple2<RecordHeaders, TrackEvent>> pendingState;
 
@@ -45,8 +45,6 @@ public class EnrichOperatorKeyedStateReaderFunction extends KeyedStateReaderFunc
         data.pendingState = StreamSupport
                 .stream(pendingState.get().spliterator(), false)
                 .collect(Collectors.toList());
-        if (data.deviceInfo != null || !data.pendingState.isEmpty()) {
-            out.collect(data);
-        }
+        out.collect(data);
     }
 }

@@ -10,6 +10,7 @@
     <artifactId>state-processor-track</artifactId>
     <packaging>jar</packaging>
     <name>state-processor-track</name>
+    <version>2.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
