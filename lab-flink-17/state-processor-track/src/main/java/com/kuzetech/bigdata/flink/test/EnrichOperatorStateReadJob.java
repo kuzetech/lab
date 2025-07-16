@@ -18,7 +18,8 @@ public class EnrichOperatorStateReadJob {
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/savepoint/track/staging/256/source",
+                // "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/savepoint/track/staging/source/256",
+                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/savepoint/track/local/gen/512/enrich",
                 new EmbeddedRocksDBStateBackend(true));
 
         DataStream<EnrichOperatorKeyedState> enrichOperatorKeyedStateDataStream = savepoint.readKeyedState(
