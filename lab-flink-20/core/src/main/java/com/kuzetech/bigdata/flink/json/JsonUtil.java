@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 
 @Slf4j
 public class JsonUtil {
-    public static final String FIELD_NAME_KEY_INGEST_TIME = "\"ingest_time\":";
+    public static final String FIELD_NAME_KEY_INGEST_TIME = "\"#ingest_time\":";
     public static final String FUNNYDB_MESSAGE_TEMP = "{\"ingest_time\":%d}";
 
     public static long extractFunnyDbIngestTime(byte[] jsonBytesData) {
