@@ -19,18 +19,21 @@
 package com.kuzetech.bigdata.flink;
 
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
+import com.kuzetech.bigdata.flink.funny.FunnyMessage;
+import com.kuzetech.bigdata.flink.kafka.KafkaConfig;
+import com.kuzetech.bigdata.flink.kafka.KafkaFunnyMessageDeserializationSchema;
+import com.kuzetech.bigdata.flink.kafka.KafkaUtil;
 import com.kuzetech.bigdata.flink.pulsar.PulsarConfig;
-import com.kuzetech.bigdata.flink.pulsar.PulsarSourceMessage;
-import com.kuzetech.bigdata.flink.pulsar.PulsarSourceMessageDeserializationSchema;
+import com.kuzetech.bigdata.flink.pulsar.PulsarFunnyMessageDeserializationSchema;
 import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.connector.pulsar.sink.PulsarSinkBuilder;
+import org.apache.flink.connector.kafka.source.KafkaSourceBuilder;
 import org.apache.flink.connector.pulsar.source.PulsarSourceBuilder;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-public class PulsarCopierJob {
+public class PulsarTransactionValidateJobCoDetail {
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -38,19 +41,29 @@ public class PulsarCopierJob {
         final StreamExecutionEnvironment env = FlinkUtil.initEnv(parameterTool);
 
         final PulsarConfig pulsarConfig = PulsarConfig.generateFromParameterTool(parameterTool);
+        final KafkaConfig kafkaConfig = KafkaConfig.generateFromParameterTool(parameterTool);
 
-        PulsarSourceBuilder<PulsarSourceMessage> sourceBuilder = PulsarUtil.buildSourceBaseBuilder(pulsarConfig, new PulsarSourceMessageDeserializationSchema());
+        PulsarSourceBuilder<FunnyMessage> pulsarSourceBuilder = PulsarUtil.buildSourceBaseBuilder(pulsarConfig, new PulsarFunnyMessageDeserializationSchema());
+        KafkaSourceBuilder<FunnyMessage> kafkaSourceBuilder = KafkaUtil.buildSourceBaseBuilder(kafkaConfig, new KafkaFunnyMessageDeserializationSchema());
 
-        SingleOutputStreamOperator<PulsarSourceMessage> sourceStream = env.fromSource(sourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source")
-                .uid("source")
-                .name("source");
 
-        PulsarSinkBuilder<PulsarSourceMessage> sinkBuilder = PulsarUtil.buildSinkBaseBuilder(pulsarConfig);
+        SingleOutputStreamOperator<FunnyMessage> pulsarSourceStream =
+                env.fromSource(pulsarSourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source-pulsar")
+                        .uid("source-pulsar")
+                        .name("source-pulsar");
 
-        sourceStream.sinkTo(sinkBuilder.build())
-                .uid("sink")
-                .name("sink");
+        SingleOutputStreamOperator<FunnyMessage> kafkaSourceStream =
+                env.fromSource(kafkaSourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source-kafka")
+                        .uid("source-kafka")
+                        .name("source-kafka");
 
+        pulsarSourceStream.connect(kafkaSourceStream)
+                .keyBy(FunnyMessage::getLogId, FunnyMessage::getLogId)
+                .process(new DiffKeyedCoProcessFunction())
+                .uid("statistician")
+                .name("statistician")
+                .print();
+        
         env.execute(pulsarConfig.getJobName());
     }
 }

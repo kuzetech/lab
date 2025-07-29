@@ -9,6 +9,7 @@ import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.KafkaSourceBuilder;
 import org.apache.flink.connector.kafka.source.KafkaSourceOptions;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
+import org.apache.flink.connector.kafka.source.reader.deserializer.KafkaRecordDeserializationSchema;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -38,8 +39,8 @@ public class KafkaUtil {
             .build();
 
 
-    public static KafkaSourceBuilder<KafkaSourceMessage> buildSourceBaseBuilder(KafkaConfig config) {
-        return KafkaSource.<KafkaSourceMessage>builder()
+    public static <T> KafkaSourceBuilder<T> buildSourceBaseBuilder(KafkaConfig config, KafkaRecordDeserializationSchema<T> recordDeserializer) {
+        return KafkaSource.<T>builder()
                 .setProperty(KafkaSourceOptions.PARTITION_DISCOVERY_INTERVAL_MS.key(), DEFAULT_KAFKA_PARTITION_DISCOVERY_INTERVAL_MS)
                 .setProperty(ConsumerConfig.ISOLATION_LEVEL_CONFIG, IsolationLevel.READ_COMMITTED.toString().toLowerCase(Locale.ROOT))
                 .setProperty("commit.offsets.on.checkpoint", "true")
@@ -47,7 +48,7 @@ public class KafkaUtil {
                 .setTopics(config.getSourceTopic())
                 .setGroupId(config.getSubscriber())
                 .setStartingOffsets(getJobStartingOffsets(config.getStartingOffsets()))
-                .setDeserializer(new KafkaSourceMessageDeserializationSchema())
+                .setDeserializer(recordDeserializer)
                 .setClientIdPrefix(config.getClientIdPrefix());
     }
 

@@ -8,16 +8,17 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
-public class PrintCountWindowFunction implements WindowFunction<Long, String, String, TimeWindow> {
+public class PrintDiffLogIdWindowFunction implements WindowFunction<Set<String>, String, String, TimeWindow> {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final ZoneId zoneId = ZoneId.of("Asia/Shanghai");
 
     @Override
-    public void apply(String key, TimeWindow window, Iterable<Long> input, Collector<String> out) {
-        Long count = input.iterator().next();
-        if (count > 0) {
+    public void apply(String key, TimeWindow window, Iterable<Set<String>> input, Collector<String> out) {
+        Set<String> diffLogIdSet = input.iterator().next();
+        if (!diffLogIdSet.isEmpty()) {
             LocalDateTime windowStart = Instant.ofEpochMilli(window.getStart())
                     .atZone(zoneId)
                     .toLocalDateTime();
@@ -30,7 +31,7 @@ public class PrintCountWindowFunction implements WindowFunction<Long, String, St
                     .atZone(zoneId)
                     .toLocalDateTime();
             String currentTimeStr = currentTime.format(formatter);
-            String result = String.format("Window Start: %s, Window End: %s, Event is %s, Total is: %d, Current Time: %s", windowStartStr, windowEndStr, key, count, currentTimeStr);
+            String result = String.format("Current Time: %s, Window Start: %s, Window End: %s, Key is %s, Result is: %s, ", currentTimeStr, windowStartStr, windowEndStr, key, String.join("|", diffLogIdSet));
             out.collect(result);
         }
     }

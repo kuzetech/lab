@@ -9,6 +9,7 @@ import org.apache.flink.connector.pulsar.source.PulsarSource;
 import org.apache.flink.connector.pulsar.source.PulsarSourceBuilder;
 import org.apache.flink.connector.pulsar.source.PulsarSourceOptions;
 import org.apache.flink.connector.pulsar.source.enumerator.cursor.StartCursor;
+import org.apache.flink.connector.pulsar.source.reader.deserializer.PulsarDeserializationSchema;
 import org.apache.pulsar.client.api.MessageId;
 import org.apache.pulsar.client.internal.DefaultImplementation;
 
@@ -28,7 +29,7 @@ public class PulsarUtil {
         return "persistent://public/default/" + simpleName;
     }
 
-    public static PulsarSourceBuilder<PulsarSourceMessage> buildSourceBaseBuilder(PulsarConfig config) {
+    public static <T> PulsarSourceBuilder<T> buildSourceBaseBuilder(PulsarConfig config, PulsarDeserializationSchema<T> deserializationSchema) {
         String completeTopicName = getDefaultCompleteTopicName(config.getSourceTopic());
         return PulsarSource.builder()
                 .setConfig(PulsarSourceOptions.PULSAR_PARTITION_DISCOVERY_INTERVAL_MS, DEFAULT_PULSAR_PARTITION_DISCOVERY_INTERVAL_MS)
@@ -36,7 +37,7 @@ public class PulsarUtil {
                 .setServiceUrl(config.getServiceUrl())
                 .setStartCursor(getJobStartCursor(completeTopicName, config.getStartCursor()))
                 .setTopics(config.getSourceTopic())
-                .setDeserializationSchema(new PulsarSourceMessageDeserializationSchema())
+                .setDeserializationSchema(deserializationSchema)
                 .setSubscriptionName(config.getSubscriber());
     }
 

@@ -21,6 +21,7 @@ package com.kuzetech.bigdata.flink;
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
 import com.kuzetech.bigdata.flink.kafka.KafkaConfig;
 import com.kuzetech.bigdata.flink.kafka.KafkaSourceMessage;
+import com.kuzetech.bigdata.flink.kafka.KafkaSourceMessageDeserializationSchema;
 import com.kuzetech.bigdata.flink.kafka.KafkaUtil;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -38,7 +39,7 @@ public class KafkaCopierJob {
 
         final KafkaConfig kafkaConfig = KafkaConfig.generateFromParameterTool(parameterTool);
 
-        KafkaSourceBuilder<KafkaSourceMessage> sourceBuilder = KafkaUtil.buildSourceBaseBuilder(kafkaConfig);
+        KafkaSourceBuilder<KafkaSourceMessage> sourceBuilder = KafkaUtil.buildSourceBaseBuilder(kafkaConfig, new KafkaSourceMessageDeserializationSchema());
 
         SingleOutputStreamOperator<KafkaSourceMessage> sourceStream = env.fromSource(sourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source")
                 .uid("source")

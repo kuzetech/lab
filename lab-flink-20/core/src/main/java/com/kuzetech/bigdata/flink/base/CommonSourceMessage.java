@@ -54,4 +54,8 @@ public class CommonSourceMessage implements Serializable {
         return null;
     }
 
+    public String extraEvent() {
+        return JsonUtil.extractFunnyDbEventName(this.data);
+    }
+
 }

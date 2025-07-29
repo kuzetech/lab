@@ -18,16 +18,13 @@
 
 package com.kuzetech.bigdata.flink;
 
-import com.kuzetech.bigdata.flink.base.CommonSourceMessage;
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
-import com.kuzetech.bigdata.flink.json.JsonUtil;
+import com.kuzetech.bigdata.flink.funny.FunnyMessage;
 import com.kuzetech.bigdata.flink.kafka.KafkaConfig;
-import com.kuzetech.bigdata.flink.kafka.KafkaSourceMessage;
-import com.kuzetech.bigdata.flink.kafka.KafkaSourceMessageDeserializationSchema;
+import com.kuzetech.bigdata.flink.kafka.KafkaFunnyMessageDeserializationSchema;
 import com.kuzetech.bigdata.flink.kafka.KafkaUtil;
 import com.kuzetech.bigdata.flink.pulsar.PulsarConfig;
-import com.kuzetech.bigdata.flink.pulsar.PulsarSourceMessage;
-import com.kuzetech.bigdata.flink.pulsar.PulsarSourceMessageDeserializationSchema;
+import com.kuzetech.bigdata.flink.pulsar.PulsarFunnyMessageDeserializationSchema;
 import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -40,7 +37,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 
 import java.time.Duration;
 
-public class PulsarTransactionValidateJob {
+public class PulsarTransactionValidateJobDetail {
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -50,37 +47,35 @@ public class PulsarTransactionValidateJob {
         final PulsarConfig pulsarConfig = PulsarConfig.generateFromParameterTool(parameterTool);
         final KafkaConfig kafkaConfig = KafkaConfig.generateFromParameterTool(parameterTool);
 
-        PulsarSourceBuilder<PulsarSourceMessage> pulsarSourceBuilder = PulsarUtil.buildSourceBaseBuilder(pulsarConfig, new PulsarSourceMessageDeserializationSchema());
-        KafkaSourceBuilder<KafkaSourceMessage> kafkaSourceBuilder = KafkaUtil.buildSourceBaseBuilder(kafkaConfig, new KafkaSourceMessageDeserializationSchema());
+        PulsarSourceBuilder<FunnyMessage> pulsarSourceBuilder = PulsarUtil.buildSourceBaseBuilder(pulsarConfig, new PulsarFunnyMessageDeserializationSchema());
+        KafkaSourceBuilder<FunnyMessage> kafkaSourceBuilder = KafkaUtil.buildSourceBaseBuilder(kafkaConfig, new KafkaFunnyMessageDeserializationSchema());
 
-        WatermarkStrategy<PulsarSourceMessage> pulsarMsgWatermarkStrategy = WatermarkStrategy
-                .<PulsarSourceMessage>forBoundedOutOfOrderness(Duration.ofSeconds(pulsarConfig.getJobOutOfOrdernessSecond()))
-                .withTimestampAssigner((record, timestamp) -> JsonUtil.extractFunnyDbIngestTime(record.getData()))
+        WatermarkStrategy<FunnyMessage> pulsarMsgWatermarkStrategy = WatermarkStrategy
+                .<FunnyMessage>forBoundedOutOfOrderness(Duration.ofSeconds(pulsarConfig.getJobOutOfOrdernessSecond()))
+                .withTimestampAssigner((record, timestamp) -> record.getIngestTime())
                 .withIdleness(Duration.ofSeconds(60));
 
-        WatermarkStrategy<KafkaSourceMessage> kafkaMsgWatermarkStrategy = WatermarkStrategy
-                .<KafkaSourceMessage>forBoundedOutOfOrderness(Duration.ofSeconds(kafkaConfig.getJobOutOfOrdernessSecond()))
-                .withTimestampAssigner((record, timestamp) -> JsonUtil.extractFunnyDbIngestTime(record.getData()))
+        WatermarkStrategy<FunnyMessage> kafkaMsgWatermarkStrategy = WatermarkStrategy
+                .<FunnyMessage>forBoundedOutOfOrderness(Duration.ofSeconds(kafkaConfig.getJobOutOfOrdernessSecond()))
+                .withTimestampAssigner((record, timestamp) -> record.getIngestTime())
                 .withIdleness(Duration.ofSeconds(60));
 
-        SingleOutputStreamOperator<CommonSourceMessage> pulsarSourceStream =
+        SingleOutputStreamOperator<FunnyMessage> pulsarSourceStream =
                 env.fromSource(pulsarSourceBuilder.build(), pulsarMsgWatermarkStrategy, "source-pulsar")
                         .uid("source-pulsar")
-                        .name("source-pulsar")
-                        .map(o -> (CommonSourceMessage) o);
+                        .name("source-pulsar");
 
-        SingleOutputStreamOperator<CommonSourceMessage> kafkaSourceStream =
+        SingleOutputStreamOperator<FunnyMessage> kafkaSourceStream =
                 env.fromSource(kafkaSourceBuilder.build(), kafkaMsgWatermarkStrategy, "source-kafka")
                         .uid("source-kafka")
-                        .name("source-kafka")
-                        .map(o -> (CommonSourceMessage) o);
+                        .name("source-kafka");
 
 
         pulsarSourceStream.union(kafkaSourceStream)
-                .keyBy(CommonSourceMessage::extraEvent)
+                .keyBy(FunnyMessage::getKey)
                 .window(TumblingEventTimeWindows.of(Time.seconds(60)))
                 .allowedLateness(Time.minutes(5))
-                .aggregate(new MessageCountAggregateFunction(), new PrintCountWindowFunction())
+                .aggregate(new LogIdAggregateFunction(), new PrintDiffLogIdWindowFunction())
                 .uid("statistician")
                 .name("statistician")
                 .print();

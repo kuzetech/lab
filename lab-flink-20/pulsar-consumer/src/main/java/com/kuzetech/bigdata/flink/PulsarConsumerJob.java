@@ -21,6 +21,7 @@ package com.kuzetech.bigdata.flink;
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
 import com.kuzetech.bigdata.flink.pulsar.PulsarConfig;
 import com.kuzetech.bigdata.flink.pulsar.PulsarSourceMessage;
+import com.kuzetech.bigdata.flink.pulsar.PulsarSourceMessageDeserializationSchema;
 import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;
@@ -39,7 +40,7 @@ public class PulsarConsumerJob {
 
         final PulsarConfig pulsarConfig = PulsarConfig.generateFromParameterTool(parameterTool);
 
-        PulsarSourceBuilder<PulsarSourceMessage> sourceBuilder = PulsarUtil.buildSourceBaseBuilder(pulsarConfig);
+        PulsarSourceBuilder<PulsarSourceMessage> sourceBuilder = PulsarUtil.buildSourceBaseBuilder(pulsarConfig, new PulsarSourceMessageDeserializationSchema());
 
         SingleOutputStreamOperator<PulsarSourceMessage> sourceStream = env.fromSource(sourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source")
                 .uid("source")
