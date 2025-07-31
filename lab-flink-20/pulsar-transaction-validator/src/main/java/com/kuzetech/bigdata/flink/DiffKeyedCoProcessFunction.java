@@ -42,7 +42,7 @@ public class DiffKeyedCoProcessFunction extends KeyedCoProcessFunction<String, F
         if (Boolean.TRUE.equals(seenInB.value())) {
             cleanup();
         } else {
-            ctx.timerService().registerProcessingTimeTimer(ctx.timerService().currentProcessingTime() + 150000);
+            ctx.timerService().registerEventTimeTimer(value.getIngestTime() + 300000);
         }
     }
 
@@ -53,7 +53,7 @@ public class DiffKeyedCoProcessFunction extends KeyedCoProcessFunction<String, F
         if (Boolean.TRUE.equals(seenInA.value())) {
             cleanup();
         } else {
-            ctx.timerService().registerProcessingTimeTimer(ctx.timerService().currentProcessingTime() + 150000);
+            ctx.timerService().registerEventTimeTimer(value.getIngestTime() + 300000);
         }
     }
 

@@ -32,12 +32,11 @@ import org.apache.flink.connector.kafka.source.KafkaSourceBuilder;
 import org.apache.flink.connector.pulsar.source.PulsarSourceBuilder;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
-import org.apache.flink.streaming.api.windowing.time.Time;
 
 import java.time.Duration;
 
-public class PulsarTransactionValidateJobStateSet {
+// 由于两条流消费速率不一样，导致无法准确统计数据
+public class PulsarTransactionValidateJobDetailKeyBy {
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -70,12 +69,9 @@ public class PulsarTransactionValidateJobStateSet {
                         .uid("source-kafka")
                         .name("source-kafka");
 
-
-        pulsarSourceStream.union(kafkaSourceStream)
-                .keyBy(FunnyMessage::getCountKey)
-                .window(TumblingEventTimeWindows.of(Time.seconds(60)))
-                .allowedLateness(Time.minutes(5))
-                .aggregate(new LogIdAggregateFunction(), new PrintDiffLogIdWindowFunction())
+        pulsarSourceStream.connect(kafkaSourceStream)
+                .keyBy(FunnyMessage::getDistinctKey, FunnyMessage::getDistinctKey)
+                .process(new DiffKeyedCoProcessFunction())
                 .uid("statistician")
                 .name("statistician")
                 .print();
