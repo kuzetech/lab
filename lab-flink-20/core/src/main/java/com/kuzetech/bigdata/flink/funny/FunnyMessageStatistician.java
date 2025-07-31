@@ -11,22 +11,20 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FunnyMessage implements Serializable {
-    public static final String CHANNEL_KEY_KAFKA = "kafka";
-    public static final String CHANNEL_KEY_PULSAR = "pulsar";
-
-    private String channel;
+public class FunnyMessageStatistician implements Serializable {
     private String app;
     private String event;
-    private String logId;
-    private Long ingestTime;
+    private Long result = 0L;
 
-    public String getCountKey() {
+    public String getKey() {
         return this.app + "@" + this.event;
     }
 
-    public String getDistinctKey() {
-        return this.app + "@" + this.event + "@" + this.logId;
+    public void incrResult() {
+        this.result++;
     }
 
+    public void decrResult() {
+        this.result--;
+    }
 }

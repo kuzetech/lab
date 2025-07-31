@@ -32,12 +32,8 @@ import org.apache.flink.connector.kafka.source.KafkaSourceBuilder;
 import org.apache.flink.connector.pulsar.source.PulsarSourceBuilder;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
-import org.apache.flink.streaming.api.windowing.time.Time;
 
-import java.time.Duration;
-
-public class PulsarTransactionValidateJobDetail {
+public class PulsarTransactionValidateJobKeyBy {
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -50,32 +46,20 @@ public class PulsarTransactionValidateJobDetail {
         PulsarSourceBuilder<FunnyMessage> pulsarSourceBuilder = PulsarUtil.buildSourceBaseBuilder(pulsarConfig, new PulsarFunnyMessageDeserializationSchema());
         KafkaSourceBuilder<FunnyMessage> kafkaSourceBuilder = KafkaUtil.buildSourceBaseBuilder(kafkaConfig, new KafkaFunnyMessageDeserializationSchema());
 
-        WatermarkStrategy<FunnyMessage> pulsarMsgWatermarkStrategy = WatermarkStrategy
-                .<FunnyMessage>forBoundedOutOfOrderness(Duration.ofSeconds(pulsarConfig.getJobOutOfOrdernessSecond()))
-                .withTimestampAssigner((record, timestamp) -> record.getIngestTime())
-                .withIdleness(Duration.ofSeconds(60));
-
-        WatermarkStrategy<FunnyMessage> kafkaMsgWatermarkStrategy = WatermarkStrategy
-                .<FunnyMessage>forBoundedOutOfOrderness(Duration.ofSeconds(kafkaConfig.getJobOutOfOrdernessSecond()))
-                .withTimestampAssigner((record, timestamp) -> record.getIngestTime())
-                .withIdleness(Duration.ofSeconds(60));
 
         SingleOutputStreamOperator<FunnyMessage> pulsarSourceStream =
-                env.fromSource(pulsarSourceBuilder.build(), pulsarMsgWatermarkStrategy, "source-pulsar")
+                env.fromSource(pulsarSourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source-pulsar")
                         .uid("source-pulsar")
                         .name("source-pulsar");
 
         SingleOutputStreamOperator<FunnyMessage> kafkaSourceStream =
-                env.fromSource(kafkaSourceBuilder.build(), kafkaMsgWatermarkStrategy, "source-kafka")
+                env.fromSource(kafkaSourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source-kafka")
                         .uid("source-kafka")
                         .name("source-kafka");
 
-
-        pulsarSourceStream.union(kafkaSourceStream)
-                .keyBy(FunnyMessage::getKey)
-                .window(TumblingEventTimeWindows.of(Time.seconds(60)))
-                .allowedLateness(Time.minutes(5))
-                .aggregate(new LogIdAggregateFunction(), new PrintDiffLogIdWindowFunction())
+        pulsarSourceStream.connect(kafkaSourceStream)
+                .keyBy(FunnyMessage::getDistinctKey, FunnyMessage::getDistinctKey)
+                .process(new DiffKeyedCoProcessFunction())
                 .uid("statistician")
                 .name("statistician")
                 .print();
