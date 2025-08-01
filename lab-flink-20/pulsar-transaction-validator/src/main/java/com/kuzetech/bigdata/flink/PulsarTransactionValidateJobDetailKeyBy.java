@@ -35,7 +35,6 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import java.time.Duration;
 
-// 由于两条流消费速率不一样，导致无法准确统计数据
 public class PulsarTransactionValidateJobDetailKeyBy {
 
     public static void main(String[] args) throws Exception {
@@ -69,9 +68,9 @@ public class PulsarTransactionValidateJobDetailKeyBy {
                         .uid("source-kafka")
                         .name("source-kafka");
 
-        pulsarSourceStream.connect(kafkaSourceStream)
-                .keyBy(FunnyMessage::getDistinctKey, FunnyMessage::getDistinctKey)
-                .process(new DiffKeyedCoProcessFunction())
+        pulsarSourceStream.union(kafkaSourceStream)
+                .keyBy(FunnyMessage::getDistinctKey)
+                .process(new DiffKeyedProcessFunction())
                 .uid("statistician")
                 .name("statistician")
                 .print();
