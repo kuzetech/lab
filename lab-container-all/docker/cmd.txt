@@ -37,6 +37,7 @@ sudo docker run \
 docker build -t registry.biubiubiu.io/turbine/ingest-client:1.0.2 -f code/turbine/sources/ingest-client/Dockerfile --build-arg version=$VERSION .
 
 docker build -t registry.biubiubiu.io/funnydb/funnydb-statistician-cron:1.0.2 .
+docker build -t registry.sofunny.io/turbine/ingest-v4:4.3.0 .
 
 docker tag registry.biubiubiu.io/funnydb/funnydb-statistician-cron:1.0.2 registry.cn-shanghai.aliyuncs.com/funnydb/funnydb-statistician-cron:1.0.2
 
