@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink20;
+package com.kuzetech.bigdata.flink;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;

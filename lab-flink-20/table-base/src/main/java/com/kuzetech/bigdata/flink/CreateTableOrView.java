@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.kuzetech.bigdata.flink20;
+package com.kuzetech.bigdata.flink;
 
 import org.apache.flink.connector.datagen.table.DataGenConnectorOptions;
 import org.apache.flink.table.api.DataTypes;

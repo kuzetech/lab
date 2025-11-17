@@ -22,9 +22,6 @@
         <module>picocli</module>
         <module>flink17-stream-work</module>
         <module>flink17-steam</module>
-        <module>flink19-dynamic-rule</module>
-        <module>flink20-sql</module>
-        <module>flink20-stream-eagle</module>
         <module>sentry</module>
     </modules>
 
