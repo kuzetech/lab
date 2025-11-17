@@ -20,18 +20,17 @@
         <module>kafka</module>
         <module>kafka-streams</module>
         <module>picocli</module>
-        <module>flink17-stream-work</module>
-        <module>flink17-steam</module>
         <module>sentry</module>
     </modules>
 
     <!--      子项目默认都会继承这一部分配置，并且可以覆盖      -->
     <properties>
-        <compiler.version>11</compiler.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <target.java.version>11</target.java.version>
+        <compiler.version>${target.java.version}</compiler.version>
+        <maven.compiler.source>${target.java.version}</maven.compiler.source>
+        <maven.compiler.target>${target.java.version}</maven.compiler.target>
         <spark.version>3.2.2</spark.version>
         <scala.version>2.12</scala.version>
         <log4j2.version>2.17.2</log4j2.version>
