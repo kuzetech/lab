@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.broadcastConnect;
+package com.kuzetech.bigdata.flink.broadcast;
 
 public class Rule {
 

@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.redis;
+package com.kuzetech.bigdata.flink.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

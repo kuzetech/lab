@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.broadcastConnect;
+package com.kuzetech.bigdata.flink.broadcast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuzetech.bigdata.flink.udsource.EventNoParallelSource;

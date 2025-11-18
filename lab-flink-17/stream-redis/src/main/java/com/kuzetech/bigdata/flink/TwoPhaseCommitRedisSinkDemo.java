@@ -1,17 +1,17 @@
-package com.kuzetech.bigdata.flink.redis;
+package com.kuzetech.bigdata.flink;
 
+import com.kuzetech.bigdata.flink.model.WordCount;
 import com.kuzetech.bigdata.flink.udsink.RedisExactlySink;
 import com.kuzetech.bigdata.flink.utils.FlinkUtil;
-import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
-import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.connector.kafka.source.KafkaSource;
-import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TwoPhaseCommitRedisSinkDemo {
     public static void main(String[] args) throws Exception {
@@ -23,26 +23,15 @@ public class TwoPhaseCommitRedisSinkDemo {
         //2.设置 jedis 的序列化
         // env.getConfig().addDefaultKryoSerializer(Jedis.class, TBaseSerializer.class);
 
-        //4.获取Kafka输入流
-//        InputStream in = KafkaToRedis.class.getClassLoader().getResourceAsStream("kafka.properties");
-//        ParameterTool parameterTool = ParameterTool.fromPropertiesFile(in);
-//        SimpleStringSchema simpleStringSchema = new SimpleStringSchema();
-//        Class<? extends SimpleStringSchema> aClass = simpleStringSchema.getClass();
-//        DataStream<String> kafkaDataStream = KafkaUtil.getKafkaDataStream(parameterTool, aClass, env);
+        List<String> collectionList = new ArrayList<>();
+        collectionList.add("a");
+        collectionList.add("b");
+        collectionList.add("c");
 
-        KafkaSource<String> kafkaSource = KafkaSource.<String>builder()
-                .setBootstrapServers("localhost:9092")
-                .setTopics("input-topic")
-                .setGroupId("my-group")
-                .setStartingOffsets(OffsetsInitializer.earliest())
-                .setValueOnlyDeserializer(new SimpleStringSchema())
-                .build();
-
-        DataStreamSource<String> kafkaDataStream =
-                env.fromSource(kafkaSource, WatermarkStrategy.noWatermarks(), "source");
+        DataStreamSource<String> source = env.fromCollection(collectionList);
 
         //5.map包装数据为value,1
-        SingleOutputStreamOperator<Tuple2<String, Integer>> mapStream = kafkaDataStream.map(new MapFunction<String, Tuple2<String, Integer>>() {
+        SingleOutputStreamOperator<Tuple2<String, Integer>> mapStream = source.map(new MapFunction<String, Tuple2<String, Integer>>() {
             @Override
             public Tuple2<String, Integer> map(String value) throws Exception {
                 return new Tuple2<>(value, 1);

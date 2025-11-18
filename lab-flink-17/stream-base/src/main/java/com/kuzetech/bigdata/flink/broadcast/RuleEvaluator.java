@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.broadcastConnect;
+package com.kuzetech.bigdata.flink.broadcast;
 
 import com.kuzetech.bigdata.flink.udsource.model.Event;
 import org.apache.flink.api.common.state.BroadcastState;

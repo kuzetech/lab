@@ -1,24 +1,25 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>com.kuzetech.bigdata.flink</groupId>
         <artifactId>lab-flink-17</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>stream-base</artifactId>
+    <artifactId>stream-redis</artifactId>
     <packaging>jar</packaging>
-    <name>stream-base</name>
+    <name>stream-redis</name>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-base</artifactId>
+            <groupId>org.apache.bahir</groupId>
+            <artifactId>flink-connector-redis_2.12</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kafka</artifactId>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
         </dependency>
         <dependency>
             <groupId>net.datafaker</groupId>
@@ -29,5 +30,4 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
     </dependencies>
-
 </project>

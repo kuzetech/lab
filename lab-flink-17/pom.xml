@@ -28,18 +28,16 @@ under the License.
     <modules>
         <module>state-processor-track</module>
         <module>stream-base</module>
+        <module>stream-redis</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <flink.version>1.17.1</flink.version>
         <target.java.version>11</target.java.version>
-        <scala.binary.version>2.12</scala.binary.version>
         <maven.compiler.source>${target.java.version}</maven.compiler.source>
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
-        <log4j.version>2.17.1</log4j.version>
-        <flink-connector-kafka.version>3.3.0-1.20</flink-connector-kafka.version>
-        <flink-connector-pulsar.version>34f217b697</flink-connector-pulsar.version>
+        <flink.version>1.17.2</flink.version>
+        <scala.binary.version>2.12</scala.binary.version>
         <log4j.version>2.17.1</log4j.version>
         <lombok.version>1.18.32</lombok.version>
         <junit.version>4.13.1</junit.version>
@@ -110,6 +108,11 @@ under the License.
             <dependency>
                 <groupId>org.apache.flink</groupId>
                 <artifactId>flink-state-processor-api</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-connector-base</artifactId>
                 <version>${flink.version}</version>
             </dependency>
             <dependency>
