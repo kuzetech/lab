@@ -2,7 +2,7 @@ package com.kuzetech.bigdata.flink.udsource;
 
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 
-public class StringNoParallelSource implements SourceFunction<String> {
+public class StringSingleParallelSource implements SourceFunction<String> {
 
     private int count = 0;
 

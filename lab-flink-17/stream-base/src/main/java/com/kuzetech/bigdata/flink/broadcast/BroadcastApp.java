@@ -1,7 +1,7 @@
 package com.kuzetech.bigdata.flink.broadcast;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kuzetech.bigdata.flink.udsource.EventNoParallelSource;
+import com.kuzetech.bigdata.flink.udsource.EventSingleParallelSource;
 import com.kuzetech.bigdata.flink.udsource.model.Event;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
@@ -39,7 +39,7 @@ public class BroadcastApp {
 
         DataStreamSource<Rule> ruleSource = env.addSource(new RuleRichParallelSource()).setParallelism(1);
 
-        DataStreamSource<Event> eventSource = env.addSource(new EventNoParallelSource()).setParallelism(1);
+        DataStreamSource<Event> eventSource = env.addSource(new EventSingleParallelSource()).setParallelism(1);
 
         MapStateDescriptor<Void, Rule> bcStateDescriptor =
                 new MapStateDescriptor<>("rules", Types.VOID, Types.POJO(Rule.class));

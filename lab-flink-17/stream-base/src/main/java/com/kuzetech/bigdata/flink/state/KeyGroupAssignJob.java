@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package com.kuzetech.bigdata.flink;
+package com.kuzetech.bigdata.flink.state;
 
-import com.kuzetech.bigdata.flink.udsource.StringNoParallelSource;
+import com.kuzetech.bigdata.flink.udsource.StringSingleParallelSource;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
@@ -33,19 +33,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
 
-/**
- * Skeleton for a Flink DataStream Job.
- *
- * <p>For a tutorial how to write a Flink application, check the
- * tutorials and examples on the <a href="https://flink.apache.org">Flink Website</a>.
- *
- * <p>To package your application into a JAR file for execution, run
- * 'mvn clean package' on the command line.
- *
- * <p>If you change the name of the main class (with the public static void main(String[] args))
- * method, change the respective entry in the POM.xml file (simply search for 'mainClass').
- */
-public class DataStreamJob {
+public class KeyGroupAssignJob {
 
     public static void main(String[] args) throws Exception {
         Configuration config = new Configuration();
@@ -55,21 +43,17 @@ public class DataStreamJob {
         config.set(CheckpointingOptions.INCREMENTAL_CHECKPOINTS, true);
         config.set(ExecutionCheckpointingOptions.CHECKPOINTING_MODE, CheckpointingMode.EXACTLY_ONCE);
         config.set(ExecutionCheckpointingOptions.EXTERNALIZED_CHECKPOINT, CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
-        config.set(CheckpointingOptions.CHECKPOINTS_DIRECTORY, "file:///Users/huangsw/code/lab/lab-java-all/flink17-steam/data/cks");
-        // config.set(CheckpointingOptions.SAVEPOINT_DIRECTORY, "file:///Users/huangsw/code/lab/lab-java-all/flink17-steam/data/sps");
-        // config.set(SavepointConfigOptions.SAVEPOINT_PATH, "file:///Users/huangsw/code/lab/lab-java-all/flink17-steam/data/cks/813c395039ca9da60a138146259d997b/chk-1");
+        config.set(CheckpointingOptions.CHECKPOINTS_DIRECTORY, "file:///Users/huangsw/code/lab/flink17-steam/data/cks");
+        // config.set(CheckpointingOptions.SAVEPOINT_DIRECTORY, "file:///Users/huangsw/code/lab/flink17-steam/data/sps");
+        // config.set(SavepointConfigOptions.SAVEPOINT_PATH, "file:///Users/huangsw/code/lab/flink17-steam/data/cks/813c395039ca9da60a138146259d997b/chk-1");
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(config);
+        env.getConfig().setMaxParallelism(4);
         env.enableCheckpointing(10000);
-        // StateBackend rocksDB = new RocksDBStateBackend("file:///Users/huangsw/code/lab/lab-java-all/flink17-steam/data/rocks", true);
-        // env.setStateBackend(rocksDB);
-
-        // Set parallelism and maxParallelism explicitly
-        env.setParallelism(2); // e.g. 2 subtasks
-        env.getConfig().setMaxParallelism(4); // total key groups = 4
+        env.setParallelism(2);
 
         // Controlled keys that map to specific key groups
-        env.addSource(new StringNoParallelSource()).setParallelism(1)
+        env.addSource(new StringSingleParallelSource()).setParallelism(1)
                 .map((MapFunction<String, String>) value -> value)
                 .keyBy(value -> value)
                 .process(new KeyStateTracker())
