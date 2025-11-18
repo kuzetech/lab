@@ -1,8 +1,4 @@
 services:
-  redis:
-    image: redis:7.2.4
-    ports:
-      - "6379:6379"
   zookeeper:
     image: 'registry.biubiubiu.io/turbine/bitnami-zookeeper:3.7.0-debian-10-r215'
     ports:
