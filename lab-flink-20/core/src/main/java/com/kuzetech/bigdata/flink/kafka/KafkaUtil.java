@@ -1,6 +1,8 @@
 package com.kuzetech.bigdata.flink.kafka;
 
 import com.google.common.collect.ImmutableMap;
+import com.kuzetech.bigdata.flink.kafka.domain.KafkaSourceMessage;
+import com.kuzetech.bigdata.flink.kafka.serialization.KafkaSourceMessageSerializationSchema;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.kafka.sink.KafkaSink;

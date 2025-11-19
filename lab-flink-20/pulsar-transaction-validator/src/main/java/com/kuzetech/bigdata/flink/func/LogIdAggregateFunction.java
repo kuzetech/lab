@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink;
+package com.kuzetech.bigdata.flink.func;
 
 import com.kuzetech.bigdata.flink.funny.FunnyMessage;
 import org.apache.flink.api.common.functions.AggregateFunction;

@@ -19,13 +19,15 @@
 package com.kuzetech.bigdata.flink;
 
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
+import com.kuzetech.bigdata.flink.func.LogIdAggregateFunction;
+import com.kuzetech.bigdata.flink.func.PrintDiffLogIdWindowFunction;
 import com.kuzetech.bigdata.flink.funny.FunnyMessage;
 import com.kuzetech.bigdata.flink.kafka.KafkaConfig;
-import com.kuzetech.bigdata.flink.kafka.KafkaFunnyMessageDeserializationSchema;
 import com.kuzetech.bigdata.flink.kafka.KafkaUtil;
+import com.kuzetech.bigdata.flink.kafka.serialization.KafkaFunnyMessageDeserializationSchema;
 import com.kuzetech.bigdata.flink.pulsar.PulsarConfig;
-import com.kuzetech.bigdata.flink.pulsar.PulsarFunnyMessageDeserializationSchema;
 import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
+import com.kuzetech.bigdata.flink.pulsar.serialization.PulsarFunnyMessageDeserializationSchema;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.kafka.source.KafkaSourceBuilder;
@@ -73,7 +75,7 @@ public class PulsarTransactionValidateJobDetailStateSet {
 
 
         pulsarSourceStream.union(kafkaSourceStream)
-                .keyBy(FunnyMessage::getCountKey)
+                .keyBy(FunnyMessage::getAppEventKey)
                 .window(TumblingEventTimeWindows.of(Time.seconds(60)))
                 .allowedLateness(Time.minutes(5))
                 .aggregate(new LogIdAggregateFunction(), new PrintDiffLogIdWindowFunction())

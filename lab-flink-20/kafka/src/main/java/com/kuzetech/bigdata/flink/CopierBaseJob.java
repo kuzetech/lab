@@ -20,8 +20,8 @@ package com.kuzetech.bigdata.flink;
 
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
 import com.kuzetech.bigdata.flink.kafka.KafkaConfig;
-import com.kuzetech.bigdata.flink.kafka.KafkaSourceMessage;
-import com.kuzetech.bigdata.flink.kafka.KafkaSourceMessageDeserializationSchema;
+import com.kuzetech.bigdata.flink.kafka.domain.KafkaSourceMessage;
+import com.kuzetech.bigdata.flink.kafka.serialization.KafkaSourceMessageDeserializationSchema;
 import com.kuzetech.bigdata.flink.kafka.KafkaUtil;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;

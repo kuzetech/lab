@@ -1,5 +1,8 @@
 package com.kuzetech.bigdata.flink.pulsar;
 
+import com.kuzetech.bigdata.flink.pulsar.domain.MessageIdMapStartCursor;
+import com.kuzetech.bigdata.flink.pulsar.domain.PulsarSourceMessage;
+import com.kuzetech.bigdata.flink.pulsar.serialization.PulsarSourceMessageSerializationSchema;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.pulsar.sink.PulsarSink;
@@ -10,11 +13,14 @@ import org.apache.flink.connector.pulsar.source.PulsarSourceBuilder;
 import org.apache.flink.connector.pulsar.source.PulsarSourceOptions;
 import org.apache.flink.connector.pulsar.source.enumerator.cursor.StartCursor;
 import org.apache.flink.connector.pulsar.source.reader.deserializer.PulsarDeserializationSchema;
+import org.apache.pulsar.client.api.CompressionType;
 import org.apache.pulsar.client.api.MessageId;
 import org.apache.pulsar.client.internal.DefaultImplementation;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class PulsarUtil {
 
@@ -32,25 +38,28 @@ public class PulsarUtil {
     public static <T> PulsarSourceBuilder<T> buildSourceBaseBuilder(PulsarConfig config, PulsarDeserializationSchema<T> deserializationSchema) {
         String completeTopicName = getDefaultCompleteTopicName(config.getSourceTopic());
         return PulsarSource.builder()
-                .setConfig(PulsarSourceOptions.PULSAR_PARTITION_DISCOVERY_INTERVAL_MS, DEFAULT_PULSAR_PARTITION_DISCOVERY_INTERVAL_MS)
-                .setConfig(PulsarSourceOptions.PULSAR_ENABLE_SOURCE_METRICS, true)
                 .setServiceUrl(config.getServiceUrl())
                 .setStartCursor(getJobStartCursor(completeTopicName, config.getStartCursor()))
                 .setTopics(config.getSourceTopic())
                 .setDeserializationSchema(deserializationSchema)
-                .setSubscriptionName(config.getSubscriber());
+                .setSubscriptionName(config.getSubscriber())
+                .setConfig(PulsarSourceOptions.PULSAR_PARTITION_DISCOVERY_INTERVAL_MS, DEFAULT_PULSAR_PARTITION_DISCOVERY_INTERVAL_MS)
+                .setConfig(PulsarSourceOptions.PULSAR_ENABLE_SOURCE_METRICS, true);
     }
 
     public static PulsarSinkBuilder<PulsarSourceMessage> buildSinkBaseBuilder(PulsarConfig config) {
         return PulsarSink.builder()
-                .setConfig(PulsarSinkOptions.PULSAR_TOPIC_METADATA_REFRESH_INTERVAL, DEFAULT_PULSAR_PARTITION_DISCOVERY_INTERVAL_MS)
-                .setConfig(PulsarSinkOptions.PULSAR_ENABLE_SINK_METRICS, true)
                 .setServiceUrl(config.getServiceUrl())
                 .setAdminUrl(config.getAdminUrl())
                 .setTopics(config.getSinkTopic())
                 .setProducerName(config.getProducerName())
                 .setSerializationSchema(new PulsarSourceMessageSerializationSchema())
-                .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE);
+                .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE)
+                .setConfig(PulsarSinkOptions.PULSAR_TOPIC_METADATA_REFRESH_INTERVAL, DEFAULT_PULSAR_PARTITION_DISCOVERY_INTERVAL_MS)
+                .setConfig(PulsarSinkOptions.PULSAR_ENABLE_SINK_METRICS, true)
+                .setConfig(PulsarSinkOptions.PULSAR_COMPRESSION_TYPE, CompressionType.LZ4)
+                .setConfig(PulsarSinkOptions.PULSAR_BATCHING_MAX_PUBLISH_DELAY_MICROS, MILLISECONDS.toMicros(50))
+                .setConfig(PulsarSinkOptions.PULSAR_BATCHING_MAX_BYTES, 10 * 1024 * 1024);
     }
 
 

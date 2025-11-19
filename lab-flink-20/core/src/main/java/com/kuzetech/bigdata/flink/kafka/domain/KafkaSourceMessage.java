@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.kafka;
+package com.kuzetech.bigdata.flink.kafka.domain;
 
 import com.kuzetech.bigdata.flink.base.CommonSourceMessage;
 import lombok.Getter;

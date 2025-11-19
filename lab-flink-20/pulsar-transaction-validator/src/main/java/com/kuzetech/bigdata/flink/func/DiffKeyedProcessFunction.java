@@ -1,6 +1,7 @@
-package com.kuzetech.bigdata.flink;
+package com.kuzetech.bigdata.flink.func;
 
 import com.kuzetech.bigdata.flink.funny.FunnyMessage;
+import com.kuzetech.bigdata.flink.time.TimeUtil;
 import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
@@ -9,13 +10,8 @@ import org.apache.flink.util.Collector;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 
 public class DiffKeyedProcessFunction extends KeyedProcessFunction<String, FunnyMessage, String> {
-
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private static final ZoneId zoneId = ZoneId.of("Asia/Shanghai");
 
     private ValueState<Boolean> seenInKafka;
     private ValueState<Boolean> seenInPulsar;
@@ -33,7 +29,7 @@ public class DiffKeyedProcessFunction extends KeyedProcessFunction<String, Funny
 
     @Override
     public void processElement(FunnyMessage msg, KeyedProcessFunction<String, FunnyMessage, String>.Context ctx, Collector<String> out) throws Exception {
-        if (FunnyMessage.CHANNEL_KEY_KAFKA.equals(msg.getChannel())) {
+        if (FunnyMessage.CHANNEL_KAFKA.equals(msg.getChannel())) {
             seenInKafka.update(true);
         } else {
             seenInPulsar.update(true);
@@ -48,11 +44,11 @@ public class DiffKeyedProcessFunction extends KeyedProcessFunction<String, Funny
     @Override
     public void onTimer(long timestamp, KeyedProcessFunction<String, FunnyMessage, String>.OnTimerContext ctx, Collector<String> out) throws Exception {
         if (Boolean.TRUE.equals(seenInKafka.value()) || Boolean.TRUE.equals(seenInPulsar.value())) {
-            String missChan = Boolean.TRUE.equals(seenInKafka.value()) ? FunnyMessage.CHANNEL_KEY_PULSAR : FunnyMessage.CHANNEL_KEY_KAFKA;
+            String missChan = Boolean.TRUE.equals(seenInKafka.value()) ? FunnyMessage.CHANNEL_PULSAR : FunnyMessage.CHANNEL_KAFKA;
             LocalDateTime currentTime = Instant.ofEpochMilli(System.currentTimeMillis())
-                    .atZone(zoneId)
+                    .atZone(TimeUtil.DEFAULT_ZONE_ID)
                     .toLocalDateTime();
-            String currentTimeStr = currentTime.format(formatter);
+            String currentTimeStr = currentTime.format(TimeUtil.DEFAULT_FORMATTER);
             out.collect(String.format(
                     "Missing record in %s, index=%s, Current Time: %s",
                     missChan,

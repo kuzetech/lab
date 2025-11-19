@@ -12,12 +12,9 @@
         <module>kafka</module>
         <module>pulsar</module>
         <module>pulsar-transaction-validator</module>
-        <module>pulsar-transaction-producer</module>
         <module>state-processor-track</module>
         <module>savepoint-analyzer</module>
         <module>table-base</module>
-
-
     </modules>
 
     <properties>

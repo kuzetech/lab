@@ -1,5 +1,6 @@
-package com.kuzetech.bigdata.flink.pulsar;
+package com.kuzetech.bigdata.flink.pulsar.serialization;
 
+import com.kuzetech.bigdata.flink.base.CommonSourceMessage;
 import org.apache.flink.connector.pulsar.sink.writer.context.PulsarSinkContext;
 import org.apache.flink.connector.pulsar.sink.writer.message.PulsarMessage;
 import org.apache.flink.connector.pulsar.sink.writer.message.PulsarMessageBuilder;
@@ -7,9 +8,9 @@ import org.apache.flink.connector.pulsar.sink.writer.serializer.PulsarSerializat
 
 import java.util.Map;
 
-public class PulsarSourceMessageSerializationSchema implements PulsarSerializationSchema<PulsarSourceMessage> {
+public class PulsarCommonSourceMessageSerializationSchema implements PulsarSerializationSchema<CommonSourceMessage> {
     @Override
-    public PulsarMessage<byte[]> serialize(PulsarSourceMessage input, PulsarSinkContext sinkContext) {
+    public PulsarMessage<byte[]> serialize(CommonSourceMessage input, PulsarSinkContext sinkContext) {
         PulsarMessageBuilder<byte[]> builder = PulsarMessage.builder(input.getData());
         if (input.getKey() != null) {
             builder.keyBytes(input.getKey());

@@ -21,7 +21,7 @@ package com.kuzetech.bigdata.flink;
 import com.kuzetech.bigdata.flink.base.DataConstant;
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
 import com.kuzetech.bigdata.flink.kafka.KafkaConfig;
-import com.kuzetech.bigdata.flink.kafka.KafkaSourceMessage;
+import com.kuzetech.bigdata.flink.kafka.domain.KafkaSourceMessage;
 import com.kuzetech.bigdata.flink.kafka.KafkaUtil;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.kafka.sink.KafkaSinkBuilder;

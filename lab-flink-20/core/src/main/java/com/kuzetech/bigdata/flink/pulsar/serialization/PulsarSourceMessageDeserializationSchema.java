@@ -1,5 +1,6 @@
-package com.kuzetech.bigdata.flink.pulsar;
+package com.kuzetech.bigdata.flink.pulsar.serialization;
 
+import com.kuzetech.bigdata.flink.pulsar.domain.PulsarSourceMessage;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.connector.pulsar.source.reader.deserializer.PulsarDeserializationSchema;
 import org.apache.flink.util.Collector;

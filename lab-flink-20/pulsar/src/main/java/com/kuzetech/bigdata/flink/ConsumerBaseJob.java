@@ -20,8 +20,8 @@ package com.kuzetech.bigdata.flink;
 
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
 import com.kuzetech.bigdata.flink.pulsar.PulsarConfig;
-import com.kuzetech.bigdata.flink.pulsar.PulsarSourceMessage;
-import com.kuzetech.bigdata.flink.pulsar.PulsarSourceMessageDeserializationSchema;
+import com.kuzetech.bigdata.flink.pulsar.domain.PulsarSourceMessage;
+import com.kuzetech.bigdata.flink.pulsar.serialization.PulsarSourceMessageDeserializationSchema;
 import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;

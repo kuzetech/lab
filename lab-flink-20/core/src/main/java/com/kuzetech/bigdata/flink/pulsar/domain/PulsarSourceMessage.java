@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.pulsar;
+package com.kuzetech.bigdata.flink.pulsar.domain;
 
 import com.kuzetech.bigdata.flink.base.CommonSourceMessage;
 import lombok.Getter;

@@ -12,8 +12,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FunnyMessage implements Serializable {
-    public static final String CHANNEL_KEY_KAFKA = "kafka";
-    public static final String CHANNEL_KEY_PULSAR = "pulsar";
+    public static final String CHANNEL_KAFKA = "kafka";
+    public static final String CHANNEL_PULSAR = "pulsar";
 
     private String channel;
     private String app;
@@ -21,7 +21,7 @@ public class FunnyMessage implements Serializable {
     private String logId;
     private Long ingestTime;
 
-    public String getCountKey() {
+    public String getAppEventKey() {
         return this.app + "@" + this.event;
     }
 

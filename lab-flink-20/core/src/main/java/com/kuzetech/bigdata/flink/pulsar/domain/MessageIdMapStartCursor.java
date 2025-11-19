@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.pulsar;
+package com.kuzetech.bigdata.flink.pulsar.domain;
 
 import org.apache.flink.connector.pulsar.source.enumerator.cursor.CursorPosition;
 import org.apache.flink.connector.pulsar.source.enumerator.cursor.StartCursor;

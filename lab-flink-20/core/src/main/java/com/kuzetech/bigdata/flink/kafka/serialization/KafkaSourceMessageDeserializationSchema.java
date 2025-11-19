@@ -1,6 +1,7 @@
-package com.kuzetech.bigdata.flink.kafka;
+package com.kuzetech.bigdata.flink.kafka.serialization;
 
 
+import com.kuzetech.bigdata.flink.kafka.domain.KafkaSourceMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;

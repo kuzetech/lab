@@ -23,7 +23,7 @@ import com.kuzetech.bigdata.flink.base.DataConstant;
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
 import com.kuzetech.bigdata.flink.json.ObjectMapperInstance;
 import com.kuzetech.bigdata.flink.pulsar.PulsarConfig;
-import com.kuzetech.bigdata.flink.pulsar.PulsarSourceMessage;
+import com.kuzetech.bigdata.flink.pulsar.domain.PulsarSourceMessage;
 import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.pulsar.sink.PulsarSinkBuilder;

@@ -1,6 +1,6 @@
-package com.kuzetech.bigdata.flink.kafka;
+package com.kuzetech.bigdata.flink.kafka.serialization;
 
-import com.kuzetech.bigdata.flink.base.CommonSourceMessage;
+import com.kuzetech.bigdata.flink.kafka.domain.KafkaSourceMessage;
 import lombok.AllArgsConstructor;
 import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
@@ -12,8 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @AllArgsConstructor
-public class KafkaCommonSourceMessageSerializationSchema
-        implements KafkaRecordSerializationSchema<CommonSourceMessage> {
+public class KafkaSourceMessageSerializationSchema
+        implements KafkaRecordSerializationSchema<KafkaSourceMessage> {
 
     private final String sinkTopic;
 
@@ -23,7 +23,7 @@ public class KafkaCommonSourceMessageSerializationSchema
     }
 
     @Override
-    public ProducerRecord<byte[], byte[]> serialize(CommonSourceMessage data, KafkaSinkContext context, Long timestamp) {
+    public ProducerRecord<byte[], byte[]> serialize(KafkaSourceMessage data, KafkaSinkContext context, Long timestamp) {
         if (data.getKey() == null && data.getProperties() == null) {
             return new ProducerRecord<>(
                     sinkTopic,
