@@ -40,7 +40,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import java.time.Duration;
 
 // 当数据量特别大时，ck 量特别大，程序卡顿严重
-public class PulsarTransactionValidateJobDetailStateSet {
+public class CompareTwoSideMessageIdJob2 {
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);

@@ -39,7 +39,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 
 import java.time.Duration;
 
-public class PulsarTransactionValidateJob {
+public class CompareTwoSideMessageNumJob {
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);

@@ -13,11 +13,7 @@ public class PrintCountWindowFunction extends ProcessWindowFunction<Long, String
     @Override
     public void process(String key, ProcessWindowFunction<Long, String, String, TimeWindow>.Context context, Iterable<Long> input, Collector<String> out) throws Exception {
         Long result = input.iterator().next();
-        if (count > 0 || (count == 0 && Boolean.TRUE.equals(needNotice.value()))) {
-            if (count > 0) {
-                needNotice.update(true);
-            }
-
+        if (result != 0) {
             LocalDateTime currentTime = Instant.ofEpochMilli(System.currentTimeMillis())
                     .atZone(TimeUtil.DEFAULT_ZONE_ID)
                     .toLocalDateTime();
@@ -33,8 +29,15 @@ public class PrintCountWindowFunction extends ProcessWindowFunction<Long, String
             String windowEndStr = windowEndTime.format(TimeUtil.DEFAULT_FORMATTER);
 
 
-            String result = String.format("Window Start: %s, Window End: %s, Key is %s, Result is: %d, Current Time: %s", windowStartStr, windowEndStr, key, count, currentTimeStr);
-            out.collect(result);
+            String printInfo = String.format(
+                    "Window Start: %s, Window End: %s, Key is %s, Result is: %d, Current Time: %s",
+                    windowStartStr,
+                    windowEndStr,
+                    key, result,
+                    currentTimeStr
+            );
+
+            out.collect(printInfo);
         }
     }
 }

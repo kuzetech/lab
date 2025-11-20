@@ -36,7 +36,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import java.time.Duration;
 
-public class PulsarTransactionValidateJobDetailKeyBy {
+public class CompareTwoSideMessageIdJob {
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
