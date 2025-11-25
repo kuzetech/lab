@@ -1,0 +1,74 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.kuzetech.bigdata.rpc</groupId>
+  <artifactId>lab-java-rpc</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>lab-java-rpc</name>
+
+  <modules>
+    <module>core</module>
+    <module>server-simple</module>
+    <module>client-simple</module>
+  </modules>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <target.java.version>11</target.java.version>
+    <maven.compiler.source>${target.java.version}</maven.compiler.source>
+    <maven.compiler.target>${target.java.version}</maven.compiler.target>
+    <log4j.version>2.17.1</log4j.version>
+    <lombok.version>1.18.32</lombok.version>
+    <grpc.version>1.77.0</grpc.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+      <version>${grpc.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+      <version>${grpc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+      <version>${grpc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>${lombok.version}</version>
+    </dependency>
+  </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.kuzetech.bigdata.rpc</groupId>
+        <artifactId>core</artifactId>
+        <version>1.0-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>${target.java.version}</source>
+          <target>${target.java.version}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
