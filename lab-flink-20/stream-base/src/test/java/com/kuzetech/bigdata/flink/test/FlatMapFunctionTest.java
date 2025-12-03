@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
-public class IncrementFlatMapFunctionTest {
+public class FlatMapFunctionTest {
 
     private IncrementFlatMapFunction func;
 

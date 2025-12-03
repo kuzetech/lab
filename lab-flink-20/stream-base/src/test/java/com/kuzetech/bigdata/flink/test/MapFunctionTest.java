@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class IncrementMapFunctionTest {
+public class MapFunctionTest {
 
     private IncrementMapFunction func;
 
