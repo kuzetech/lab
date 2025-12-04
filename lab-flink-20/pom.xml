@@ -12,7 +12,6 @@
         <module>kafka</module>
         <module>pulsar</module>
         <module>pulsar-transaction-validator</module>
-        <module>state-processor-track</module>
         <module>savepoint-analyzer</module>
         <module>table-base</module>
         <module>stream-base</module>

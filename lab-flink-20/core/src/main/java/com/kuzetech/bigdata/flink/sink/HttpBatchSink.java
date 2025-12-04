@@ -2,7 +2,6 @@ package com.kuzetech.bigdata.flink.sink;
 
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.runtime.state.FunctionInitializationContext;
 import org.apache.flink.runtime.state.FunctionSnapshotContext;
@@ -45,7 +44,7 @@ public class HttpBatchSink extends RichSinkFunction<String> implements Checkpoin
     @Override
     public void snapshotState(FunctionSnapshotContext context) throws Exception {
         if (!batch.isEmpty()) {
-            executeBatchInsert();
+            sendBatch();
             batch.clear();
         }
     }
@@ -54,7 +53,7 @@ public class HttpBatchSink extends RichSinkFunction<String> implements Checkpoin
     public void invoke(String value, Context context) throws Exception {
         batch.add(value);
         if (batch.size() >= batchSize) {
-            executeBatchInsert();
+            sendBatch();
             batch.clear();
         }
     }
@@ -62,12 +61,12 @@ public class HttpBatchSink extends RichSinkFunction<String> implements Checkpoin
     @Override
     public void close() throws Exception {
         if (batch.size() >= batchSize) {
-            executeBatchInsert();
+            sendBatch();
             batch.clear();
         }
     }
 
-    private void executeBatchInsert() throws IOException {
+    private void sendBatch() throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("[");
         for (String data : batch) {

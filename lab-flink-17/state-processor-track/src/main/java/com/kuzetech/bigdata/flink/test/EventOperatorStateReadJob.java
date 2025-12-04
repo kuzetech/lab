@@ -9,31 +9,29 @@ import org.apache.flink.state.api.SavepointReader;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-public class EventOperatorStateReadAllJob {
+public class EventOperatorStateReadJob {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(32);
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                EventOperatorStateBuildJob.OLD_SAVEPOINT_PATH,
+                "",
                 new HashMapStateBackend());
 
         DataStream<ValidateEvenStatsResponse> validateEvenStatsResponseDataStream = savepoint.readListState(
                 OperatorIdentifier.forUid("event-etl"),
                 "validateStatsList",
                 TypeInformation.of(ValidateEvenStatsResponse.class));
-
         validateEvenStatsResponseDataStream.print();
 
         DataStream<MetaDataContent> metaDataContentDataStream = savepoint.readListState(
                 OperatorIdentifier.forUid("event-etl"),
                 "rulesList",
                 TypeInformation.of(MetaDataContent.class));
-
         metaDataContentDataStream.print();
 
-        env.execute("EventOperatorStateReadAllJob");
+        env.execute("EventOperatorStateReadJob");
 
     }
 }

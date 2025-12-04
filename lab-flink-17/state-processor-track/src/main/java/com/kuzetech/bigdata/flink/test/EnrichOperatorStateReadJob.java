@@ -9,6 +9,9 @@ import org.apache.flink.state.api.OperatorIdentifier;
 import org.apache.flink.state.api.SavepointReader;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.triggers.ContinuousProcessingTimeTrigger;
 
 public class EnrichOperatorStateReadJob {
 
@@ -18,8 +21,7 @@ public class EnrichOperatorStateReadJob {
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                // "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/savepoint/track/staging/source/256",
-                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/savepoint/track/local/gen/512/enrich",
+                "",
                 new EmbeddedRocksDBStateBackend(true));
 
         DataStream<EnrichOperatorKeyedState> enrichOperatorKeyedStateDataStream = savepoint.readKeyedState(
@@ -28,7 +30,15 @@ public class EnrichOperatorStateReadJob {
                 Types.STRING,
                 TypeInformation.of(EnrichOperatorKeyedState.class));
 
-        enrichOperatorKeyedStateDataStream.print();
+        DataStream<Long> totalCount = enrichOperatorKeyedStateDataStream
+                .filter(o -> o.getDeviceInfo() != null)
+                .map(x -> 1L)
+                .returns(Types.LONG)
+                .windowAll(GlobalWindows.create())
+                .trigger(ContinuousProcessingTimeTrigger.of(Time.seconds(30)))
+                .reduce(Long::sum);
+
+        totalCount.print("EnrichStateRecordNumber"); // 3288
 
         env.execute("EnrichOperatorStateReadJob");
 
