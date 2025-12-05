@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.work;
+package com.kuzetech.bigdata.flink;
 
 import com.kuzetech.bigdata.flink.domain.EnrichOperatorKeyedState;
 import com.kuzetech.bigdata.flink.function.EnrichOperatorKeyedStateBootstrapper;

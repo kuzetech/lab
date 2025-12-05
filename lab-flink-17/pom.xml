@@ -29,6 +29,7 @@ under the License.
         <module>state-processor-track</module>
         <module>stream-base</module>
         <module>stream-redis</module>
+        <module>state-processor-derive</module>
     </modules>
 
     <properties>

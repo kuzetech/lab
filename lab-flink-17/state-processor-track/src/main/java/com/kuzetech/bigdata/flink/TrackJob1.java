@@ -1,27 +1,27 @@
-package com.kuzetech.bigdata.flink.test;
+package com.kuzetech.bigdata.flink;
 
 import com.kuzetech.bigdata.flink.domain.DistinctOperatorKeyedState;
+import com.kuzetech.bigdata.flink.function.DistinctOperatorKeyedStateBootstrapper;
 import com.kuzetech.bigdata.flink.function.DistinctOperatorKeyedStateReaderFunction;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
-import org.apache.flink.state.api.OperatorIdentifier;
-import org.apache.flink.state.api.SavepointReader;
+import org.apache.flink.state.api.*;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
-import org.apache.flink.streaming.api.windowing.time.Time;
-import org.apache.flink.streaming.api.windowing.triggers.ContinuousProcessingTimeTrigger;
 
-public class DistinctOperatorStateReadJob {
-
+@Slf4j
+public class TrackJob1 {
     public static void main(String[] args) throws Exception {
+        ParameterTool parameterTool = ParameterTool.fromArgs(args);
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(32);
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                "",
+                parameterTool.get("old"),
                 new EmbeddedRocksDBStateBackend(true));
 
         DataStream<DistinctOperatorKeyedState> distinctOperatorKeyedStateDataStream = savepoint.readKeyedState(
@@ -30,16 +30,16 @@ public class DistinctOperatorStateReadJob {
                 Types.STRING,
                 TypeInformation.of(DistinctOperatorKeyedState.class));
 
-        DataStream<Long> totalCount = distinctOperatorKeyedStateDataStream
-                .map(x -> 1L)
-                .returns(Types.LONG)
-                .windowAll(GlobalWindows.create())
-                .trigger(ContinuousProcessingTimeTrigger.of(Time.seconds(30)))
-                .reduce(Long::sum);
+        StateBootstrapTransformation<DistinctOperatorKeyedState> transformation = OperatorTransformation
+                .bootstrapWith(distinctOperatorKeyedStateDataStream)
+                .keyBy(o -> o.key)
+                .transform(new DistinctOperatorKeyedStateBootstrapper());
 
-        totalCount.print(); // 16662
+        SavepointWriter
+                .newSavepoint(env, new EmbeddedRocksDBStateBackend(true), parameterTool.getInt("max", 256))
+                .withOperator(OperatorIdentifier.forUid("filter-distinct"), transformation)
+                .write(parameterTool.get("new"));
 
-        env.execute("DistinctOperatorStateReadJob");
-
+        env.execute("TrackJob1");
     }
 }

@@ -15,6 +15,8 @@
         <module>savepoint-analyzer</module>
         <module>table-base</module>
         <module>stream-base</module>
+        <module>state-processor-track</module>
+        <module>state-processor-derive</module>
     </modules>
 
     <properties>
