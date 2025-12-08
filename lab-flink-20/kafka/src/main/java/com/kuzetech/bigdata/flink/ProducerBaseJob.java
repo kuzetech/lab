@@ -20,9 +20,9 @@ package com.kuzetech.bigdata.flink;
 
 import com.kuzetech.bigdata.flink.base.DataConstant;
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
-import com.kuzetech.bigdata.flink.kafka.KafkaConfig;
-import com.kuzetech.bigdata.flink.kafka.domain.KafkaSourceMessage;
+import com.kuzetech.bigdata.flink.base.JobConfig;
 import com.kuzetech.bigdata.flink.kafka.KafkaUtil;
+import com.kuzetech.bigdata.flink.kafka.domain.KafkaSourceMessage;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.kafka.sink.KafkaSinkBuilder;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -37,7 +37,7 @@ public class ProducerBaseJob {
 
         final StreamExecutionEnvironment env = FlinkUtil.initEnv(parameterTool);
 
-        final KafkaConfig kafkaConfig = KafkaConfig.generateFromParameterTool(parameterTool);
+        final JobConfig jobConfig = new JobConfig(parameterTool);
 
         SingleOutputStreamOperator<String> sourceStream = env.fromData(DataConstant.APP_NAME_LIST)
                 .uid("source")
@@ -45,12 +45,12 @@ public class ProducerBaseJob {
 
         SingleOutputStreamOperator<KafkaSourceMessage> msgStream = sourceStream.map(u -> new KafkaSourceMessage(u.getBytes(StandardCharsets.UTF_8)));
 
-        KafkaSinkBuilder<KafkaSourceMessage> sinkBuilder = KafkaUtil.buildSinkBaseBuilder(kafkaConfig);
+        KafkaSinkBuilder<KafkaSourceMessage> sinkBuilder = KafkaUtil.buildSinkBaseBuilder(jobConfig.getKafkaSinkConfig());
 
         msgStream.sinkTo(sinkBuilder.build())
                 .uid("sink")
                 .name("sink");
 
-        env.execute(kafkaConfig.getJobName());
+        env.execute(jobConfig.getJobName());
     }
 }

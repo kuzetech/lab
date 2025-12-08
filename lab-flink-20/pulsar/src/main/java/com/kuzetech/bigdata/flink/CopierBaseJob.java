@@ -19,10 +19,10 @@
 package com.kuzetech.bigdata.flink;
 
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
-import com.kuzetech.bigdata.flink.pulsar.PulsarConfig;
+import com.kuzetech.bigdata.flink.base.JobConfig;
+import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
 import com.kuzetech.bigdata.flink.pulsar.domain.PulsarSourceMessage;
 import com.kuzetech.bigdata.flink.pulsar.serialization.PulsarSourceMessageDeserializationSchema;
-import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.pulsar.sink.PulsarSinkBuilder;
@@ -37,20 +37,20 @@ public class CopierBaseJob {
 
         final StreamExecutionEnvironment env = FlinkUtil.initEnv(parameterTool);
 
-        final PulsarConfig pulsarConfig = PulsarConfig.generateFromParameterTool(parameterTool);
+        final JobConfig jobConfig = new JobConfig(parameterTool);
 
-        PulsarSourceBuilder<PulsarSourceMessage> sourceBuilder = PulsarUtil.buildSourceBaseBuilder(pulsarConfig, new PulsarSourceMessageDeserializationSchema());
+        PulsarSourceBuilder<PulsarSourceMessage> sourceBuilder = PulsarUtil.buildSourceBaseBuilder(jobConfig.getPulsarSourceConfig(), new PulsarSourceMessageDeserializationSchema());
 
         SingleOutputStreamOperator<PulsarSourceMessage> sourceStream = env.fromSource(sourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source")
                 .uid("source")
                 .name("source");
 
-        PulsarSinkBuilder<PulsarSourceMessage> sinkBuilder = PulsarUtil.buildSinkBaseBuilder(pulsarConfig);
+        PulsarSinkBuilder<PulsarSourceMessage> sinkBuilder = PulsarUtil.buildSinkBaseBuilder(jobConfig.getPulsarSinkConfig());
 
         sourceStream.sinkTo(sinkBuilder.build())
                 .uid("sink")
                 .name("sink");
 
-        env.execute(pulsarConfig.getJobName());
+        env.execute(jobConfig.getJobName());
     }
 }

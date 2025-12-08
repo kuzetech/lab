@@ -21,10 +21,10 @@ package com.kuzetech.bigdata.flink;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuzetech.bigdata.flink.base.DataConstant;
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
+import com.kuzetech.bigdata.flink.base.JobConfig;
 import com.kuzetech.bigdata.flink.json.ObjectMapperInstance;
-import com.kuzetech.bigdata.flink.pulsar.PulsarConfig;
-import com.kuzetech.bigdata.flink.pulsar.domain.PulsarSourceMessage;
 import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
+import com.kuzetech.bigdata.flink.pulsar.domain.PulsarSourceMessage;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.pulsar.sink.PulsarSinkBuilder;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -42,7 +42,7 @@ public class ProducerBaseJob {
 
         final StreamExecutionEnvironment env = FlinkUtil.initEnv(parameterTool);
 
-        final PulsarConfig pulsarConfig = PulsarConfig.generateFromParameterTool(parameterTool);
+        final JobConfig jobConfig = new JobConfig(parameterTool);
 
         SingleOutputStreamOperator<String> sourceStream = env.fromData(DataConstant.APP_NAME_LIST)
                 .uid("source")
@@ -50,12 +50,12 @@ public class ProducerBaseJob {
 
         SingleOutputStreamOperator<PulsarSourceMessage> msgStream = sourceStream.map(u -> new PulsarSourceMessage(u.getBytes(StandardCharsets.UTF_8)));
 
-        PulsarSinkBuilder<PulsarSourceMessage> sinkBuilder = PulsarUtil.buildSinkBaseBuilder(pulsarConfig);
+        PulsarSinkBuilder<PulsarSourceMessage> sinkBuilder = PulsarUtil.buildSinkBaseBuilder(jobConfig.getPulsarSinkConfig());
 
         msgStream.sinkTo(sinkBuilder.build())
                 .uid("sink")
                 .name("sink");
 
-        env.execute(pulsarConfig.getJobName());
+        env.execute(jobConfig.getJobName());
     }
 }

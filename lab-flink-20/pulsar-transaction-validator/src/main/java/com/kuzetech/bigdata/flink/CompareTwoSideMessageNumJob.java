@@ -19,13 +19,14 @@
 package com.kuzetech.bigdata.flink;
 
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
+import com.kuzetech.bigdata.flink.base.JobConfig;
 import com.kuzetech.bigdata.flink.func.MessageCountAggregateFunction;
 import com.kuzetech.bigdata.flink.func.PrintCountWindowFunction;
 import com.kuzetech.bigdata.flink.funny.FunnyMessage;
-import com.kuzetech.bigdata.flink.kafka.KafkaConfig;
+import com.kuzetech.bigdata.flink.kafka.KafkaSourceConfig;
 import com.kuzetech.bigdata.flink.kafka.KafkaUtil;
 import com.kuzetech.bigdata.flink.kafka.serialization.KafkaFunnyMessageDeserializationSchema;
-import com.kuzetech.bigdata.flink.pulsar.PulsarConfig;
+import com.kuzetech.bigdata.flink.pulsar.PulsarSourceConfig;
 import com.kuzetech.bigdata.flink.pulsar.PulsarUtil;
 import com.kuzetech.bigdata.flink.pulsar.serialization.PulsarFunnyMessageDeserializationSchema;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
@@ -46,19 +47,20 @@ public class CompareTwoSideMessageNumJob {
 
         final StreamExecutionEnvironment env = FlinkUtil.initEnv(parameterTool);
 
-        final PulsarConfig pulsarConfig = PulsarConfig.generateFromParameterTool(parameterTool);
-        final KafkaConfig kafkaConfig = KafkaConfig.generateFromParameterTool(parameterTool);
+        final JobConfig jobConfig = new JobConfig(parameterTool);
+        final PulsarSourceConfig pulsarSourceConfig = jobConfig.getPulsarSourceConfig();
+        final KafkaSourceConfig kafkaSourceConfig = jobConfig.getKafkaSourceConfig();
 
-        PulsarSourceBuilder<FunnyMessage> pulsarSourceBuilder = PulsarUtil.buildSourceBaseBuilder(pulsarConfig, new PulsarFunnyMessageDeserializationSchema());
-        KafkaSourceBuilder<FunnyMessage> kafkaSourceBuilder = KafkaUtil.buildSourceBaseBuilder(kafkaConfig, new KafkaFunnyMessageDeserializationSchema());
+        PulsarSourceBuilder<FunnyMessage> pulsarSourceBuilder = PulsarUtil.buildSourceBaseBuilder(pulsarSourceConfig, new PulsarFunnyMessageDeserializationSchema());
+        KafkaSourceBuilder<FunnyMessage> kafkaSourceBuilder = KafkaUtil.buildSourceBaseBuilder(kafkaSourceConfig, new KafkaFunnyMessageDeserializationSchema());
 
         WatermarkStrategy<FunnyMessage> pulsarMsgWatermarkStrategy = WatermarkStrategy
-                .<FunnyMessage>forBoundedOutOfOrderness(Duration.ofSeconds(pulsarConfig.getJobOutOfOrdernessSecond()))
+                .<FunnyMessage>forBoundedOutOfOrderness(Duration.ofSeconds(jobConfig.getJobOutOfOrdernessSecond()))
                 .withTimestampAssigner((record, timestamp) -> record.getIngestTime())
                 .withIdleness(Duration.ofSeconds(60));
 
         WatermarkStrategy<FunnyMessage> kafkaMsgWatermarkStrategy = WatermarkStrategy
-                .<FunnyMessage>forBoundedOutOfOrderness(Duration.ofSeconds(kafkaConfig.getJobOutOfOrdernessSecond()))
+                .<FunnyMessage>forBoundedOutOfOrderness(Duration.ofSeconds(jobConfig.getJobOutOfOrdernessSecond()))
                 .withTimestampAssigner((record, timestamp) -> record.getIngestTime())
                 .withIdleness(Duration.ofSeconds(60));
 
@@ -81,6 +83,6 @@ public class CompareTwoSideMessageNumJob {
                 .name("statistician")
                 .print();
 
-        env.execute(pulsarConfig.getJobName());
+        env.execute(jobConfig.getJobName());
     }
 }

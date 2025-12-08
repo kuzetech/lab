@@ -35,23 +35,23 @@ public class PulsarUtil {
         return "persistent://public/default/" + simpleName;
     }
 
-    public static <T> PulsarSourceBuilder<T> buildSourceBaseBuilder(PulsarConfig config, PulsarDeserializationSchema<T> deserializationSchema) {
-        String completeTopicName = getDefaultCompleteTopicName(config.getSourceTopic());
+    public static <T> PulsarSourceBuilder<T> buildSourceBaseBuilder(PulsarSourceConfig config, PulsarDeserializationSchema<T> deserializationSchema) {
+        String completeTopicName = getDefaultCompleteTopicName(config.getTopic());
         return PulsarSource.builder()
                 .setServiceUrl(config.getServiceUrl())
                 .setStartCursor(getJobStartCursor(completeTopicName, config.getStartCursor()))
-                .setTopics(config.getSourceTopic())
+                .setTopics(config.getTopic())
                 .setDeserializationSchema(deserializationSchema)
                 .setSubscriptionName(config.getSubscriber())
                 .setConfig(PulsarSourceOptions.PULSAR_PARTITION_DISCOVERY_INTERVAL_MS, DEFAULT_PULSAR_PARTITION_DISCOVERY_INTERVAL_MS)
                 .setConfig(PulsarSourceOptions.PULSAR_ENABLE_SOURCE_METRICS, true);
     }
 
-    public static PulsarSinkBuilder<PulsarSourceMessage> buildSinkBaseBuilder(PulsarConfig config) {
+    public static PulsarSinkBuilder<PulsarSourceMessage> buildSinkBaseBuilder(PulsarSinkConfig config) {
         return PulsarSink.builder()
                 .setServiceUrl(config.getServiceUrl())
                 .setAdminUrl(config.getAdminUrl())
-                .setTopics(config.getSinkTopic())
+                .setTopics(config.getTopic())
                 .setProducerName(config.getProducerName())
                 .setSerializationSchema(new PulsarSourceMessageSerializationSchema())
                 .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE)

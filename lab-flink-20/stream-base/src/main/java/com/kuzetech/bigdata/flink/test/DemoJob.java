@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-package com.kuzetech.bigdata.flink;
+package com.kuzetech.bigdata.flink.test;
 
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
-import com.kuzetech.bigdata.flink.kafka.KafkaConfig;
+import com.kuzetech.bigdata.flink.base.JobConfig;
 import com.kuzetech.bigdata.flink.kafka.KafkaUtil;
 import com.kuzetech.bigdata.flink.kafka.domain.KafkaSourceMessage;
 import com.kuzetech.bigdata.flink.kafka.serialization.KafkaSourceMessageDeserializationSchema;
@@ -30,27 +30,32 @@ import org.apache.flink.connector.kafka.source.KafkaSourceBuilder;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-public class TrackDemoJob {
+public class DemoJob {
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
         final StreamExecutionEnvironment env = FlinkUtil.initEnv(parameterTool);
+        final JobConfig jobConfig = new JobConfig(parameterTool);
 
-        final KafkaConfig kafkaConfig = KafkaConfig.generateFromParameterTool(parameterTool);
+        buildFlow(env, jobConfig);
 
-        KafkaSourceBuilder<KafkaSourceMessage> sourceBuilder = KafkaUtil.buildSourceBaseBuilder(kafkaConfig, new KafkaSourceMessageDeserializationSchema());
+        env.execute(jobConfig.getJobName());
+    }
 
-        SingleOutputStreamOperator<KafkaSourceMessage> sourceStream = env.fromSource(sourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source")
-                .uid("source")
-                .name("source");
+    public static void buildFlow(StreamExecutionEnvironment env, JobConfig jobConfig) {
+        KafkaSourceBuilder<KafkaSourceMessage> sourceBuilder =
+                KafkaUtil.buildSourceBaseBuilder(jobConfig.getKafkaSourceConfig(), new KafkaSourceMessageDeserializationSchema());
 
-        KafkaSinkBuilder<KafkaSourceMessage> sinkBuilder = KafkaUtil.buildSinkBaseBuilder(kafkaConfig);
+        SingleOutputStreamOperator<KafkaSourceMessage> sourceStream =
+                env.fromSource(sourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source")
+                        .uid("source")
+                        .name("source");
+
+        KafkaSinkBuilder<KafkaSourceMessage> sinkBuilder = KafkaUtil.buildSinkBaseBuilder(jobConfig.getKafkaSinkConfig());
 
         sourceStream.sinkTo(sinkBuilder.build())
                 .uid("sink")
                 .name("sink");
-
-        env.execute(kafkaConfig.getJobName());
     }
 }

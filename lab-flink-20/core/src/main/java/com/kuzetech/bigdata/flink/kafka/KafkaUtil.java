@@ -41,20 +41,20 @@ public class KafkaUtil {
             .build();
 
 
-    public static <T> KafkaSourceBuilder<T> buildSourceBaseBuilder(KafkaConfig config, KafkaRecordDeserializationSchema<T> recordDeserializer) {
+    public static <T> KafkaSourceBuilder<T> buildSourceBaseBuilder(KafkaSourceConfig config, KafkaRecordDeserializationSchema<T> recordDeserializer) {
         return KafkaSource.<T>builder()
                 .setProperty(KafkaSourceOptions.PARTITION_DISCOVERY_INTERVAL_MS.key(), DEFAULT_KAFKA_PARTITION_DISCOVERY_INTERVAL_MS)
                 .setProperty(ConsumerConfig.ISOLATION_LEVEL_CONFIG, IsolationLevel.READ_COMMITTED.toString().toLowerCase(Locale.ROOT))
                 .setProperty("commit.offsets.on.checkpoint", "true")
                 .setBootstrapServers(config.getBootstrapServers())
-                .setTopics(config.getSourceTopic())
+                .setTopics(config.getTopic())
                 .setGroupId(config.getSubscriber())
                 .setStartingOffsets(getJobStartingOffsets(config.getStartingOffsets()))
                 .setDeserializer(recordDeserializer)
                 .setClientIdPrefix(config.getClientIdPrefix());
     }
 
-    public static KafkaSinkBuilder<KafkaSourceMessage> buildSinkBaseBuilder(KafkaConfig config) {
+    public static KafkaSinkBuilder<KafkaSourceMessage> buildSinkBaseBuilder(KafkaSinkConfig config) {
         Properties props = new Properties();
         props.putAll(DEFAULT_PRODUCER_CONFIG);
         return KafkaSink.<KafkaSourceMessage>builder()
@@ -67,12 +67,12 @@ public class KafkaUtil {
                 .setProperty(ACKS_CONFIG, "all")
                 .setProperty("commit.offsets.on.checkpoint", "true")
                 .setBootstrapServers(config.getBootstrapServers())
-                .setRecordSerializer(new KafkaSourceMessageSerializationSchema(config.getSinkTopic()));
+                .setRecordSerializer(new KafkaSourceMessageSerializationSchema(config.getTopic()));
     }
 
     private static OffsetsInitializer getJobStartingOffsets(String startingOffsets) {
         if (StringUtils.isBlank(startingOffsets)) {
-            return OffsetsInitializer.committedOffsets(OffsetResetStrategy.EARLIEST);
+            return OffsetsInitializer.committedOffsets(OffsetResetStrategy.LATEST);
         }
         if (OffsetResetStrategy.EARLIEST.name().equalsIgnoreCase(startingOffsets)) {
             return OffsetsInitializer.committedOffsets(OffsetResetStrategy.EARLIEST);
@@ -85,7 +85,7 @@ public class KafkaUtil {
 
     // 需要实现指定分区消费进度，todo
     private static OffsetsInitializer analysisStartingOffsets(String startingOffsets) {
-        return OffsetsInitializer.committedOffsets(OffsetResetStrategy.EARLIEST);
+        return OffsetsInitializer.committedOffsets(OffsetResetStrategy.LATEST);
     }
 
 

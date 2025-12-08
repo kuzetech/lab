@@ -19,10 +19,10 @@
 package com.kuzetech.bigdata.flink;
 
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
-import com.kuzetech.bigdata.flink.kafka.KafkaConfig;
+import com.kuzetech.bigdata.flink.base.JobConfig;
+import com.kuzetech.bigdata.flink.kafka.KafkaUtil;
 import com.kuzetech.bigdata.flink.kafka.domain.KafkaSourceMessage;
 import com.kuzetech.bigdata.flink.kafka.serialization.KafkaSourceMessageDeserializationSchema;
-import com.kuzetech.bigdata.flink.kafka.KafkaUtil;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.kafka.sink.KafkaSinkBuilder;
@@ -37,20 +37,20 @@ public class CopierBaseJob {
 
         final StreamExecutionEnvironment env = FlinkUtil.initEnv(parameterTool);
 
-        final KafkaConfig kafkaConfig = KafkaConfig.generateFromParameterTool(parameterTool);
+        final JobConfig jobConfig = new JobConfig(parameterTool);
 
-        KafkaSourceBuilder<KafkaSourceMessage> sourceBuilder = KafkaUtil.buildSourceBaseBuilder(kafkaConfig, new KafkaSourceMessageDeserializationSchema());
+        KafkaSourceBuilder<KafkaSourceMessage> sourceBuilder = KafkaUtil.buildSourceBaseBuilder(jobConfig.getKafkaSourceConfig(), new KafkaSourceMessageDeserializationSchema());
 
         SingleOutputStreamOperator<KafkaSourceMessage> sourceStream = env.fromSource(sourceBuilder.build(), WatermarkStrategy.noWatermarks(), "source")
                 .uid("source")
                 .name("source");
 
-        KafkaSinkBuilder<KafkaSourceMessage> sinkBuilder = KafkaUtil.buildSinkBaseBuilder(kafkaConfig);
+        KafkaSinkBuilder<KafkaSourceMessage> sinkBuilder = KafkaUtil.buildSinkBaseBuilder(jobConfig.getKafkaSinkConfig());
 
         sourceStream.sinkTo(sinkBuilder.build())
                 .uid("sink")
                 .name("sink");
 
-        env.execute(kafkaConfig.getJobName());
+        env.execute(jobConfig.getJobName());
     }
 }

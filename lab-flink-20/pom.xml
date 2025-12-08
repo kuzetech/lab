@@ -37,6 +37,7 @@
         <jackson.version>2.14.1</jackson.version>
         <fastjson.version>2.0.31</fastjson.version>
         <datafaker.version>1.9.0</datafaker.version>
+        <testcontainers.version>1.19.3</testcontainers.version>
     </properties>
 
     <repositories>
@@ -161,6 +162,42 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-table-test-utils</artifactId>
             <version>${flink.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>kafka</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>pulsar</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mockserver</artifactId>
+            <version>1.19.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-client-java</artifactId>
+            <version>5.15.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.mguenther.kafka</groupId>
+            <artifactId>kafka-junit</artifactId>
+            <version>3.5.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
