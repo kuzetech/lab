@@ -16,10 +16,12 @@ public class DeriveReadJob {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(32);
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-derive/data/staging/derive",
+                // "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-derive/data/staging/derive",
+                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/gen/track",
                 new EmbeddedRocksDBStateBackend(true));
 
         savepoint.readKeyedState(
