@@ -54,12 +54,7 @@ public class DemoJob {
 
         KafkaSinkBuilder<KafkaSourceMessage> sinkBuilder = KafkaUtil.buildSinkBaseBuilder(jobConfig.getKafkaSinkConfig());
 
-        sourceStream
-                .map(v -> {
-                    System.out.println("---------aaabbb-------");
-                    return v;
-                })
-                .sinkTo(sinkBuilder.build())
+        sourceStream.sinkTo(sinkBuilder.build())
                 .uid("sink")
                 .name("sink");
     }

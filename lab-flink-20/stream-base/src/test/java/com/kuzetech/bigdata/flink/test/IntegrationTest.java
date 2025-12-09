@@ -1,18 +1,19 @@
 package com.kuzetech.bigdata.flink.test;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
 import com.kuzetech.bigdata.flink.base.JobConfig;
+import com.kuzetech.bigdata.flink.json.ObjectMapperInstance;
 import lombok.extern.slf4j.Slf4j;
-import net.mguenther.kafka.junit.ExternalKafkaCluster;
-import net.mguenther.kafka.junit.ObserveKeyValues;
-import net.mguenther.kafka.junit.SendValues;
-import net.mguenther.kafka.junit.TopicConfig;
+import net.mguenther.kafka.junit.*;
 import org.apache.flink.api.common.JobStatus;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.core.execution.JobClient;
 import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.test.util.MiniClusterWithClientResource;
+import org.assertj.core.api.Assertions;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,13 +22,21 @@ import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.utility.DockerImageName;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 public class IntegrationTest {
+
+    private final static ObjectMapper OBJECT_MAPPER = ObjectMapperInstance.getInstance();
+    private final static Integer JOB_PARALLELISM = 2;
 
     @ClassRule
     public static MiniClusterWithClientResource flinkCluster = new MiniClusterWithClientResource(
             new MiniClusterResourceConfiguration.Builder()
-                    .setNumberSlotsPerTaskManager(2)
+                    .setNumberSlotsPerTaskManager(JOB_PARALLELISM)
                     .setNumberTaskManagers(1)
                     .build()
     );
@@ -56,7 +65,7 @@ public class IntegrationTest {
         kafkaAdmin.createTopic(TopicConfig.withName(jobConfig.getKafkaSinkConfig().getTopic()).build());
 
         StreamExecutionEnvironment env = FlinkUtil.initEnv(parameterTool);
-        env.setParallelism(2);
+        env.setParallelism(JOB_PARALLELISM);
         DemoJob.buildFlow(env, jobConfig);
         JobClient jobClient = env.executeAsync();
         while (true) {
@@ -78,8 +87,25 @@ public class IntegrationTest {
 
     @Test
     public void test() throws Exception {
-        kafkaAdmin.send(SendValues.to(jobConfig.getKafkaSourceConfig().getTopic(), "1"));
-        kafkaAdmin.observe(ObserveKeyValues.on(jobConfig.getKafkaSinkConfig().getTopic(), 1));
+        List<String> events = Files.readAllLines(Paths.get("src/test/resources/events.ndjson"));
+        kafkaAdmin.send(SendValues.to(jobConfig.getKafkaSourceConfig().getTopic(), events));
+
+        List<KeyValue<String, String>> messages = kafkaAdmin.observe(ObserveKeyValues.on(jobConfig.getKafkaSinkConfig().getTopic(), events.size()));
+        List<JsonNode> result = new ArrayList<>();
+        for (KeyValue<String, String> message : messages) {
+            Assertions.assertThat(message.getHeaders()).hasSize(0);
+            Assertions.assertThat(message.getKey()).isNull();
+            JsonNode data = OBJECT_MAPPER.readTree(message.getValue());
+            result.add(data);
+        }
+
+        List<String> expects = Files.readAllLines(Paths.get("src/test/resources/expect.ndjson"));
+        List<JsonNode> expectDataList = new ArrayList<>();
+        for (String expect : expects) {
+            JsonNode data = OBJECT_MAPPER.readTree(expect);
+            expectDataList.add(data);
+        }
+        Assertions.assertThat(result).hasSize(expectDataList.size()).containsAll(expectDataList);
     }
 
 
