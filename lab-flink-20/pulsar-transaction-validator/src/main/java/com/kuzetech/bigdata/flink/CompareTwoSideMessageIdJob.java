@@ -52,12 +52,12 @@ public class CompareTwoSideMessageIdJob {
         KafkaSourceBuilder<FunnyMessage> kafkaSourceBuilder = KafkaUtil.buildSourceBaseBuilder(kafkaSourceConfig, new KafkaFunnyMessageDeserializationSchema());
 
         WatermarkStrategy<FunnyMessage> pulsarMsgWatermarkStrategy = WatermarkStrategy
-                .<FunnyMessage>forBoundedOutOfOrderness(Duration.ofSeconds(jobConfig.getJobOutOfOrdernessSecond()))
+                .<FunnyMessage>forBoundedOutOfOrderness(Duration.ofMillis(jobConfig.getWatermarkOutInterval()))
                 .withTimestampAssigner((record, timestamp) -> record.getIngestTime())
                 .withIdleness(Duration.ofSeconds(60));
 
         WatermarkStrategy<FunnyMessage> kafkaMsgWatermarkStrategy = WatermarkStrategy
-                .<FunnyMessage>forBoundedOutOfOrderness(Duration.ofSeconds(jobConfig.getJobOutOfOrdernessSecond()))
+                .<FunnyMessage>forBoundedOutOfOrderness(Duration.ofMillis(jobConfig.getWatermarkOutInterval()))
                 .withTimestampAssigner((record, timestamp) -> record.getIngestTime())
                 .withIdleness(Duration.ofSeconds(60));
 

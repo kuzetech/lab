@@ -20,7 +20,7 @@ public class KafkaSinkConfig {
 
     public static KafkaSinkConfig generateFromParameterTool(ParameterTool parameterTool) {
         KafkaSinkConfig config = new KafkaSinkConfig();
-        config.setBootstrapServers(parameterTool.get("kafka.bootstrap.servers", DEFAULT_KAFKA_BOOTSTRAP_SERVERS));
+        config.setBootstrapServers(parameterTool.get("kafka.producer.bootstrap.servers", DEFAULT_KAFKA_BOOTSTRAP_SERVERS));
 
         config.setTopic(parameterTool.get("kafka.producer.topic"));
         config.setTransactionalIdPrefix(parameterTool.get("kafka.producer.transactional.id.prefix"));

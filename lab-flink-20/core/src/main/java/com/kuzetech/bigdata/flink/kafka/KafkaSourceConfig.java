@@ -11,7 +11,7 @@ public class KafkaSourceConfig {
 
     private String bootstrapServers;
     private String topic;
-    private String subscriber;
+    private String group;
     private String clientIdPrefix;
 
     /**
@@ -23,10 +23,10 @@ public class KafkaSourceConfig {
 
     public static KafkaSourceConfig generateFromParameterTool(ParameterTool parameterTool) {
         KafkaSourceConfig config = new KafkaSourceConfig();
-        config.setBootstrapServers(parameterTool.get("kafka.bootstrap.servers", Constants.DEFAULT_KAFKA_BOOTSTRAP_SERVERS));
+        config.setBootstrapServers(parameterTool.get("kafka.consumer.bootstrap.servers", Constants.DEFAULT_KAFKA_BOOTSTRAP_SERVERS));
 
         config.setTopic(parameterTool.get("kafka.consumer.topic"));
-        config.setSubscriber(parameterTool.get("kafka.consumer.subscriber"));
+        config.setGroup(parameterTool.get("kafka.consumer.group"));
         config.setClientIdPrefix(parameterTool.get("kafka.consumer.client.id.prefix"));
         config.setStartingOffsets(parameterTool.get("kafka.consumer.starting.offsets"));
 

@@ -48,7 +48,7 @@ public class KafkaUtil {
                 .setProperty("commit.offsets.on.checkpoint", "true")
                 .setBootstrapServers(config.getBootstrapServers())
                 .setTopics(config.getTopic())
-                .setGroupId(config.getSubscriber())
+                .setGroupId(config.getGroup())
                 .setStartingOffsets(getJobStartingOffsets(config.getStartingOffsets()))
                 .setDeserializer(recordDeserializer)
                 .setClientIdPrefix(config.getClientIdPrefix());

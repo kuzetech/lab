@@ -1,7 +1,9 @@
 package com.kuzetech.bigdata.flink.base;
 
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.configuration.*;
+import org.apache.flink.configuration.CheckpointingOptions;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.StateBackendOptions;
 import org.apache.flink.runtime.jobgraph.SavepointConfigOptions;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
