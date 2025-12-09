@@ -35,9 +35,11 @@ public class AuOperatorKeyedStateReaderFunction extends KeyedStateReaderFunction
 
     @Override
     public void readKey(String key, Context context, Collector<AuOperatorKeyedState> out) throws Exception {
-        AuOperatorKeyedState data = new AuOperatorKeyedState();
-        data.key = key;
-        data.activeMark = activeState.value();
-        out.collect(data);
+        if (key != null && !key.startsWith("demo")) {
+            AuOperatorKeyedState data = new AuOperatorKeyedState();
+            data.key = key;
+            data.activeMark = activeState.value();
+            out.collect(data);
+        }
     }
 }

@@ -99,13 +99,18 @@ public class IntegrationTest {
             result.add(data);
         }
 
-        List<String> expects = Files.readAllLines(Paths.get("src/test/resources/expect.ndjson"));
+        List<String> expects = Files.readAllLines(Paths.get("src/test/resources/events_expect.ndjson"));
         List<JsonNode> expectDataList = new ArrayList<>();
         for (String expect : expects) {
             JsonNode data = OBJECT_MAPPER.readTree(expect);
             expectDataList.add(data);
         }
         Assertions.assertThat(result).hasSize(expectDataList.size()).containsAll(expectDataList);
+
+        for (JsonNode item : result) {
+
+        }
+
     }
 
 

@@ -6,6 +6,7 @@ import com.kuzetech.bigdata.flink.function.AuOperatorKeyedStateReaderFunction;
 import com.kuzetech.bigdata.flink.function.IdentifyNewOperatorKeyedStateReaderFunction;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
 import org.apache.flink.state.api.OperatorIdentifier;
 import org.apache.flink.state.api.SavepointReader;
@@ -15,13 +16,13 @@ import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
 public class DeriveReadJob {
 
     public static void main(String[] args) throws Exception {
+        ParameterTool parameterTool = ParameterTool.fromArgs(args);
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(32);
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                // "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-derive/data/staging/derive",
-                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/gen/track",
+                parameterTool.get("path"),
                 new EmbeddedRocksDBStateBackend(true));
 
         savepoint.readKeyedState(
@@ -66,7 +67,7 @@ public class DeriveReadJob {
                 .reduce(Long::sum)
                 .print("mauDataStreamResult: "); //3907248
 
-        env.execute("ReadJob");
+        env.execute("DeriveReadJob");
 
     }
 }
