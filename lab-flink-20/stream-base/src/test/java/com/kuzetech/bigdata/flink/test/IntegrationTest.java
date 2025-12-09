@@ -106,11 +106,6 @@ public class IntegrationTest {
             expectDataList.add(data);
         }
         Assertions.assertThat(result).hasSize(expectDataList.size()).containsAll(expectDataList);
-
-        for (JsonNode item : result) {
-
-        }
-
     }
 
 
