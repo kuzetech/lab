@@ -2,6 +2,7 @@ package com.kuzetech.bigdata.flink.function;
 
 import com.kuzetech.bigdata.flink.domain.AuOperatorKeyedState;
 import com.xmfunny.funnydb.flink.model.ActiveMark;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.state.StateTtlConfig;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
@@ -12,6 +13,7 @@ import org.apache.flink.util.Collector;
 
 import java.time.Duration;
 
+@Slf4j
 public class AuOperatorKeyedStateReaderFunction extends KeyedStateReaderFunction<String, AuOperatorKeyedState> {
 
     private final String stateName;
@@ -35,11 +37,11 @@ public class AuOperatorKeyedStateReaderFunction extends KeyedStateReaderFunction
 
     @Override
     public void readKey(String key, Context context, Collector<AuOperatorKeyedState> out) throws Exception {
-        if (key != null && !key.startsWith("demo")) {
-            AuOperatorKeyedState data = new AuOperatorKeyedState();
-            data.key = key;
-            data.activeMark = activeState.value();
-            out.collect(data);
-        }
+        log.info("key is {}, value is {}", key, activeState.value());
+
+        AuOperatorKeyedState data = new AuOperatorKeyedState();
+        data.key = key;
+        data.activeMark = activeState.value();
+        out.collect(data);
     }
 }

@@ -23,11 +23,9 @@ public class IdentifyNewOperatorKeyedStateReaderFunction extends KeyedStateReade
 
     @Override
     public void readKey(String key, Context context, Collector<IdentifyNewOperatorKeyedState> out) throws Exception {
-        if (key != null && !key.startsWith("demo")) {
-            IdentifyNewOperatorKeyedState data = new IdentifyNewOperatorKeyedState();
-            data.key = key;
-            data.createdTs = createdTsState.value();
-            out.collect(data);
-        }
+        IdentifyNewOperatorKeyedState data = new IdentifyNewOperatorKeyedState();
+        data.key = key;
+        data.createdTs = createdTsState.value();
+        out.collect(data);
     }
 }
