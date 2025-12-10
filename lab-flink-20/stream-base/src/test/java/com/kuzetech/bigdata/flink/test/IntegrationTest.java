@@ -90,7 +90,9 @@ public class IntegrationTest {
 
     @AfterAll
     public static void clean() throws Exception {
-        flinkCluster.cancelAllJobs();
+        if (flinkCluster != null) {
+            flinkCluster.cancelAllJobs();
+        }
         kafkaCluster.close();
         network.close();
     }
@@ -119,7 +121,7 @@ public class IntegrationTest {
         Assertions.assertThat(result).hasSize(expectDataList.size()).containsAll(expectDataList);
 
         // 部分字段校验
-        Map<String, Consumer<DocumentContext>> validators = new HashMap<>() {{
+        Map<String, Consumer<DocumentContext>> validatorMap = new HashMap<>() {{
             put(null, doc -> {
                 org.junit.jupiter.api.Assertions.assertEquals(5, doc.read("$.data.['#time']", Integer.class));
             });
@@ -131,9 +133,11 @@ public class IntegrationTest {
             String msgContent = message.getValue();
             DocumentContext documentContext = jsonPathParseContext.parse(msgContent);
             Object logId = documentContext.read("$.data.['#log_id']");
-            Consumer<DocumentContext> validatorRule = validators.get(logId);
-            if (validatorRule != null) {
-                validatorRule.accept(documentContext);
+            Consumer<DocumentContext> validator = validatorMap.get(logId);
+            if (validator != null) {
+                validator.accept(documentContext);
+            } else {
+                // throw new Exception("can not find validate rule, msg is  " + msgContent);
             }
         }
     }
