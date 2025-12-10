@@ -2,6 +2,7 @@ package com.kuzetech.bigdata.flink.test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.*;
 import com.kuzetech.bigdata.flink.base.FlinkUtil;
 import com.kuzetech.bigdata.flink.base.JobConfig;
 import com.kuzetech.bigdata.flink.json.ObjectMapperInstance;
@@ -25,13 +26,22 @@ import org.testcontainers.utility.DockerImageName;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
 @Slf4j
 public class IntegrationTest {
 
     private final static ObjectMapper OBJECT_MAPPER = ObjectMapperInstance.getInstance();
     private final static Integer JOB_PARALLELISM = 2;
+
+    // 设置不存在的路径返回 null
+    private final static Configuration jsonPathConf = Configuration.defaultConfiguration()
+            .addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL);
+    private final static ParseContext jsonPathParseContext = JsonPath.using(jsonPathConf);
+
 
     @ClassRule
     public static MiniClusterWithClientResource flinkCluster = new MiniClusterWithClientResource(
@@ -99,13 +109,33 @@ public class IntegrationTest {
             result.add(data);
         }
 
-        List<String> expects = Files.readAllLines(Paths.get("src/test/resources/events_expect.ndjson"));
+        // 全字段校验
+        List<String> expects = Files.readAllLines(Paths.get("src/test/resources/events.ndjson"));
         List<JsonNode> expectDataList = new ArrayList<>();
         for (String expect : expects) {
             JsonNode data = OBJECT_MAPPER.readTree(expect);
             expectDataList.add(data);
         }
         Assertions.assertThat(result).hasSize(expectDataList.size()).containsAll(expectDataList);
+
+        // 部分字段校验
+        Map<String, Consumer<DocumentContext>> validators = new HashMap<>() {{
+            put(null, doc -> {
+                org.junit.jupiter.api.Assertions.assertEquals(5, doc.read("$.data.['#time']", Integer.class));
+            });
+            put("1", doc -> {
+                org.junit.jupiter.api.Assertions.assertEquals(1, doc.read("$.data.['#time']", Integer.class));
+            });
+        }};
+        for (KeyValue<String, String> message : messages) {
+            String msgContent = message.getValue();
+            DocumentContext documentContext = jsonPathParseContext.parse(msgContent);
+            Object logId = documentContext.read("$.data.['#log_id']");
+            Consumer<DocumentContext> validatorRule = validators.get(logId);
+            if (validatorRule != null) {
+                validatorRule.accept(documentContext);
+            }
+        }
     }
 
 
