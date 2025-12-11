@@ -28,40 +28,44 @@ public class DeriveJob {
                 new EmbeddedRocksDBStateBackend(true));
 
         DataStream<IdentifyNewOperatorKeyedState> newDataStream = savepoint.readKeyedState(
-                OperatorIdentifier.forUid("derive-event-process"),
-                new IdentifyNewOperatorKeyedStateReaderFunction(),
-                Types.STRING,
-                TypeInformation.of(IdentifyNewOperatorKeyedState.class));
+                        OperatorIdentifier.forUid("derive-event-process"),
+                        new IdentifyNewOperatorKeyedStateReaderFunction(),
+                        Types.STRING,
+                        TypeInformation.of(IdentifyNewOperatorKeyedState.class))
+                .filter(value -> value.getCreatedTs() != null);
         StateBootstrapTransformation<IdentifyNewOperatorKeyedState> newTransformation = OperatorTransformation
                 .bootstrapWith(newDataStream)
                 .keyBy(o -> o.key)
                 .transform(new IdentifyNewOperatorKeyedStateBootstrapper());
 
         DataStream<AuOperatorKeyedState> dauDataStream = savepoint.readKeyedState(
-                OperatorIdentifier.forUid("derive-event-dau-process"),
-                new AuOperatorKeyedStateReaderFunction("dau-state"),
-                Types.STRING,
-                TypeInformation.of(AuOperatorKeyedState.class));
+                        OperatorIdentifier.forUid("derive-event-dau-process"),
+                        new AuOperatorKeyedStateReaderFunction("dau-state"),
+                        Types.STRING,
+                        TypeInformation.of(AuOperatorKeyedState.class))
+                .filter(value -> value.getActiveMark() != null);
         StateBootstrapTransformation<AuOperatorKeyedState> dauTransformation = OperatorTransformation
                 .bootstrapWith(dauDataStream)
                 .keyBy(o -> o.key)
                 .transform(new AuOperatorKeyedStateBootstrapper("dau-state"));
 
         DataStream<AuOperatorKeyedState> wauDataStream = savepoint.readKeyedState(
-                OperatorIdentifier.forUid("derive-event-wau-process"),
-                new AuOperatorKeyedStateReaderFunction("wau-state"),
-                Types.STRING,
-                TypeInformation.of(AuOperatorKeyedState.class));
+                        OperatorIdentifier.forUid("derive-event-wau-process"),
+                        new AuOperatorKeyedStateReaderFunction("wau-state"),
+                        Types.STRING,
+                        TypeInformation.of(AuOperatorKeyedState.class))
+                .filter(value -> value.getActiveMark() != null);
         StateBootstrapTransformation<AuOperatorKeyedState> wauTransformation = OperatorTransformation
                 .bootstrapWith(wauDataStream)
                 .keyBy(o -> o.key)
                 .transform(new AuOperatorKeyedStateBootstrapper("wau-state"));
 
         DataStream<AuOperatorKeyedState> mauDataStream = savepoint.readKeyedState(
-                OperatorIdentifier.forUid("derive-event-mau-process"),
-                new AuOperatorKeyedStateReaderFunction("mau-state"),
-                Types.STRING,
-                TypeInformation.of(AuOperatorKeyedState.class));
+                        OperatorIdentifier.forUid("derive-event-mau-process"),
+                        new AuOperatorKeyedStateReaderFunction("mau-state"),
+                        Types.STRING,
+                        TypeInformation.of(AuOperatorKeyedState.class))
+                .filter(value -> value.getActiveMark() != null);
         StateBootstrapTransformation<AuOperatorKeyedState> mauTransformation = OperatorTransformation
                 .bootstrapWith(mauDataStream)
                 .keyBy(o -> o.key)

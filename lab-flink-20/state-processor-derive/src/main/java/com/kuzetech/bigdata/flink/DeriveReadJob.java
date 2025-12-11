@@ -1,7 +1,9 @@
 package com.kuzetech.bigdata.flink;
 
 import com.kuzetech.bigdata.flink.domain.AuOperatorKeyedState;
+import com.kuzetech.bigdata.flink.domain.IdentifyNewOperatorKeyedState;
 import com.kuzetech.bigdata.flink.function.AuOperatorKeyedStateReaderFunction;
+import com.kuzetech.bigdata.flink.function.IdentifyNewOperatorKeyedStateReaderFunction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.typeinfo.TypeHint;
@@ -23,22 +25,20 @@ public class DeriveReadJob {
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
-        boolean exceptDemo = parameterTool.getBoolean("exceptDemo", true);
-        log.info("exceptDemo: {}", exceptDemo);
-
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                //parameterTool.get("path"),
-                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-derive/data/staging/derive",
+                parameterTool.get("path"),
+                // "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-derive/data/staging/derive",
                 new EmbeddedRocksDBStateBackend(true));
 
         savepoint.readKeyedState(
-                        OperatorIdentifier.forUid("derive-event-wau-process"),
-                        new AuOperatorKeyedStateReaderFunction("wau-state"),
+                        OperatorIdentifier.forUid("derive-event-process"),
+                        new IdentifyNewOperatorKeyedStateReaderFunction(),
                         Types.STRING,
-                        TypeInformation.of(AuOperatorKeyedState.class))
+                        TypeInformation.of(IdentifyNewOperatorKeyedState.class))
+                .filter(value -> value.getCreatedTs() != null)
                 .map(v -> {
                     return Tuple2.of(new Random().nextInt(128), 1L);
                 })
@@ -51,7 +51,71 @@ public class DeriveReadJob {
                 .map(value -> value.f1)
                 .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
                 .reduce(Long::sum)
-                .print("wauDataStreamResult: ").setParallelism(1); //3907250
+                .print("newDataStreamResult: ") //1841838
+                .setParallelism(1);
+
+        savepoint.readKeyedState(
+                        OperatorIdentifier.forUid("derive-event-dau-process"),
+                        new AuOperatorKeyedStateReaderFunction("dau-state"),
+                        Types.STRING,
+                        TypeInformation.of(AuOperatorKeyedState.class))
+                .filter(value -> value.getActiveMark() != null)
+                .map(v -> {
+                    return Tuple2.of(new Random().nextInt(128), 1L);
+                })
+                .returns(new TypeHint<Tuple2<Integer, Long>>() {
+                })
+                .keyBy(value -> value.f0)
+                .window(GlobalWindows.create())
+                .trigger(new GlobalWindows.EndOfStreamTrigger())
+                .reduce((ReduceFunction<Tuple2<Integer, Long>>) (value1, value2) -> new Tuple2<>(value1.f0, value1.f1 + value2.f1))
+                .map(value -> value.f1)
+                .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
+                .reduce(Long::sum)
+                .print("dauDataStreamResult: ") //3907250
+                .setParallelism(1);
+
+        savepoint.readKeyedState(
+                        OperatorIdentifier.forUid("derive-event-wau-process"),
+                        new AuOperatorKeyedStateReaderFunction("wau-state"),
+                        Types.STRING,
+                        TypeInformation.of(AuOperatorKeyedState.class))
+                .filter(value -> value.getActiveMark() != null)
+                .map(v -> {
+                    return Tuple2.of(new Random().nextInt(128), 1L);
+                })
+                .returns(new TypeHint<Tuple2<Integer, Long>>() {
+                })
+                .keyBy(value -> value.f0)
+                .window(GlobalWindows.create())
+                .trigger(new GlobalWindows.EndOfStreamTrigger())
+                .reduce((ReduceFunction<Tuple2<Integer, Long>>) (value1, value2) -> new Tuple2<>(value1.f0, value1.f1 + value2.f1))
+                .map(value -> value.f1)
+                .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
+                .reduce(Long::sum)
+                .print("wauDataStreamResult: ") //3907250
+                .setParallelism(1);
+
+        savepoint.readKeyedState(
+                        OperatorIdentifier.forUid("derive-event-mau-process"),
+                        new AuOperatorKeyedStateReaderFunction("mau-state"),
+                        Types.STRING,
+                        TypeInformation.of(AuOperatorKeyedState.class))
+                .filter(value -> value.getActiveMark() != null)
+                .map(v -> {
+                    return Tuple2.of(new Random().nextInt(128), 1L);
+                })
+                .returns(new TypeHint<Tuple2<Integer, Long>>() {
+                })
+                .keyBy(value -> value.f0)
+                .window(GlobalWindows.create())
+                .trigger(new GlobalWindows.EndOfStreamTrigger())
+                .reduce((ReduceFunction<Tuple2<Integer, Long>>) (value1, value2) -> new Tuple2<>(value1.f0, value1.f1 + value2.f1))
+                .map(value -> value.f1)
+                .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
+                .reduce(Long::sum)
+                .print("mauDataStreamResult: ") //3907250
+                .setParallelism(1);
 
         env.execute("DeriveReadJob");
 

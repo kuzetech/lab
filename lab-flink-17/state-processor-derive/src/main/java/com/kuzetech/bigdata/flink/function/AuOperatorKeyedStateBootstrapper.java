@@ -23,7 +23,7 @@ public class AuOperatorKeyedStateBootstrapper extends KeyedStateBootstrapFunctio
     public void open(Configuration configuration) throws Exception {
         ValueStateDescriptor<ActiveMark> activeStateDesc = new ValueStateDescriptor<>(stateName, Types.POJO(ActiveMark.class));
         // 原本的过期时间为60天
-        StateTtlConfig ttlCfg = StateTtlConfig.newBuilder(Time.days(1000))
+        StateTtlConfig ttlCfg = StateTtlConfig.newBuilder(Time.days(60))
                 .setUpdateType(StateTtlConfig.UpdateType.OnReadAndWrite)
                 .setStateVisibility(StateTtlConfig.StateVisibility.ReturnExpiredIfNotCleanedUp)
                 .build();
