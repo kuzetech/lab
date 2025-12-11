@@ -35,6 +35,10 @@ public class AuOperatorKeyedStateReaderFunction extends KeyedStateReaderFunction
         this.activeState = this.getRuntimeContext().getState(activeStateDesc);
     }
 
+    /*
+        不能直接在这里过滤数据，如果startsWith demo 直接 return 将不返回任何数据
+        如果需要实现过滤，并且加速作业的话，这里一样得用 out 输出数据，然后外层通过 filter 进行过滤
+     */
     @Override
     public void readKey(String key, Context context, Collector<AuOperatorKeyedState> out) throws Exception {
         AuOperatorKeyedState data = new AuOperatorKeyedState();
