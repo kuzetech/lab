@@ -5,19 +5,14 @@ import com.kuzetech.bigdata.flink.domain.IdentifyNewOperatorKeyedState;
 import com.kuzetech.bigdata.flink.function.AuOperatorKeyedStateReaderFunction;
 import com.kuzetech.bigdata.flink.function.IdentifyNewOperatorKeyedStateReaderFunction;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.flink.api.common.functions.ReduceFunction;
-import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
 import org.apache.flink.state.api.OperatorIdentifier;
 import org.apache.flink.state.api.SavepointReader;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
-
-import java.util.Random;
 
 @Slf4j
 public class DeriveReadJob {
@@ -30,7 +25,6 @@ public class DeriveReadJob {
         SavepointReader savepoint = SavepointReader.read(
                 env,
                 parameterTool.get("path"),
-                // "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-derive/data/staging/derive",
                 new EmbeddedRocksDBStateBackend(true));
 
         savepoint.readKeyedState(
@@ -39,16 +33,8 @@ public class DeriveReadJob {
                         Types.STRING,
                         TypeInformation.of(IdentifyNewOperatorKeyedState.class))
                 .filter(value -> value.getCreatedTs() != null)
-                .map(v -> {
-                    return Tuple2.of(new Random().nextInt(128), 1L);
-                })
-                .returns(new TypeHint<Tuple2<Integer, Long>>() {
-                })
-                .keyBy(value -> value.f0)
-                .window(GlobalWindows.create())
-                .trigger(new GlobalWindows.EndOfStreamTrigger())
-                .reduce((ReduceFunction<Tuple2<Integer, Long>>) (value1, value2) -> new Tuple2<>(value1.f0, value1.f1 + value2.f1))
-                .map(value -> value.f1)
+                .map(x -> 1L)
+                .returns(Types.LONG)
                 .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
                 .reduce(Long::sum)
                 .print("newDataStreamResult: ") //1841838
@@ -60,16 +46,8 @@ public class DeriveReadJob {
                         Types.STRING,
                         TypeInformation.of(AuOperatorKeyedState.class))
                 .filter(value -> value.getActiveMark() != null)
-                .map(v -> {
-                    return Tuple2.of(new Random().nextInt(128), 1L);
-                })
-                .returns(new TypeHint<Tuple2<Integer, Long>>() {
-                })
-                .keyBy(value -> value.f0)
-                .window(GlobalWindows.create())
-                .trigger(new GlobalWindows.EndOfStreamTrigger())
-                .reduce((ReduceFunction<Tuple2<Integer, Long>>) (value1, value2) -> new Tuple2<>(value1.f0, value1.f1 + value2.f1))
-                .map(value -> value.f1)
+                .map(x -> 1L)
+                .returns(Types.LONG)
                 .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
                 .reduce(Long::sum)
                 .print("dauDataStreamResult: ") //3907250
@@ -81,16 +59,8 @@ public class DeriveReadJob {
                         Types.STRING,
                         TypeInformation.of(AuOperatorKeyedState.class))
                 .filter(value -> value.getActiveMark() != null)
-                .map(v -> {
-                    return Tuple2.of(new Random().nextInt(128), 1L);
-                })
-                .returns(new TypeHint<Tuple2<Integer, Long>>() {
-                })
-                .keyBy(value -> value.f0)
-                .window(GlobalWindows.create())
-                .trigger(new GlobalWindows.EndOfStreamTrigger())
-                .reduce((ReduceFunction<Tuple2<Integer, Long>>) (value1, value2) -> new Tuple2<>(value1.f0, value1.f1 + value2.f1))
-                .map(value -> value.f1)
+                .map(x -> 1L)
+                .returns(Types.LONG)
                 .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
                 .reduce(Long::sum)
                 .print("wauDataStreamResult: ") //3907250
@@ -102,22 +72,14 @@ public class DeriveReadJob {
                         Types.STRING,
                         TypeInformation.of(AuOperatorKeyedState.class))
                 .filter(value -> value.getActiveMark() != null)
-                .map(v -> {
-                    return Tuple2.of(new Random().nextInt(128), 1L);
-                })
-                .returns(new TypeHint<Tuple2<Integer, Long>>() {
-                })
-                .keyBy(value -> value.f0)
-                .window(GlobalWindows.create())
-                .trigger(new GlobalWindows.EndOfStreamTrigger())
-                .reduce((ReduceFunction<Tuple2<Integer, Long>>) (value1, value2) -> new Tuple2<>(value1.f0, value1.f1 + value2.f1))
-                .map(value -> value.f1)
+                .map(x -> 1L)
+                .returns(Types.LONG)
                 .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
                 .reduce(Long::sum)
                 .print("mauDataStreamResult: ") //3907250
                 .setParallelism(1);
 
-        env.execute("DeriveReadJob");
+        env.execute("ReadJob");
 
     }
 }

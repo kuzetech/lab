@@ -20,7 +20,9 @@ public class TrackReadJob {
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/staging/track",
+                //"file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/staging/track",
+                //"file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/gen/track",
+                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/gen/sum",
                 new EmbeddedRocksDBStateBackend(true));
 
         DataStream<DistinctOperatorKeyedState> distinctOperatorKeyedStateDataStream = savepoint.readKeyedState(
@@ -33,7 +35,8 @@ public class TrackReadJob {
                 .returns(Types.LONG)
                 .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
                 .reduce(Long::sum)
-                .print("distinctOperatorKeyedStateDataStreamResult:"); //12124
+                .print("distinctOperatorKeyedStateDataStreamResult:") //12124
+                .setParallelism(1);
 
         DataStream<DeviceOperatorKeyedState> deviceOperatorKeyedStateDataStream = savepoint.readKeyedState(
                 OperatorIdentifier.forUid("user-login-device-state"),
@@ -45,7 +48,8 @@ public class TrackReadJob {
                 .returns(Types.LONG)
                 .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
                 .reduce(Long::sum)
-                .print("deviceOperatorKeyedStateDataStreamResult:"); //223327
+                .print("deviceOperatorKeyedStateDataStreamResult:") //223327
+                .setParallelism(1);
 
         env.execute("ReadJob");
 

@@ -25,9 +25,7 @@ public class IdentifyNewOperatorKeyedStateReaderFunction extends KeyedStateReade
     public void readKey(String key, Context context, Collector<IdentifyNewOperatorKeyedState> out) throws Exception {
         IdentifyNewOperatorKeyedState data = new IdentifyNewOperatorKeyedState();
         data.key = key;
-        if (!key.startsWith("demo")) {
-            data.createdTs = createdTsState.value();
-        }
+        data.createdTs = createdTsState.value();
         out.collect(data);
     }
 }
