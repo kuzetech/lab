@@ -24,7 +24,6 @@ public class DebugDeriveJob {
 
         Configuration config = new Configuration();
         config.set(BIND_PORT, "49316");
-        config.set(NUM_TASK_SLOTS, 16);
         config.set(JVM_OVERHEAD_MIN, MemorySize.parse("512m"));
         config.set(JVM_OVERHEAD_MAX, MemorySize.parse("512m"));
         config.set(JVM_METASPACE, MemorySize.parse("256m"));
@@ -32,9 +31,11 @@ public class DebugDeriveJob {
         config.set(NETWORK_MEMORY_MAX, MemorySize.parse("64m"));
         config.set(FRAMEWORK_HEAP_MEMORY, MemorySize.parse("128m"));
         config.set(FRAMEWORK_OFF_HEAP_MEMORY, MemorySize.parse("128m"));
-        config.set(TASK_HEAP_MEMORY, MemorySize.parse("6g"));
+        config.set(TASK_HEAP_MEMORY, MemorySize.parse("2g"));
         config.set(TASK_OFF_HEAP_MEMORY, MemorySize.ZERO);
-        config.set(MANAGED_MEMORY_SIZE, MemorySize.parse("3g"));
+        config.set(MANAGED_MEMORY_SIZE, MemorySize.ZERO);
+        config.set(NUM_TASK_SLOTS, 16);
+        
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(config);
         env.setParallelism(16);
 
@@ -48,7 +49,7 @@ public class DebugDeriveJob {
                         new IdentifyNewOperatorKeyedStateReaderFunction(),
                         Types.STRING,
                         TypeInformation.of(IdentifyNewOperatorKeyedState.class))
-                .filter(value -> !value.getKey().startsWith("demo"));
+                .filter(value -> value.getCreatedTs() != null);
         StateBootstrapTransformation<IdentifyNewOperatorKeyedState> newTransformation = OperatorTransformation
                 .bootstrapWith(newDataStream)
                 .keyBy(o -> o.key)
