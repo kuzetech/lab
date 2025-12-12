@@ -20,7 +20,7 @@ public class DeriveReadNewJob {
         SavepointReader savepoint = SavepointReader.read(
                 env,
                 //"file:///Users/huangsw/code/lab/lab-flink-17/state-processor-derive/data/staging/derive",
-                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/gen/track",
+                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/gen/fix",
                 new EmbeddedRocksDBStateBackend(true));
 
         savepoint.readKeyedState(

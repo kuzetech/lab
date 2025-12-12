@@ -21,8 +21,7 @@ public class TrackReadJob {
         SavepointReader savepoint = SavepointReader.read(
                 env,
                 //"file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/staging/track",
-                //"file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/gen/track",
-                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/gen/sum",
+                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/gen/fix",
                 new EmbeddedRocksDBStateBackend(true));
 
         DataStream<DistinctOperatorKeyedState> distinctOperatorKeyedStateDataStream = savepoint.readKeyedState(

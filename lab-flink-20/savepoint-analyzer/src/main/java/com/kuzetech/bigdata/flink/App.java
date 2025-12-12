@@ -28,10 +28,11 @@ public class App {
 
     public static void main(String[] args) throws IOException {
         String metadataPath =
-                //"/Users/huangsw/Downloads/_metadata"
-                //"/Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/staging/track/_metadata"
-                //"/Users/huangsw/code/lab/lab-flink-17/state-processor-derive/data/staging/derive/_metadata"
-                "/Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/gen/track/_metadata";
+                //"/Users/huangsw/Downloads/_metadata";
+                //"/Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/staging/track/_metadata";
+                //"/Users/huangsw/code/lab/lab-flink-17/state-processor-derive/data/staging/derive/_metadata";
+                //"/Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/gen/track/_metadata";
+                "/Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/gen/fix/_metadata";
 
         File metaFile = new File(metadataPath);
         if (!metaFile.exists() || !metaFile.isFile()) {
