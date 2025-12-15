@@ -26,10 +26,8 @@ under the License.
     <packaging>pom</packaging>
     <name>flink-17-parent</name>
     <modules>
-        <module>state-processor-track</module>
         <module>stream-base</module>
         <module>stream-redis</module>
-        <module>state-processor-derive</module>
     </modules>
 
     <properties>
