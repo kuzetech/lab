@@ -24,7 +24,7 @@ public class DeriveReadJob {
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                parameterTool.get("path"),
+                parameterTool.get("derive"),
                 new EmbeddedRocksDBStateBackend(true));
 
         savepoint.readKeyedState(
@@ -50,7 +50,7 @@ public class DeriveReadJob {
                 .returns(Types.LONG)
                 .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
                 .reduce(Long::sum)
-                .print("dauDataStreamResult: ") //3907250
+                .print("dauDataStreamResult: ")
                 .setParallelism(1);
 
         savepoint.readKeyedState(
@@ -63,7 +63,7 @@ public class DeriveReadJob {
                 .returns(Types.LONG)
                 .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
                 .reduce(Long::sum)
-                .print("wauDataStreamResult: ") //3907250
+                .print("wauDataStreamResult: ")
                 .setParallelism(1);
 
         savepoint.readKeyedState(
@@ -76,7 +76,7 @@ public class DeriveReadJob {
                 .returns(Types.LONG)
                 .windowAll(GlobalWindows.createWithEndOfStreamTrigger())
                 .reduce(Long::sum)
-                .print("mauDataStreamResult: ") //3907250
+                .print("mauDataStreamResult: ")
                 .setParallelism(1);
 
         env.execute();

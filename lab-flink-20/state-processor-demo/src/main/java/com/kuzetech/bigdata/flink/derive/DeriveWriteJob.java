@@ -80,6 +80,6 @@ public class DeriveWriteJob {
                 .withOperator(OperatorIdentifier.forUid("derive-event-mau-process"), mauTransformation)
                 .write(parameterTool.get("target"));
 
-        env.execute("DeriveJob");
+        env.execute("DeriveWriteJob");
     }
 }
