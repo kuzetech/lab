@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.track.work;
+package com.kuzetech.bigdata.flink.track;
 
 import com.kuzetech.bigdata.flink.track.function.EventOperatorStateBootstrapFunction;
 import com.kuzetech.bigdata.flink.util.FlinkEnvironmentUtil;

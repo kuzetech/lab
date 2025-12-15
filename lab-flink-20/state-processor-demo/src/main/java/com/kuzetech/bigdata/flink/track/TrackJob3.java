@@ -1,8 +1,8 @@
-package com.kuzetech.bigdata.flink.track.work;
+package com.kuzetech.bigdata.flink.track;
 
-import com.kuzetech.bigdata.flink.track.domain.EnrichOperatorKeyedState;
-import com.kuzetech.bigdata.flink.track.function.EnrichOperatorKeyedStateBootstrapper;
-import com.kuzetech.bigdata.flink.track.function.EnrichOperatorKeyedStateReaderFunction;
+import com.kuzetech.bigdata.flink.track.domain.DeviceOperatorKeyedState;
+import com.kuzetech.bigdata.flink.track.function.DeviceOperatorKeyedStateBootstrapper;
+import com.kuzetech.bigdata.flink.track.function.DeviceOperatorKeyedStateReaderFunction;
 import com.kuzetech.bigdata.flink.util.FlinkEnvironmentUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
@@ -14,7 +14,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 @Slf4j
-public class TrackJob4 {
+public class TrackJob3 {
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
@@ -25,22 +25,22 @@ public class TrackJob4 {
                 parameterTool.get("old"),
                 new EmbeddedRocksDBStateBackend(true));
 
-        DataStream<EnrichOperatorKeyedState> enrichOperatorKeyedStateDataStream = savepoint.readKeyedState(
-                OperatorIdentifier.forUid("device-info-enrich-state"),
-                new EnrichOperatorKeyedStateReaderFunction(),
+        DataStream<DeviceOperatorKeyedState> deviceOperatorKeyedStateDataStream = savepoint.readKeyedState(
+                OperatorIdentifier.forUid("user-login-device-state"),
+                new DeviceOperatorKeyedStateReaderFunction(),
                 Types.STRING,
-                TypeInformation.of(EnrichOperatorKeyedState.class));
+                TypeInformation.of(DeviceOperatorKeyedState.class));
 
-        StateBootstrapTransformation<EnrichOperatorKeyedState> transformation = OperatorTransformation
-                .bootstrapWith(enrichOperatorKeyedStateDataStream)
+        StateBootstrapTransformation<DeviceOperatorKeyedState> transformation = OperatorTransformation
+                .bootstrapWith(deviceOperatorKeyedStateDataStream)
                 .keyBy(o -> o.key)
-                .transform(new EnrichOperatorKeyedStateBootstrapper());
+                .transform(new DeviceOperatorKeyedStateBootstrapper());
 
         SavepointWriter
                 .fromExistingSavepoint(env, parameterTool.get("temp"), new EmbeddedRocksDBStateBackend(true))
-                .withOperator(OperatorIdentifier.forUid("device-info-enrich-state"), transformation)
+                .withOperator(OperatorIdentifier.forUid("user-login-device-state"), transformation)
                 .write(parameterTool.get("new"));
 
-        env.execute("TrackJob4");
+        env.execute("TrackJob3");
     }
 }
