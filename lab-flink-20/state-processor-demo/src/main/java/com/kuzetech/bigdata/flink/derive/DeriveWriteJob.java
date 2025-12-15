@@ -1,18 +1,16 @@
 package com.kuzetech.bigdata.flink.derive;
 
-import com.kuzetech.bigdata.flink.domain.AuOperatorKeyedState;
-import com.kuzetech.bigdata.flink.domain.IdentifyNewOperatorKeyedState;
-import com.kuzetech.bigdata.flink.function.AuOperatorKeyedStateBootstrapper;
-import com.kuzetech.bigdata.flink.function.AuOperatorKeyedStateReaderFunction;
-import com.kuzetech.bigdata.flink.function.IdentifyNewOperatorKeyedStateBootstrapper;
-import com.kuzetech.bigdata.flink.function.IdentifyNewOperatorKeyedStateReaderFunction;
+import com.kuzetech.bigdata.flink.derive.domain.AuOperatorKeyedState;
+import com.kuzetech.bigdata.flink.derive.domain.IdentifyNewOperatorKeyedState;
+import com.kuzetech.bigdata.flink.derive.function.AuOperatorKeyedStateBootstrapper;
+import com.kuzetech.bigdata.flink.derive.function.AuOperatorKeyedStateReaderFunction;
+import com.kuzetech.bigdata.flink.derive.function.IdentifyNewOperatorKeyedStateBootstrapper;
+import com.kuzetech.bigdata.flink.derive.function.IdentifyNewOperatorKeyedStateReaderFunction;
+import com.kuzetech.bigdata.flink.util.FlinkEnvironmentUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.flink.api.common.RuntimeExecutionMode;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.configuration.BatchExecutionOptions;
-import org.apache.flink.configuration.Configuration;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
 import org.apache.flink.state.api.*;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -23,10 +21,7 @@ public class DeriveWriteJob {
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
-        Configuration config = new Configuration();
-        config.set(BatchExecutionOptions.ADAPTIVE_AUTO_PARALLELISM_ENABLED, false);
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(config);
-        env.setRuntimeMode(RuntimeExecutionMode.BATCH);
+        StreamExecutionEnvironment env = FlinkEnvironmentUtil.getDefaultStreamExecutionEnvironment();
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
@@ -78,7 +73,7 @@ public class DeriveWriteJob {
                 .transform(new AuOperatorKeyedStateBootstrapper("mau-state"));
 
         SavepointWriter
-                .fromExistingSavepoint(env, parameterTool.get("track"), new EmbeddedRocksDBStateBackend(false))
+                .fromExistingSavepoint(env, parameterTool.get("track"), new EmbeddedRocksDBStateBackend(true))
                 .withOperator(OperatorIdentifier.forUid("derive-event-process"), newTransformation)
                 .withOperator(OperatorIdentifier.forUid("derive-event-dau-process"), dauTransformation)
                 .withOperator(OperatorIdentifier.forUid("derive-event-wau-process"), wauTransformation)

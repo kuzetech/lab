@@ -79,7 +79,7 @@ public class DeriveReadJob {
                 .print("mauDataStreamResult: ") //3907250
                 .setParallelism(1);
 
-        env.execute("ReadJob");
+        env.execute();
 
     }
 }

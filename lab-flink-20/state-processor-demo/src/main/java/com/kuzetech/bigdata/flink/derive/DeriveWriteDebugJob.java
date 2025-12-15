@@ -1,8 +1,8 @@
 package com.kuzetech.bigdata.flink.derive;
 
-import com.kuzetech.bigdata.flink.domain.IdentifyNewOperatorKeyedState;
-import com.kuzetech.bigdata.flink.function.IdentifyNewOperatorKeyedStateBootstrapper;
-import com.kuzetech.bigdata.flink.function.IdentifyNewOperatorKeyedStateReaderFunction;
+import com.kuzetech.bigdata.flink.derive.domain.IdentifyNewOperatorKeyedState;
+import com.kuzetech.bigdata.flink.derive.function.IdentifyNewOperatorKeyedStateBootstrapper;
+import com.kuzetech.bigdata.flink.derive.function.IdentifyNewOperatorKeyedStateReaderFunction;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.RuntimeExecutionMode;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
@@ -24,8 +24,8 @@ public class DeriveWriteDebugJob {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
         Configuration config = new Configuration();
-        config.set(BIND_PORT, "49316");
         config.set(BatchExecutionOptions.ADAPTIVE_AUTO_PARALLELISM_ENABLED, false);
+        config.set(BIND_PORT, "29988");
         config.set(NUM_TASK_SLOTS, 16);
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(config);
@@ -53,6 +53,6 @@ public class DeriveWriteDebugJob {
                 .withOperator(OperatorIdentifier.forUid("derive-event-process"), newTransformation)
                 .write(parameterTool.get("target"));
 
-        env.execute("DeriveJob");
+        env.execute();
     }
 }

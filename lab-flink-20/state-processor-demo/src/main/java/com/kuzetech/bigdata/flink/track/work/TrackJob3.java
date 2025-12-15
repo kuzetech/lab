@@ -1,8 +1,9 @@
-package com.kuzetech.bigdata.flink.track;
+package com.kuzetech.bigdata.flink.track.work;
 
-import com.kuzetech.bigdata.flink.domain.DeviceOperatorKeyedState;
-import com.kuzetech.bigdata.flink.function.DeviceOperatorKeyedStateBootstrapper;
-import com.kuzetech.bigdata.flink.function.DeviceOperatorKeyedStateReaderFunction;
+import com.kuzetech.bigdata.flink.track.domain.DeviceOperatorKeyedState;
+import com.kuzetech.bigdata.flink.track.function.DeviceOperatorKeyedStateBootstrapper;
+import com.kuzetech.bigdata.flink.track.function.DeviceOperatorKeyedStateReaderFunction;
+import com.kuzetech.bigdata.flink.util.FlinkEnvironmentUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
@@ -17,7 +18,7 @@ public class TrackJob3 {
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        StreamExecutionEnvironment env = FlinkEnvironmentUtil.getDefaultStreamExecutionEnvironment();
 
         SavepointReader savepoint = SavepointReader.read(
                 env,

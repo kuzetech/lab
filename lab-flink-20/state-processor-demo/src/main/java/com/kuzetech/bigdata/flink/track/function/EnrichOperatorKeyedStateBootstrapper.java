@@ -1,6 +1,6 @@
 package com.kuzetech.bigdata.flink.track.function;
 
-import com.kuzetech.bigdata.flink.domain.EnrichOperatorKeyedState;
+import com.kuzetech.bigdata.flink.track.domain.EnrichOperatorKeyedState;
 import com.xmfunny.funnydb.flink.model.DeviceInfoCacheData;
 import com.xmfunny.funnydb.flink.model.RecordHeaders;
 import com.xmfunny.funnydb.flink.model.TrackEvent;

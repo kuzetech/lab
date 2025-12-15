@@ -20,9 +20,9 @@ public class TrackReadJob {
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                //"file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/staging/track",
-                "file:///Users/huangsw/code/lab/lab-flink-17/state-processor-track/data/gen/fix",
-                new EmbeddedRocksDBStateBackend(true));
+                "file:///Users/huangsw/code/lab/lab-flink-20/state-processor-demo/data/track/staging"
+                //"file:///Users/huangsw/code/lab/lab-flink-20/state-processor-demo/data/track/gen/fix"
+                , new EmbeddedRocksDBStateBackend(true));
 
         DataStream<DistinctOperatorKeyedState> distinctOperatorKeyedStateDataStream = savepoint.readKeyedState(
                 OperatorIdentifier.forUid("filter-distinct"),
@@ -50,7 +50,7 @@ public class TrackReadJob {
                 .print("deviceOperatorKeyedStateDataStreamResult:") //223327
                 .setParallelism(1);
 
-        env.execute("ReadJob");
+        env.execute();
 
     }
 }
