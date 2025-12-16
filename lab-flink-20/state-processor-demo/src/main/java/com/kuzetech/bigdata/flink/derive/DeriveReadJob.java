@@ -7,7 +7,6 @@ import com.kuzetech.bigdata.flink.derive.function.IdentifyNewOperatorKeyedStateR
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
-import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
 import org.apache.flink.state.api.OperatorIdentifier;
 import org.apache.flink.state.api.SavepointReader;
@@ -18,14 +17,13 @@ import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
 public class DeriveReadJob {
 
     public static void main(String[] args) throws Exception {
-        ParameterTool parameterTool = ParameterTool.fromArgs(args);
-
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                parameterTool.get("derive"),
-                new EmbeddedRocksDBStateBackend(true));
+//                "file:///Users/huangsw/code/lab/lab-flink-20/state-processor-demo/data/derive/staging"
+                "file:///Users/huangsw/code/lab/lab-flink-20/state-processor-demo/data/track/20/fix"
+                , new EmbeddedRocksDBStateBackend(true));
 
         savepoint.readKeyedState(
                         OperatorIdentifier.forUid("derive-event-process"),

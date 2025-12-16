@@ -28,7 +28,8 @@ public class SavepointAnalyzer {
 
     public static void main(String[] args) throws IOException {
         //String metadataPath = "/Users/huangsw/Downloads/_metadata";
-        String metadataPath = "/Users/huangsw/code/lab/lab-flink-20/state-processor-demo/data/track/gen/_metadata";
+        String metadataPath = "/Users/huangsw/code/lab/lab-flink-20/state-processor-demo/data/track/20/fix/_metadata";
+        //String metadataPath = "/Users/huangsw/code/lab/lab-flink-20/state-processor-demo/data/track/staging/_metadata";
 
         File metaFile = new File(metadataPath);
         if (!metaFile.exists() || !metaFile.isFile()) {

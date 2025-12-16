@@ -28,7 +28,6 @@ under the License.
     <modules>
         <module>stream-base</module>
         <module>stream-redis</module>
-        <module>state-processor-demo</module>
     </modules>
 
     <properties>
