@@ -44,6 +44,7 @@ public class DeriveWriteJob {
 
             @Override
             public void onJobExecuted(@Nullable JobExecutionResult jobExecutionResult, @Nullable Throwable throwable) {
+                log.info("DeriveWriteJob run FlinkFsCopy begin");
                 try {
                     FlinkFsCopyUtil.copyDirIfNotExists(
                             new Path(trackSavepointPath),
