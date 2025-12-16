@@ -13,7 +13,6 @@ import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.BatchExecutionOptions;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.configuration.TaskManagerOptions;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
 import org.apache.flink.state.api.*;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -26,11 +25,8 @@ public class DeriveWriteJob {
 
         Configuration config = new Configuration();
         config.set(BatchExecutionOptions.ADAPTIVE_AUTO_PARALLELISM_ENABLED, false);
-        config.set(TaskManagerOptions.NUM_TASK_SLOTS, 16);
-
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(config);
         env.setRuntimeMode(RuntimeExecutionMode.BATCH);
-        env.setParallelism(16);
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
