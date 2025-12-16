@@ -7,11 +7,13 @@ import com.kuzetech.bigdata.flink.derive.function.AuOperatorKeyedStateReaderFunc
 import com.kuzetech.bigdata.flink.derive.function.IdentifyNewOperatorKeyedStateBootstrapper;
 import com.kuzetech.bigdata.flink.derive.function.IdentifyNewOperatorKeyedStateReaderFunction;
 import com.kuzetech.bigdata.flink.util.FlinkEnvironmentUtil;
+import com.kuzetech.bigdata.flink.util.FlinkFsCopyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
+import org.apache.flink.core.fs.Path;
 import org.apache.flink.state.api.*;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -21,12 +23,18 @@ public class DeriveWriteJob {
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
 
+        String deriveSavepointPath = parameterTool.getRequired("derive");
+        String trackSavepointPath = parameterTool.getRequired("track");
+        String targetSavepointPath = parameterTool.getRequired("target");
+
+        EmbeddedRocksDBStateBackend embeddedRocksDBStateBackend = new EmbeddedRocksDBStateBackend(true);
+
         StreamExecutionEnvironment env = FlinkEnvironmentUtil.getDefaultStreamExecutionEnvironment();
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
-                parameterTool.get("derive"),
-                new EmbeddedRocksDBStateBackend(true));
+                deriveSavepointPath,
+                embeddedRocksDBStateBackend);
 
         DataStream<IdentifyNewOperatorKeyedState> newDataStream = savepoint.readKeyedState(
                         OperatorIdentifier.forUid("derive-event-process"),
@@ -73,13 +81,21 @@ public class DeriveWriteJob {
                 .transform(new AuOperatorKeyedStateBootstrapper("mau-state"));
 
         SavepointWriter
-                .fromExistingSavepoint(env, parameterTool.get("track"), new EmbeddedRocksDBStateBackend(true))
+                .fromExistingSavepoint(env, trackSavepointPath, embeddedRocksDBStateBackend)
                 .withOperator(OperatorIdentifier.forUid("derive-event-process"), newTransformation)
                 .withOperator(OperatorIdentifier.forUid("derive-event-dau-process"), dauTransformation)
                 .withOperator(OperatorIdentifier.forUid("derive-event-wau-process"), wauTransformation)
                 .withOperator(OperatorIdentifier.forUid("derive-event-mau-process"), mauTransformation)
-                .write(parameterTool.get("target"));
+                .write(targetSavepointPath);
 
         env.execute("DeriveWriteJob");
+
+        log.info("DeriveWriteJob run FlinkFsCopy");
+        FlinkFsCopyUtil.copyDirIfNotExists(
+                new Path(trackSavepointPath),
+                new Path(targetSavepointPath)
+        );
+        log.info("DeriveWriteJob run FlinkFsCopy success");
+
     }
 }
