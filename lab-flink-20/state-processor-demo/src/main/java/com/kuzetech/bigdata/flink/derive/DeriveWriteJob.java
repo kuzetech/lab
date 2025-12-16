@@ -9,14 +9,20 @@ import com.kuzetech.bigdata.flink.derive.function.IdentifyNewOperatorKeyedStateR
 import com.kuzetech.bigdata.flink.util.FlinkEnvironmentUtil;
 import com.kuzetech.bigdata.flink.util.FlinkFsCopyUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.flink.api.common.JobExecutionResult;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
+import org.apache.flink.core.execution.JobClient;
+import org.apache.flink.core.execution.JobListener;
 import org.apache.flink.core.fs.Path;
 import org.apache.flink.state.api.*;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+import javax.annotation.Nullable;
+import java.io.IOException;
 
 @Slf4j
 public class DeriveWriteJob {
@@ -30,6 +36,25 @@ public class DeriveWriteJob {
         EmbeddedRocksDBStateBackend embeddedRocksDBStateBackend = new EmbeddedRocksDBStateBackend(true);
 
         StreamExecutionEnvironment env = FlinkEnvironmentUtil.getDefaultStreamExecutionEnvironment();
+        env.registerJobListener(new JobListener() {
+            @Override
+            public void onJobSubmitted(@Nullable JobClient jobClient, @Nullable Throwable throwable) {
+
+            }
+
+            @Override
+            public void onJobExecuted(@Nullable JobExecutionResult jobExecutionResult, @Nullable Throwable throwable) {
+                try {
+                    FlinkFsCopyUtil.copyDirIfNotExists(
+                            new Path(trackSavepointPath),
+                            new Path(targetSavepointPath)
+                    );
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                log.info("DeriveWriteJob run FlinkFsCopy success");
+            }
+        });
 
         SavepointReader savepoint = SavepointReader.read(
                 env,
@@ -89,13 +114,5 @@ public class DeriveWriteJob {
                 .write(targetSavepointPath);
 
         env.execute("DeriveWriteJob");
-
-        log.info("DeriveWriteJob run FlinkFsCopy");
-        FlinkFsCopyUtil.copyDirIfNotExists(
-                new Path(trackSavepointPath),
-                new Path(targetSavepointPath)
-        );
-        log.info("DeriveWriteJob run FlinkFsCopy success");
-
     }
 }
