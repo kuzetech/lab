@@ -6,14 +6,11 @@ import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutionException;
-
 public class BatchProducer {
     public static void main(String[] args) throws PulsarClientException, InterruptedException {
         try (
                 PulsarClient client = ClientUtil.createDefaultLocalClient();
-                Producer<String> producer = ProducerUtil.getSimpleBatchProducer(
+                Producer<String> producer = ProducerUtil.getFixedSizeBatchProducer(
                         client,
                         "funnydb-ingest-receive",
                         10);

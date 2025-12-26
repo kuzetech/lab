@@ -20,10 +20,10 @@ public class ProducerUtil {
                 .create();
     }
 
-    public static Producer<String> getSimpleBatchProducer(PulsarClient client, String topic, Integer batchSize) throws PulsarClientException {
+    public static Producer<String> getFixedSizeBatchProducer(PulsarClient client, String topic, Integer batchSize) throws PulsarClientException {
         return client.newProducer(Schema.STRING)
                 .producerName("lab-producer-batch")
-                .batchingMaxPublishDelay(24, TimeUnit.HOURS)
+                .batchingMaxPublishDelay(30, TimeUnit.DAYS)
                 .batchingMaxBytes(1024 * 1024 * 1024) // 1GB
                 .batchingMaxMessages(batchSize)
                 .topic(TopicUtil.getDefaultCompleteTopic(topic))
@@ -35,12 +35,12 @@ public class ProducerUtil {
                 .producerName("lab-producer-common")
                 .topic(TopicUtil.getDefaultCompleteTopic(topic))
                 .enableBatching(true) // 默认开启，仅对 sendAsync 有效
+                .batchingMaxPublishDelay(50, TimeUnit.MILLISECONDS)
+                .batchingMaxMessages(1000)
+                .batchingMaxBytes(128 * 1024) // 128KB
                 .sendTimeout(30, TimeUnit.SECONDS)
                 .maxPendingMessages(0)
                 .blockIfQueueFull(false)
-                .batchingMaxPublishDelay(1, TimeUnit.MILLISECONDS)
-                .batchingMaxMessages(1000)
-                .batchingMaxBytes(128 * 1024) // 128KB
                 .compressionType(CompressionType.NONE)
                 .accessMode(ProducerAccessMode.Shared)
                 .create();
