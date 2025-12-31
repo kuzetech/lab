@@ -1,6 +1,5 @@
-package com.kuzetech.bigdata.flink.udsink;
+package com.kuzetech.bigdata.flink.redis;
 
-import com.kuzetech.bigdata.flink.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.api.common.typeutils.base.VoidSerializer;

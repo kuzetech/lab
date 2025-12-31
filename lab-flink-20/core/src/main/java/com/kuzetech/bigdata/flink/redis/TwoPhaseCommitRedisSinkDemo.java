@@ -1,7 +1,6 @@
-package com.kuzetech.bigdata.flink;
+package com.kuzetech.bigdata.flink.redis;
 
 import com.kuzetech.bigdata.flink.model.WordCount;
-import com.kuzetech.bigdata.flink.udsink.RedisExactlySink;
 import com.kuzetech.bigdata.flink.utils.FlinkUtil;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;

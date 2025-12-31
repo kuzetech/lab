@@ -1,6 +1,7 @@
-package com.kuzetech.bigdata.flink.utils;
+package com.kuzetech.bigdata.flink.redis;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -11,6 +12,7 @@ import java.io.InputStream;
 import java.time.Duration;
 import java.util.Properties;
 
+@Slf4j
 public class RedisUtil {
 
     public static JedisPool jedisPool = null;

@@ -1,6 +1,6 @@
 package com.kuzetech.bigdata.flink;
 
-import com.kuzetech.bigdata.flink.broadcast.BroadcastSource;
+import com.kuzetech.bigdata.flink.source.BroadcastSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.state.MapStateDescriptor;

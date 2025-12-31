@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package com.kuzetech.bigdata.flink.state;
+package com.kuzetech.bigdata.flink;
 
-import com.kuzetech.bigdata.flink.udsource.GenTimeSingleParallelSource;
+import com.kuzetech.bigdata.flink.source.GenTimeSingleParallelSource;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.CheckpointingOptions;
 import org.apache.flink.configuration.Configuration;
@@ -32,10 +32,15 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.ExecutionCheckpointingOptions;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.async.ResultFuture;
+import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
 
+import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
-public class AsyncFunctionStateJob {
+public class AsyncFunctionDemoJob {
 
     public static void main(String[] args) throws Exception {
         Configuration config = new Configuration();
@@ -54,8 +59,35 @@ public class AsyncFunctionStateJob {
 
         DataStreamSource<Long> sourceStream = env.addSource(new GenTimeSingleParallelSource());
 
-        DataStream<Tuple3<Long, Long, Boolean>> resultStream =
-                AsyncDataStream.orderedWait(sourceStream, new AsyncMockRequest2(), 1000, TimeUnit.MILLISECONDS, 100).uid("AsyncMockRequest1").name("AsyncMockRequest1");
+        DataStream<Tuple3<Long, Long, Boolean>> resultStream = AsyncDataStream.orderedWait(
+                        sourceStream,
+                        new RichAsyncFunction<Long, Tuple3<Long, Long, Boolean>>() {
+                            @Override
+                            public void asyncInvoke(Long input, ResultFuture<Tuple3<Long, Long, Boolean>> resultFuture) throws Exception {
+                                CompletableFuture.supplyAsync(new Supplier<Long>() {
+                                    @Override
+                                    public Long get() {
+                                        try {
+                                            Thread.sleep(500);
+                                        } catch (InterruptedException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                        return System.currentTimeMillis();
+                                    }
+                                }).thenAccept((Long mockResult) -> {
+                                    boolean inState = false;
+                                    if (mockResult - input > 1000) {
+                                        inState = true;
+                                    }
+                                    resultFuture.complete(Collections.singleton(new Tuple3<>(input, mockResult, inState)));
+                                });
+                            }
+                        },
+                        1000, TimeUnit.MILLISECONDS,
+                        100
+                )
+                .uid("AsyncMockRequest1")
+                .name("AsyncMockRequest1");
 
         resultStream.print();
 

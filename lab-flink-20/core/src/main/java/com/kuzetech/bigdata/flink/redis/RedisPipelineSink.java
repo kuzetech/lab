@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.udsink;
+package com.kuzetech.bigdata.flink.redis;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
@@ -42,9 +42,7 @@ public class RedisPipelineSink extends RichSinkFunction<Tuple2<String, String>> 
     }
 
     private void executeBatchInsert() {
-        try (
-                Jedis client = pool.getResource()
-        ) {
+        try (Jedis client = pool.getResource()) {
             Pipeline pipelined = client.pipelined();
             batch.forEach(pipelined::set);
             pipelined.sync();

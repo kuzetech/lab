@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.broadcast;
+package com.kuzetech.bigdata.flink.source;
 
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 
