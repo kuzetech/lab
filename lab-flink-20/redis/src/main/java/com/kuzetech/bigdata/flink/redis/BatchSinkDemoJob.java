@@ -1,20 +1,20 @@
 package com.kuzetech.bigdata.flink.redis;
 
-import com.kuzetech.bigdata.flink.utils.FlinkUtil;
-import org.apache.flink.api.common.functions.MapFunction;
+import com.kuzetech.bigdata.flink.base.FlinkUtil;
+import com.kuzetech.bigdata.flink.redis.sink.RedisBatchSink;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-public class PipelineRedisSinkDemo {
+public class BatchSinkDemoJob {
     public static void main(String[] args) throws Exception {
 
-        StreamExecutionEnvironment env = FlinkUtil.getEnvironment("PipelineRedisSinkDemo");
+        StreamExecutionEnvironment env = FlinkUtil.initEnv(ParameterTool.fromArgs(args));
         env.setParallelism(1);
 
         List<String> collectionList = new ArrayList<>();
@@ -24,20 +24,13 @@ public class PipelineRedisSinkDemo {
 
         DataStreamSource<String> source = env.fromCollection(collectionList);
 
-        SingleOutputStreamOperator<Tuple2<String, String>> redisTupleStream = source.map(new MapFunction<>() {
-            private final Random random = new Random();
+        SingleOutputStreamOperator<Tuple2<String, String>> redisTupleStream = source.map(v -> Tuple2.of(v, "test"));
 
-            @Override
-            public Tuple2<String, String> map(String value) throws Exception {
-                return new Tuple2<>(String.valueOf(random.nextInt(1000)), value);
-            }
-        });
-
-        RedisPipelineSink redisPipelineSink = new RedisPipelineSink();
+        RedisBatchSink redisPipelineSink = new RedisBatchSink();
 
         redisTupleStream.addSink(redisPipelineSink);
 
-        env.execute("PipelineRedisSinkDemo");
+        env.execute();
     }
 }
 

@@ -16,6 +16,7 @@
         <module>stream-base</module>
         <module>state-processor-demo</module>
         <module>dynamic-rule</module>
+        <module>redis</module>
     </modules>
 
     <properties>

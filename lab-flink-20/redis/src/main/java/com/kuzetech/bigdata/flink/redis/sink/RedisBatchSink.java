@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.flink.redis;
+package com.kuzetech.bigdata.flink.redis.sink;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
@@ -9,7 +9,7 @@ import redis.clients.jedis.Pipeline;
 
 import java.util.HashMap;
 
-public class RedisPipelineSink extends RichSinkFunction<Tuple2<String, String>> {
+public class RedisBatchSink extends RichSinkFunction<Tuple2<String, String>> {
 
     private final static Integer MAX_BATCH_SIZE = 2;
 

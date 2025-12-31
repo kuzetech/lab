@@ -1,5 +1,6 @@
-package com.kuzetech.bigdata.flink.redis;
+package com.kuzetech.bigdata.flink.redis.sink;
 
+import com.kuzetech.bigdata.flink.redis.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.api.common.typeutils.base.VoidSerializer;
@@ -11,9 +12,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 
 @Slf4j
-public class RedisExactlySink<T> extends TwoPhaseCommitSinkFunction<T, RedisUtil, Void> {
-    //定义redis hash表名
-    public static final String REDIS_HASH_MAP = "WordAndWordCount";
+public class RedisEosSink<T> extends TwoPhaseCommitSinkFunction<T, RedisUtil, Void> {
 
     public static RedisUtil redisUtil;
 
@@ -26,7 +25,7 @@ public class RedisExactlySink<T> extends TwoPhaseCommitSinkFunction<T, RedisUtil
     }
 
     //继承父类的构造参数，因为要初始化父类的内容
-    public RedisExactlySink() {
+    public RedisEosSink() {
         super(new KryoSerializer<>(RedisUtil.class, new ExecutionConfig()), VoidSerializer.INSTANCE);
     }
 
@@ -44,7 +43,7 @@ public class RedisExactlySink<T> extends TwoPhaseCommitSinkFunction<T, RedisUtil
         }
         Object object2 = fields[1].get(value);
         System.out.println("写入redis HashMap ");
-        jedis.hset(REDIS_HASH_MAP, object1.toString(), object2.toString());
+        jedis.hset("WordAndWordCount", object1.toString(), object2.toString());
     }
 
     @Override
