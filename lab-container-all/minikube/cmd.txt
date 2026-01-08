@@ -6,3 +6,49 @@ minikube status
 
 ## 加载本地镜像
 minikube image load registry.biubiubiu.io/funnydb/funnydb-statistician-cron:1.0.0
+
+
+minikube start --memory=8192 --cpus=4 --kubernetes-version=<k8s-version>
+
+kubectl config use-context minikube
+
+helm repo add apache https://pulsar.apache.org/charts
+helm repo update
+
+git clone https://github.com/apache/pulsar-helm-chart
+cd pulsar-helm-chart
+
+./scripts/pulsar/prepare_helm_release.sh \
+    -n pulsar \
+    -k pulsar-mini \
+    -c
+
+minikube image load apachepulsar/pulsar-all:4.0.2
+minikube image load apachepulsar/pulsar-manager:v0.4.0
+minikube image load quay.io/prometheus-operator/prometheus-config-reloader:v0.77.2
+minikube image load quay.io/kiwigrid/k8s-sidecar:1.28.0
+minikube image load docker.io/curlimages/curl:7.85.0
+minikube image load quay.io/prometheus/prometheus:v2.55.0
+minikube image load docker.io/grafana/grafana:11.3.0
+minikube image load registry.k8s.io/ingress-nginx/kube-webhook-certgen:v20221220-controller-v1.5.1-58-g787ea74b6
+minikube image load registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.13.0
+
+helm install --values examples/values-minikube.yaml -n pulsar pulsar-mini apache/pulsar
+
+helm uninstall -n pulsar pulsar-mini
+
+kubectl get pods -n pulsar
+kubectl get services -n pulsar
+kubectl get services -n pulsar | grep pulsar-mini-proxy
+kubectl port-forward svc/pulsar-mini-proxy 6650:6650 -n pulsar
+minikube service pulsar-mini-proxy -n pulsar
+
+
+kubectl exec -it -n pulsar pulsar-mini-toolset-0 -- /bin/bash
+pulsar-admin topics create-partitioned-topic public/default/source-topic -p 4
+pulsar-admin topics create-partitioned-topic public/default/sink-topic -p 4
+pulsar-admin topics list public/default
+pulsar-client produce source-topic --messages 'Hello Pulsar!'
+
+kubectl get secret -l component=pulsar-manager -o=jsonpath="{.items[0].data.UI_PASSWORD}" -n pulsar | base64 --decode
+kubectl get secret -l app.kubernetes.io/name=grafana -o=jsonpath="{.items[0].data.admin-password}" -n pulsar | base64 --decode

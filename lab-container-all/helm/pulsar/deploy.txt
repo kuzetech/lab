@@ -1,0 +1,22 @@
+helm repo add pulsar https://pulsar.apache.org/charts
+helm repo update
+
+git clone https://github.com/apache/pulsar-helm-chart
+
+cd pulsar-helm-chart
+./scripts/pulsar/prepare_helm_release.sh -n default -k pulsar -c
+
+helm install -n default -f pulsar.yaml pulsar apache/pulsar
+helm upgrade pulsar apache/pulsar -n default -f pulsar.yaml
+helm uninstall -n default pulsar
+
+kubectl get pods -n pulsar
+kubectl get pvc -n pulsar
+kubectl get pvc -l app=pulsar | awk 'NR!=1{print $1}' | xargs kubectl delete pvc
+kubectl get pvc | awk 'NR!=1{print $1}' | xargs kubectl delete pvc
+
+kubectl exec -it -n default pulsar-broker-0 -- /bin/bash
+kubectl exec -it -n pulsar pulsar-toolset-0 -- /bin/bash
+kubectl exec -it -n pulsar pulsar-bookie-0 -- /bin/bash
+kubectl exec -it -n pulsar pulsar-bookie-1 -- bin/bookkeeper shell bookieformat
+kubectl exec -it -n pulsar pulsar-broker-0 -- bin/pulsar initialize-transaction-coordinator-metadata -cs 127.0.0.1:2181 -c pulsar

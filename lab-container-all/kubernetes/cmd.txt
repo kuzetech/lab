@@ -1,12 +1,12 @@
 ## 端口转发
 kubectl port-forward svc/alluxio-master 19999:19999
 kubectl port-forward svc/kafka-headless 9092:9092
+kubectl port-forward svc/pulsar-grafana 3000:3000
 
-kubectl cp default/alluxio-master-0:/tmp/track.tar.gz /Users/huangsw/code/lab/lab-java-all/flink-state-processor/savepoints/track.tar.gz
-
+## 拷贝文件
+kubectl cp default/alluxio-master-0:/tmp/track.tar.gz /Users/huangsw/track.tar.gz
 kubectl cp kafka-1.0-SNAPSHOT.jar default/kafka-0:/tmp/kafka.jar
-
-
 kubectl cp test.sh default/clickhouse-0-0:/test.sh
 
+## 运行容器
 kubectl run hsw --image=registry-vpc.cn-shanghai.aliyuncs.com/funnydb/pulsar-all:4.0.2 --restart=Never -it -- /bin/sh
