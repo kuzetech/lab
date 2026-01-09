@@ -1,6 +1,6 @@
 ## 批量删除 docker 镜像
 docker images | grep "ingest-client" | awk '{print $3}' | xargs docker rmi
-docker images | grep "ingest-client" | awk '{print $3}' | xargs docker rmi -f
+docker images | grep "postgres" | awk '{print $3}' | xargs docker rmi -f
 
 ## docker logs 过滤
 docker logs -f server 2>&1 | grep INFO
