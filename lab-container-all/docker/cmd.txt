@@ -39,6 +39,10 @@ docker build -t registry.biubiubiu.io/turbine/ingest-client:1.0.2 -f code/turbin
 docker build -t registry.biubiubiu.io/funnydb/funnydb-statistician-cron:1.0.2 .
 docker build -t registry.sofunny.io/turbine/ingest-v4:4.3.0 .
 
-docker tag registry.biubiubiu.io/funnydb/funnydb-statistician-cron:1.0.2 registry.cn-shanghai.aliyuncs.com/funnydb/funnydb-statistician-cron:1.0.2
 
-docker --config /Users/huangsw/code/funny/funnydb/.secrets/image_registry_credentials/funny-aliyun-cn-shanghai push registry.cn-shanghai.aliyuncs.com/funnydb/funnydb-statistician-cron:1.0.2
+docker tag registry.sofunny.io/data-analysis/clickhouse-dedup:snapshot-20250725093954-439aae03 registry.ap-southeast-1.aliyuncs.com/funnydb/clickhouse-dedup:snapshot-20250725093954-439aae03
+
+docker --config /Users/huangsw/code/funny/funnydb-deployment/.secrets/image_registry_credentials/funny-aliyun-ap-southeast-1 push registry.ap-southeast-1.aliyuncs.com/funnydb/clickhouse-dedup:snapshot-20250725093954-439aae03
+
+docker login --username=data-analysis-docker-image@1852175071440579  registry.ap-southeast-1.aliyuncs.com
+docker push registry.ap-southeast-1.aliyuncs.com/funnydb/clickhouse-dedup:snapshot-20250725093954-439aae03
