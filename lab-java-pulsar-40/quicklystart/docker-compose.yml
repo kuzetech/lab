@@ -1,12 +1,18 @@
 version: '3'
+
+volumes:
+  data_zk: { }
+  data_bk: { }
+
 services:
   # Start zookeeper
   zookeeper:
     image: apachepulsar/pulsar:4.0.2
+    user: root
     container_name: zookeeper
     restart: on-failure
     volumes:
-      - ./data/zookeeper:/pulsar/data/zookeeper
+      - data_zk:/pulsar/data/zookeeper
     environment:
       - metadataStoreUrl=zk:zookeeper:2181
       - PULSAR_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=512m
@@ -34,6 +40,7 @@ services:
   # Start bookie
   bookie:
     image: apachepulsar/pulsar:4.0.2
+    user: root
     container_name: bookie
     restart: on-failure
     environment:
@@ -48,7 +55,7 @@ services:
       pulsar-init:
         condition: service_completed_successfully
     volumes:
-      - ./data/bookkeeper:/pulsar/data/bookkeeper
+      - data_bk:/pulsar/data/bookkeeper
     command: bash -c "bin/apply-config-from-env.py conf/bookkeeper.conf && exec bin/pulsar bookie"
 
   # Start broker
