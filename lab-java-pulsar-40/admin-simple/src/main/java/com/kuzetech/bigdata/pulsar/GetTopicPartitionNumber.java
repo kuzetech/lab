@@ -7,7 +7,7 @@ import org.apache.pulsar.client.api.PulsarClientException;
 
 public class GetTopicPartitionNumber {
     public static void main(String[] args) {
-        String topic = "persistent://public/default/my-topic"; // 替换为你的 Topic 名称
+        String topic = "persistent://public/default/funnydb-ingest-receive";
 
         try (PulsarAdmin admin = AdminUtil.createDefaultLocalAdmin()) {
             int partitions = admin.topics().getPartitionedTopicMetadata(topic).partitions;

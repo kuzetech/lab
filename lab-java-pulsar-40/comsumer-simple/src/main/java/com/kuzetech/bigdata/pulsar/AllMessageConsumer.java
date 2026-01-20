@@ -14,7 +14,7 @@ public class AllMessageConsumer {
     public static void main(String[] args) throws PulsarClientException {
         try (
                 PulsarClient client = ClientUtil.createDefaultLocalClient();
-                Consumer<byte[]> consumer = ConsumerUtil.getSimpleConsumer(client, "test")
+                Consumer<byte[]> consumer = ConsumerUtil.getSimpleConsumer(client, "source")
         ) {
             while (true) {
                 Message<byte[]> msg = consumer.receive(1, TimeUnit.SECONDS);

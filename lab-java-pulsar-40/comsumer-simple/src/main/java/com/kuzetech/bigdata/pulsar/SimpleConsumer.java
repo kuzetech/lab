@@ -14,7 +14,7 @@ public class SimpleConsumer {
     public static void main(String[] args) throws PulsarClientException {
         try (
                 PulsarClient client = ClientUtil.createDefaultLocalClient();
-                Consumer<byte[]> consumer = ConsumerUtil.getSimpleConsumer(client, "funnydb-ingest-receive")
+                Consumer<byte[]> consumer = ConsumerUtil.getSimpleConsumer(client, "source")
         ) {
             while (true) {
                 Message<byte[]> msg = consumer.receive(5, TimeUnit.SECONDS);
