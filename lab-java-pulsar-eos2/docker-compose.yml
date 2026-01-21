@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Apache Pulsar 单机版
+  pulsar:
+    image: apachepulsar/pulsar:4.0.1
+    container_name: pulsar
+    ports:
+      - "6650:6650"   # Pulsar 服务端口
+      - "8080:8080"   # HTTP 管理端口
+    environment:
+      - PULSAR_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=256m
+    command: bin/pulsar standalone
+    healthcheck:
+      test: ["CMD", "bin/pulsar-admin", "brokers", "healthcheck"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    volumes:
+      - pulsar-data:/pulsar/data
+      - pulsar-conf:/pulsar/conf
+
+  # EOS 应用程序
+  eos-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eos-app
+    depends_on:
+      pulsar:
+        condition: service_healthy
+    environment:
+      - PULSAR_SERVICE_URL=pulsar://pulsar:6650
+      - PULSAR_TOPIC=persistent://public/default/eos-test-topic
+    volumes:
+      - ./data/input:/data/input:ro
+      - ./data/offset:/data/offset
+    command: >
+      java -jar /app/app.jar
+      --service-url pulsar://pulsar:6650
+      --topic persistent://public/default/eos-test-topic
+      --input /data/input/test.log
+      --offset /data/offset/offset.json
+      --batch-size 100
+
+volumes:
+  pulsar-data:
+  pulsar-conf:

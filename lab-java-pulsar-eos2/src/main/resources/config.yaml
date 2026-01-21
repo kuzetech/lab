@@ -1,0 +1,29 @@
+# Pulsar 配置
+pulsar:
+  serviceUrl: pulsar://localhost:6650
+  topic: persistent://public/default/eos-test-topic
+  # 事务超时时间（秒）
+  transactionTimeout: 60
+
+# 文件配置
+file:
+  # 待读取的日志文件路径
+  inputPath: /data/input/test.log
+  # 偏移量记录文件路径
+  offsetPath: /data/offset/offset.json
+  # 事务日志文件路径
+  transactionLogPath: /data/offset/transaction.log
+  # 最大文件大小（10MB）
+  maxFileSize: 10485760
+
+# 批次配置
+batch:
+  # 每批次处理的行数
+  size: 100
+
+# 重试配置
+retry:
+  # 最大重试次数
+  maxAttempts: 3
+  # 重试间隔（毫秒）
+  intervalMs: 1000
