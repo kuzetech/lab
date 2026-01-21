@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  pulsar:
+    image: apachepulsar/pulsar:4.0.1
+    container_name: pulsar-standalone
+    hostname: pulsar
+    ports:
+      - "6650:6650"   # Pulsar broker service
+      - "8080:8080"   # Pulsar admin REST API
+    environment:
+      - PULSAR_MEM=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=256m
+    command: >
+      bash -c "
+      bin/apply-config-from-env.py conf/standalone.conf &&
+      echo 'transactionCoordinatorEnabled=true' >> conf/standalone.conf &&
+      echo 'systemTopicEnabled=true' >> conf/standalone.conf &&
+      bin/pulsar standalone
+      "
+    volumes:
+      - pulsar-data:/pulsar/data
+    networks:
+      - pulsar-network
+    healthcheck:
+      test: ["CMD", "bin/pulsar-admin", "brokers", "healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql:
+    image: mysql:8.0.33
+    container_name: mysql-offset-store
+    hostname: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: pulsar_offset
+      MYSQL_USER: pulsar_user
+      MYSQL_PASSWORD: pulsar_pass
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - pulsar-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123456"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pulsar-data:
+  mysql-data:
+
+networks:
+  pulsar-network:
+    driver: bridge
