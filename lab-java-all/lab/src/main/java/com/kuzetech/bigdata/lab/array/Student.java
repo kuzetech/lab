@@ -1,8 +1,6 @@
 package com.kuzetech.bigdata.lab.array;
 
-import org.jetbrains.annotations.NotNull;
-
-public class Student implements Comparable<Student>{
+public class Student implements Comparable<Student> {
     public Long age;
 
     public Student(Long age) {
@@ -10,7 +8,7 @@ public class Student implements Comparable<Student>{
     }
 
     @Override
-    public int compareTo(@NotNull Student o) {
+    public int compareTo(Student o) {
         return -this.age.compareTo(o.age);
     }
 }

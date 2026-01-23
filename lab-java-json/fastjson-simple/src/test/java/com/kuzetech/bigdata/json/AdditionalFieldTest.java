@@ -23,7 +23,7 @@ public class AdditionalFieldTest {
     @Test
     public void testGetExtraField() {
         FastjsonAnnotationObject annotationObject;
-        try (InputStream inputStream = AnnotationTest.class.getClassLoader().getResourceAsStream("data/annotation.json")) {
+        try (InputStream inputStream = AdditionalFieldTest.class.getClassLoader().getResourceAsStream("data/annotation.json")) {
             String jsonStr = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
             annotationObject = JSON.parseObject(jsonStr, FastjsonAnnotationObject.class, new FastjsonAnnotationObjectExtraProcessor());
         } catch (IOException e) {
