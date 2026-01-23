@@ -16,7 +16,7 @@ import java.security.MessageDigest;
 @Slf4j
 @Command(name = "checksum", mixinStandardHelpOptions = true, version = "1.0.0",
         description = "Prints the checksum (SHA-256 by default) of a file to STDOUT.")
-class SimpleCommand implements Runnable {
+class ChecksumCommand implements Runnable {
 
     @Spec
     public CommandSpec spec;
@@ -41,7 +41,7 @@ class SimpleCommand implements Runnable {
 
     public static void main(String... args) {
         String[] arguments = {"-a", "MD5", "/Users/huangsw/code/lab/lab-java-all/picocli/src/main/resources/log4j2.xml"};
-        int exitCode = new CommandLine(new SimpleCommand()).execute(arguments);
+        int exitCode = new CommandLine(new ChecksumCommand()).execute(arguments);
         System.exit(exitCode);
     }
 }
