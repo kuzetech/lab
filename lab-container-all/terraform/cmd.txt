@@ -21,5 +21,10 @@ terraform apply --target="module.main.module.ingest-v3.helm_release.ingest"
 terraform apply --target="module.main.module.ingest-v4.helm_release.ingest-v4"
 terraform apply --target="module.main.kubernetes_config_map.grafana-alert-rules-configmap"
 terraform apply --target="module.main.module.grafana-dashboards.kubernetes_config_map.grafana-dashboards-funnydb-configmap"
-terraform apply --target="module.main.module.pulsar.helm_release.pulsar" 
 terraform apply --target="module.main.module.ingest-bench.helm_release.ingest-bench" 
+
+## 更新 pulsar 集群
+export TF_CLI_ARGS_init=-backend-config="config_path=./.secrets/k8s/kubeconfig.yaml"
+sed -i 's/version = "2.9.0"/version = "2.12.0"/g' terraform_providers.tf
+terraform init -upgrade
+terraform apply   ## 这里不要使用 target 指定模块，不然更新了 configmap 无法检测到
