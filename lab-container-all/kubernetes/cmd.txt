@@ -2,7 +2,6 @@
 kubectl get node --selector=kubernetes.io/os=linux
 kubectl describe nodes | grep -A 10 "Allocated resources"
 
-
 ## 端口转发
 kubectl port-forward svc/alluxio-master 19999:19999
 kubectl port-forward svc/kafka-headless 9092:9092

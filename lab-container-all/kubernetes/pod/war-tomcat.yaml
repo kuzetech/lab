@@ -3,8 +3,12 @@ kind: Pod
 metadata:
   name: javaweb-2
 spec:
+  volumes:
+  - name: app-volume
+    emptyDir: {}
   initContainers:
   - image: geektime/sample:v2
+    imagePullPolicy: Always ## 不代表每次都无脑的拉取 - 当远程仓库的镜像信息与本地相同则跳过 - 当远程仓库的镜像信息与本地不同则拉取
     name: war
     command: ["cp", "/sample.war", "/app"]
     volumeMounts:
@@ -12,14 +16,20 @@ spec:
       name: app-volume
   containers:
   - image: geektime/tomcat:7.0
+    imagePullPolicy: IfNotPresent ## 优先使用本地 - 当本地不存在，则拉取远程仓库镜像 - 当本地存在，无论远程仓库镜像信息与本地是否相同都使用本地的
     name: tomcat
     command: ["sh","-c","/root/apache-tomcat-7.0.42-v2/bin/start.sh"]
+    lifecycle: 
+      postStart: ## 在 ENTRYPOINT 执行之后，异步操作。也就是说 postStart 启动时，ENTRYPOINT 有可能还没有结束。执行异常会导致 Pod 也处于失败的状态
+        exec: 
+          command: ["/bin/sh", "-c", "echo postStart handler"] 
+      preStop: ## 容器被杀死之前执行（比如，收到了 SIGKILL 信号），同步操作。所以它会阻塞当前的容器杀死流程，直到操作完成，这跟 postStart 不一样
+        exec: 
+          command: ["/bin/sh", "-c", "echo preStop handler"] 
     volumeMounts:
     - mountPath: /root/apache-tomcat-7.0.42-v2/webapps
       name: app-volume
     ports:
     - containerPort: 8080
       hostPort: 8001 
-  volumes:
-  - name: app-volume
-    emptyDir: {}
+  

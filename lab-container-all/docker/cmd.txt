@@ -41,8 +41,18 @@ docker build -t registry.sofunny.io/turbine/ingest-v4:4.3.0 .
 
 
 docker tag registry.sofunny.io/data-analysis/clickhouse-dedup:snapshot-20250725093954-439aae03 registry.ap-southeast-1.aliyuncs.com/funnydb/clickhouse-dedup:snapshot-20250725093954-439aae03
-
-docker --config /Users/huangsw/code/funny/funnydb-deployment/.secrets/image_registry_credentials/funny-aliyun-ap-southeast-1 push registry.ap-southeast-1.aliyuncs.com/funnydb/clickhouse-dedup:snapshot-20250725093954-439aae03
-
 docker login --username=data-analysis-docker-image@1852175071440579  registry.ap-southeast-1.aliyuncs.com
 docker push registry.ap-southeast-1.aliyuncs.com/funnydb/clickhouse-dedup:snapshot-20250725093954-439aae03
+
+docker tag apachepulsar/pulsar-all:4.0.3 registry.sofunny.io/turbine/pulsar-all:4.0.3
+docker login --username=huangshaowei registry.sofunny.io
+docker push registry.sofunny.io/turbine/pulsar-all:4.0.3
+
+docker tag apachepulsar/pulsar-all:4.0.3 registry.ap-southeast-1.aliyuncs.com/funnydb/pulsar-all:4.0.3
+docker login --username=data-analysis-docker-image@1852175071440579 registry.ap-southeast-1.aliyuncs.com
+docker push registry.ap-southeast-1.aliyuncs.com/funnydb/pulsar-all:4.0.3
+
+docker tag apachepulsar/pulsar-all:4.0.3 registry.cn-shanghai.aliyuncs.com/funnydb/pulsar-all:4.0.3
+docker login --username=data-analysis-docker-image@1852175071440579 registry.cn-shanghai.aliyuncs.com
+docker push registry.cn-shanghai.aliyuncs.com/funnydb/pulsar-all:4.0.3
+
