@@ -1,27 +1,14 @@
+## 查看镜像
+docker inspect --type image 08ef35a1c3f0
+
 ## 批量删除 docker 镜像
 docker images | grep "ingest-client" | awk '{print $3}' | xargs docker rmi
 docker images | grep "postgres" | awk '{print $3}' | xargs docker rmi -f
 
-## docker logs 过滤
-docker logs -f server 2>&1 | grep INFO
-
-docker exec -it clickhouse1 tail -f /var/log/clickhouse-server/clickhouse-server.log 2>&1 | grep executeQuery
-
-docker build -t temp:0.0.1 . 
-
-docker run -it --rm --name test --entrypoint /bin/bash registry.biubiubiu.io/funnydb/funnydb-ingest-processor:1.2.1-240109-1844-2cec8c12
+## 运行镜像
+docker run --rm -it --name test --entrypoint /bin/bash registry.biubiubiu.io/funnydb/funnydb-ingest-processor:1.2.1-240109-1844-2cec8c12
 docker run --rm -it --name test                        registry.biubiubiu.io/turbine/ingest:2.0.0-s230209-1522-3f2b7d34 bash
-docker run --rm -it --name test222                     registry.biubiubiu.io/funnydb/funnydb-statistician-cron:1.0.2 bash
-docker run -d -p 8082:8080 --name tomcat tomcat:latest
-docker run --rm --name rate100 temp:0.0.2 --rate=100
-docker run -d --name  temp:0.0.5
-docker run -it --rm --name test2 --entrypoint /bin/sh registry.biubiubiu.io/funnydb/geoip:2024-09-20
-
-docker cp test2:/geoip/maxmind-geoip2-city.mmdb /Users/huangsw/Downloads/maxmind-geoip2-city.mmdb
-docker cp test2:/geoip/maxmind-geoip2-country.mmdb /Users/huangsw/Downloads/maxmind-geoip2-country.mmdb
-docker cp test2:/geoip/maxmind-geoip2-isp.mmdb /Users/huangsw/Downloads/maxmind-geoip2-isp.mmdb
-
-sudo docker run \
+docker run \
   --volume=/:/rootfs:ro \
   --volume=/var/run:/var/run:ro \
   --volume=/sys:/sys:ro \
@@ -34,25 +21,17 @@ sudo docker run \
   --device=/dev/kmsg \
   lagoudocker/cadvisor:v0.37.0
 
-docker build -t registry.biubiubiu.io/turbine/ingest-client:1.0.2 -f code/turbine/sources/ingest-client/Dockerfile --build-arg version=$VERSION .
+## 复制文件
+docker cp test2:/geoip/maxmind-geoip2-city.mmdb /Users/huangsw/Downloads/maxmind-geoip2-city.mmdb
+docker cp test2:/geoip/maxmind-geoip2-country.mmdb /Users/huangsw/Downloads/maxmind-geoip2-country.mmdb
+docker cp test2:/geoip/maxmind-geoip2-isp.mmdb /Users/huangsw/Downloads/maxmind-geoip2-isp.mmdb
 
-docker build -t registry.biubiubiu.io/funnydb/funnydb-statistician-cron:1.0.2 .
+## 构建镜像
+docker build -t registry.biubiubiu.io/turbine/ingest-client:1.0.2 -f code/turbine/sources/ingest-client/Dockerfile --build-arg version=$VERSION .
 docker build -t registry.sofunny.io/turbine/ingest-v4:4.3.0 .
 
-
-docker tag registry.sofunny.io/data-analysis/clickhouse-dedup:snapshot-20250725093954-439aae03 registry.ap-southeast-1.aliyuncs.com/funnydb/clickhouse-dedup:snapshot-20250725093954-439aae03
-docker login --username=data-analysis-docker-image@1852175071440579  registry.ap-southeast-1.aliyuncs.com
-docker push registry.ap-southeast-1.aliyuncs.com/funnydb/clickhouse-dedup:snapshot-20250725093954-439aae03
-
+## 推送镜像
 docker tag apachepulsar/pulsar-all:4.0.3 registry.sofunny.io/turbine/pulsar-all:4.0.3
 docker login --username=huangshaowei registry.sofunny.io
 docker push registry.sofunny.io/turbine/pulsar-all:4.0.3
-
-docker tag apachepulsar/pulsar-all:4.0.3 registry.ap-southeast-1.aliyuncs.com/funnydb/pulsar-all:4.0.3
-docker login --username=data-analysis-docker-image@1852175071440579 registry.ap-southeast-1.aliyuncs.com
-docker push registry.ap-southeast-1.aliyuncs.com/funnydb/pulsar-all:4.0.3
-
-docker tag apachepulsar/pulsar-all:4.0.3 registry.cn-shanghai.aliyuncs.com/funnydb/pulsar-all:4.0.3
-docker login --username=data-analysis-docker-image@1852175071440579 registry.cn-shanghai.aliyuncs.com
-docker push registry.cn-shanghai.aliyuncs.com/funnydb/pulsar-all:4.0.3
 
