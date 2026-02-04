@@ -1,5 +1,8 @@
-# 创建 chart
+# 创建 chart 模版
 helm create mychart
+
+# 测试模版生成
+helm template funnydb-events-agent ./charts/funnydb-events-agent -f value.yaml
 
 # 查看内网ingest版本
 helm list | grep ingest
@@ -14,31 +17,25 @@ helm repo update
 helm get values ingest > ~/helm/ingest.yaml
 helm get values api > ~/helm/api.yaml
 
-# 修改values配置
-vi ~/helm/ingest.yaml
-
 # 更新版本(若仅更新配置,则版本号要使用原先的版本号)
 helm upgrade -f ~/helm/api.yaml --version 0.9.0-s230208-1411-0e25fa09 turbine-api turbine/turbine-api
-helm upgrade -f ~/helm/ingest-2.0.0-s230224-1117-50ec938e.yaml --version 2.0.0-s230224-1117-50ec938e ingest turbine/ingest
-helm upgrade -f ~/helm/ingest-2.0.0-s230317-1724-48c7c085.yaml --version 2.0.0-s230317-1724-48c7c085 ingest turbine/ingest
 helm upgrade --install clunky-serval
 
 # 查看历史部署版本
 helm history ingest
+
 # 回滚操作
 # 回滚到指定版本,这里的1指的是上面列出的revision版本
 helm rollback ingest 1
 
 # 安装
-helm install --dry-run --debug --set favoriteDrink=slurm solid-vulture ./mychart 
-helm install --dry-run --disable-openapi-validation moldy-jaguar ./mychart
-helm install clunky-serval ./mychart
-
-helm install funnydb-statistician-cron /Users/huangsw/code/funny/funnydb/misc/funnydb-statistician-cron/charts/funnydb-statistician-cron -f /Users/huangsw/code/funny/funnydb/misc/funnydb-statistician-cron/charts/values-cn.yaml
+helm install --dry-run --debug test ./mychart 
+helm install test ./mychart -f value.yaml
 
 # 卸载
 helm uninstall funnydb-statistician-cron
 
+## 推送脚本
 export HELM_REPO_USERNAME=huangshaowei
 export HELM_REPO_PASSWORD=xxxxxxx
 helm cm-push charts/kafka https://registry.sofunny.io/chartrepo/turbine
