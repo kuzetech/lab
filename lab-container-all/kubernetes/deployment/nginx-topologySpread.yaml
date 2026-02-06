@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 2
+  strategy: 
+    type: RollingUpdate 
+    rollingUpdate: 
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      #nodeSelector:
+        #kubernetes.io/hostname: desktop-worker
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector: 
+          matchLabels:
+            app: nginx
+      containers:
+      - name: nginx
+        image: nginx:1.28.2-alpine-slim
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15  # 容器启动后等待 15s 再开始探测
+          periodSeconds: 15        # 每隔 20s 执行一次探测
+          timeoutSeconds: 5        # 探测超时时间为 5s
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15   # 容器启动后等待 15s 就开始探测
+          periodSeconds: 15        # 每隔 10s 探测一次
+          failureThreshold: 3      # 连续 3 次失败才认为是不就绪

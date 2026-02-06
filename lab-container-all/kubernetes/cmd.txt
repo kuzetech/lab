@@ -1,4 +1,10 @@
-##kubectl 相关命令
+## context
+kubectl config current-context
+kubectl config get-contexts
+kubectl config use-context default
+kubectl config set-context --current --namespace=default
+
+## 获取信息
 kubectl get node --selector=kubernetes.io/os=linux
 kubectl describe nodes | grep -A 10 "Allocated resources"
 
@@ -14,3 +20,12 @@ kubectl cp test.sh default/clickhouse-0-0:/test.sh
 
 ## 运行容器
 kubectl run hsw --image=registry-vpc.cn-shanghai.aliyuncs.com/funnydb/pulsar-all:4.0.2 --restart=Never -it -- /bin/sh
+
+## rollout
+kubectl rollout status deployment/nginx-deployment
+kubectl rollout history deployment/nginx-deployment
+kubectl rollout history deployment/nginx-deployment --revision=2
+kubectl rollout undo deployment/nginx-deployment
+kubectl rollout undo deployment/nginx-deployment --to-revision=2
+kubectl rollout pause deployment/nginx-deployment
+kubectl rollout resume deployment/nginx-deployment
