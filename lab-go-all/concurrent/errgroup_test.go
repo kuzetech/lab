@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"golang.org/x/sync/errgroup"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"golang.org/x/sync/errgroup"
 )
 
 /*
@@ -87,5 +88,23 @@ func Test_errgroup_all_result(t *testing.T) {
 	} else {
 		fmt.Printf("failed: %v\n", result)
 	}
+}
 
+func Test_errgroup_parameter(t *testing.T) {
+	var g errgroup.Group
+
+	for i := 0; i < 3; i++ {
+		test := i
+		g.Go(func() error {
+			time.Sleep(5 * time.Second)
+			fmt.Println(test)
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err == nil {
+		fmt.Printf("Successfully")
+	} else {
+		fmt.Printf("Failed")
+	}
 }

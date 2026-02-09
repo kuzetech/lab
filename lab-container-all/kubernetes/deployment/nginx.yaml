@@ -6,12 +6,12 @@ spec:
   selector:
     matchLabels:
       app: nginx
-  replicas: 2
+  replicas: 4
   strategy: 
     type: RollingUpdate 
     rollingUpdate: 
-      maxSurge: 20% #一次更新最多创建 pod 数量
-      maxUnavailable: 20% #一次更新最多下线 pod 数量
+      maxSurge: 1 #允许超过预期副本数的上限。即：$replicas + 2 = 6。更新时，集群中最多可以同时存在 6 个 Pod
+      maxUnavailable: 0 #允许处于不可用状态的 Pod 数量上限。即：$replicas - 1 = 4。更新时，必须至少有 4 个 Pod 处于运行状态
   revisionHistoryLimit: 10 #保留历史版本数量
   template:
     metadata:
@@ -23,17 +23,17 @@ spec:
         image: nginx:1.28.2-alpine-slim
         ports:
         - containerPort: 80
-      livenessProbe:
-        httpGet:
-          path: /
-          port: 80
-        initialDelaySeconds: 15  # 容器启动后等待 15s 再开始探测
-        periodSeconds: 15        # 每隔 20s 执行一次探测
-        timeoutSeconds: 5        # 探测超时时间为 5s
-      readinessProbe:
-        httpGet:
-          path: /
-          port: 80
-        initialDelaySeconds: 15   # 容器启动后等待 15s 就开始探测
-        periodSeconds: 15        # 每隔 10s 探测一次
-        failureThreshold: 3      # 连续 3 次失败才认为是不就绪
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15  # 容器启动后等待 15s 再开始探测
+          periodSeconds: 15        # 每隔 15s 执行一次探测
+          timeoutSeconds: 5        # 探测超时时间为 5s
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15   # 容器启动后等待 15s 就开始探测
+          periodSeconds: 15        # 每隔 15s 探测一次
+          failureThreshold: 3      # 连续 3 次失败才认为是不就绪
