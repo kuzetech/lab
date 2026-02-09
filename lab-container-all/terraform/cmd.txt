@@ -7,21 +7,7 @@ terraform init
 
 然后修改 flink job 配置
 
-terraform taint module.main.module.funnydb-track-event-processor.helm_release.funnydb_track_event_processor
-terraform apply --target=module.main.module.funnydb-track-event-processor
-
-terraform taint module.main.module.funnydb-track-derive-event-processor.helm_release.funnydb_track_derive_event_processor
-terraform apply --target=module.main.module.funnydb-track-derive-event-processor
-
-terraform taint module.main.module.funnydb-mutation-event-processor.helm_release.funnydb_mutation_event_processor
-terraform apply --target=module.main.module.funnydb-mutation-event-processor
-
-
-terraform apply --target="module.main.module.ingest-v3.helm_release.ingest"
-terraform apply --target="module.main.module.ingest-v4.helm_release.ingest-v4"
-terraform apply --target="module.main.kubernetes_config_map.grafana-alert-rules-configmap"
-terraform apply --target="module.main.module.grafana-dashboards.kubernetes_config_map.grafana-dashboards-funnydb-configmap"
-terraform apply --target="module.main.module.ingest-bench.helm_release.ingest-bench" 
+terraform apply --target="module.ingest-v4.helm_release.ingest-v4"
 
 ## 更新 pulsar 集群
 export TF_CLI_ARGS_init=-backend-config="config_path=./.secrets/k8s/kubeconfig.yaml"
