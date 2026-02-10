@@ -7,13 +7,18 @@ spec:
     matchLabels:
       app: nginx
   replicas: 6
+  strategy: 
+    type: RollingUpdate 
+    rollingUpdate: 
+      maxSurge: 1
+      maxUnavailable: 1
   template:
     metadata:
       labels:
         app: nginx
     spec:
-      # nodeSelector:
-        # kubernetes.io/hostname: desktop-worker
+      #nodeSelector:
+        #kubernetes.io/hostname: desktop-worker
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -28,3 +33,17 @@ spec:
         image: nginx:1.28.2-alpine-slim
         ports:
         - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          failureThreshold: 3

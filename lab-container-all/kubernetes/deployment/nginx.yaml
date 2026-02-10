@@ -7,12 +7,12 @@ spec:
     matchLabels:
       app: nginx
   replicas: 4
-  strategy: 
-    type: RollingUpdate 
+  revisionHistoryLimit: 10 #保留历史版本数量
+  strategy: #修改副本数不受该策略影响
+    type: RollingUpdate #更新策略：滚动更新或按需更新OnDelete
     rollingUpdate: 
       maxSurge: 1 #允许超过预期副本数的上限。即：$replicas + 2 = 6。更新时，集群中最多可以同时存在 6 个 Pod
-      maxUnavailable: 0 #允许处于不可用状态的 Pod 数量上限。即：$replicas - 1 = 4。更新时，必须至少有 4 个 Pod 处于运行状态
-  revisionHistoryLimit: 10 #保留历史版本数量
+      maxUnavailable: 0 #允许处于不可用状态的 Pod 数量上限。即：$replicas - 1 = 4。更新时，必须至少有 4 个 Pod 处于运行状态。
   template:
     metadata:
       labels:
