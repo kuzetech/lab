@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: with-toleration
+spec:
+  tolerations:
+  #DaemonSet Controller 自动为 Pod 加上了这个特殊的 Toleration
+  - key: node.kubernetes.io/unschedulable
+    operator: Exists
+    effect: NoSchedule
+  #如果自实现网络插件则必须手动加上这个 Toleration，否则网络不可用的节点上的 Pod 将无法调度
+  - key: node.kubernetes.io/network-unavailable
+    operator: Exists
+    effect: NoSchedule

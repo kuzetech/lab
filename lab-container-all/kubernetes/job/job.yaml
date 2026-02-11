@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: test
+spec:
+  parallelism: 2 #任意时间内最多有多少个 Pod 可以同时运行
+  completions: 4 #Job 至少要完成的 Pod 数目
+  backoffLimit: 6 # Job 失败后重试的次数，默认为 6 次
+  activeDeadlineSeconds: 100 # 设置最长运行时间，防止这个 Pod 因为某种原因一直不肯结束
+  template:
+    spec:
+      restartPolicy: Never #失败后 Job Controller 就会不断地尝试创建一个新 Pod来执行 Job，直到成功或者达到 backoffLimit 的限制
+      #restartPolicy: OnFailure #失败后，Job Controller 不会尝试创建新的 Pod。但是会不断地尝试重启 Pod 里的容器直到成功或者达到 backoffLimit 的限制
+      containers:
+      - name: pi
+        image: busybox
+        command:
+        - sh
+        - -c
+        - sleep 30; echo 'job exec success' # 模拟计算任务
+      
+  

@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: nginx
-  replicas: 2
+  replicas: 6
   strategy: 
     type: RollingUpdate 
     rollingUpdate: 
@@ -22,26 +22,27 @@ spec:
       topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: ScheduleAnyway
+        whenUnsatisfiable: DoNotSchedule #严格模式，不满足不调度
+        #whenUnsatisfiable: ScheduleAnyway #宽松模式，优先满足，其次调度
         labelSelector: 
           matchLabels:
             app: nginx
       containers:
       - name: nginx
-        image: nginx:1.28.2-alpine-slim
+        image: nginx:1.29.5-alpine-slim
         ports:
         - containerPort: 80
         livenessProbe:
           httpGet:
             path: /
             port: 80
-          initialDelaySeconds: 15  # 容器启动后等待 15s 再开始探测
-          periodSeconds: 15        # 每隔 20s 执行一次探测
-          timeoutSeconds: 5        # 探测超时时间为 5s
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /
             port: 80
-          initialDelaySeconds: 15   # 容器启动后等待 15s 就开始探测
-          periodSeconds: 15        # 每隔 10s 探测一次
-          failureThreshold: 3      # 连续 3 次失败才认为是不就绪
+          initialDelaySeconds: 15
+          periodSeconds: 15
+          failureThreshold: 3

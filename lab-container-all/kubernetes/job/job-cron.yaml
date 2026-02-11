@@ -1,0 +1,28 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: "*/1 * * * *"
+
+  #由于定时任务的特殊性，很可能某个 Job 还没有执行完，另外一个新 Job 就产生了，因此需要设置并发策略来控制这种情况
+  concurrencyPolicy: Allow #允许并发执行
+  #concurrencyPolicy: Forbid #意味着不会创建新的 Pod，该创建周期被跳过
+  #concurrencyPolicy: Replace #意味着新产生的 Job 会替换旧的、没有执行完的 Job
+
+  #如果 job 创建失败，这次创建就会被标记为 miss，如果在指定的时间窗口内，miss 的数目达到 100 次时，那么 CronJob 会停止再创建这个 Job
+  startingDeadlineSeconds: 200 #设置时间窗口为 100 秒
+  
+  #CronJob 是一个专门用来管理 Job 对象的控制器
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: hello
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes cluster
+          restartPolicy: OnFailure

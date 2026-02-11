@@ -3,15 +3,15 @@ kind: StatefulSet
 metadata:
   name: web
 spec:
-  serviceName: "nginx"
-  replicas: 2
+  serviceName: nginx
   selector:
     matchLabels:
       app: nginx
+  replicas: 2
   updateStrategy: 
-    type: RollingUpdate #按照与 Pod 编号相反的顺序，逐一更新
+    type: RollingUpdate #按照与 Pod 编号相反的顺序逐一更新
     rollingUpdate: 
-      partition: 2 #只有序号 >= 2 的 Pod 会被更新
+      partition: 2 #只更新序号 >= 2 的 Pod
   template:
     metadata:
       labels:
@@ -29,16 +29,16 @@ spec:
         httpGet:
           path: /
           port: 80
-        initialDelaySeconds: 15  # 容器启动后等待 15s 再开始探测
-        periodSeconds: 15        # 每隔 15s 执行一次探测
-        timeoutSeconds: 5        # 探测超时时间为 5s
+        initialDelaySeconds: 15
+        periodSeconds: 15
+        timeoutSeconds: 5
       readinessProbe:
         httpGet:
           path: /
           port: 80
-        initialDelaySeconds: 15   # 容器启动后等待 15s 就开始探测
-        periodSeconds: 15        # 每隔 10s 探测一次
-        failureThreshold: 3      # 连续 3 次失败才认为是不就绪
+        initialDelaySeconds: 15
+        periodSeconds: 15
+        failureThreshold: 3
   volumeClaimTemplates:
   - metadata:
       name: www
