@@ -19,6 +19,26 @@ import static org.apache.flink.configuration.StateRecoveryOptions.SAVEPOINT_PATH
 import static org.apache.flink.configuration.TaskManagerOptions.NUM_TASK_SLOTS;
 
 public class FlinkUtil {
+    public static StreamExecutionEnvironment createCheckpointEnv() {
+        Configuration config = new Configuration();
+        config.set(CheckpointingOptions.CHECKPOINT_STORAGE, CHECKPOINT_STORAGE_TYPE_FILESYSTEM);
+        config.set(StateBackendOptions.STATE_BACKEND, STATE_BACKEND_TYPE_ROCKSDB);
+        config.set(ExecutionCheckpointingOptions.CHECKPOINTING_MODE, CheckpointingMode.EXACTLY_ONCE);
+        config.set(ExecutionCheckpointingOptions.EXTERNALIZED_CHECKPOINT, CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+        config.set(CheckpointingOptions.CHECKPOINTS_DIRECTORY, "file:///Users/huangsw/code/lab/lab-flink-20/quicklystart/checkpoints");
+
+        // config.set(SavepointConfigOptions.SAVEPOINT_PATH, "file:///Users/huangsw/code/lab/lab-flink-20/quicklystart/checkpoints");
+
+        config.set(NUM_TASK_SLOTS, 6);
+        config.set(BIND_PORT, "28899");
+
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(config);
+        env.setParallelism(3);
+        env.enableCheckpointing(10000L);
+
+        return env;
+    }
+
     public static StreamExecutionEnvironment initEnv(ParameterTool parameterTool) {
         Configuration config = new Configuration();
         if (parameterTool.has(CheckpointingOptions.CHECKPOINTS_DIRECTORY.key())) {
