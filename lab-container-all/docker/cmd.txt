@@ -22,9 +22,9 @@ docker run \
   lagoudocker/cadvisor:v0.37.0
 
 ## 复制文件
-docker cp test2:/geoip/maxmind-geoip2-city.mmdb /Users/huangsw/Downloads/maxmind-geoip2-city.mmdb
-docker cp test2:/geoip/maxmind-geoip2-country.mmdb /Users/huangsw/Downloads/maxmind-geoip2-country.mmdb
-docker cp test2:/geoip/maxmind-geoip2-isp.mmdb /Users/huangsw/Downloads/maxmind-geoip2-isp.mmdb
+docker run --rm -d --name geoip-tmp --entrypoint "" registry.sofunny.io/funnydb/ipdb:2026-03-05 sleep 1000000
+docker cp geoip-tmp:/data/maxmind-geoip2-city.mmdb /Users/huangsw/Downloads/maxmind-geoip2-city.mmdb
+docker cp geoip-tmp:/data/maxmind-geoip2-isp.mmdb /Users/huangsw/Downloads/maxmind-geoip2-isp.mmdb
 
 ## 构建镜像
 docker build -t registry.biubiubiu.io/turbine/ingest-client:1.0.2 -f code/turbine/sources/ingest-client/Dockerfile --build-arg version=$VERSION .

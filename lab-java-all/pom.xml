@@ -15,6 +15,7 @@
         <module>lab</module>
         <module>concurrent</module>
         <module>picocli</module>
+        <module>geo</module>
     </modules>
 
     <repositories>
@@ -47,7 +48,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <target.java.version>11</target.java.version>
+        <target.java.version>17</target.java.version>
         <compiler.version>${target.java.version}</compiler.version>
         <maven.compiler.source>${target.java.version}</maven.compiler.source>
         <maven.compiler.target>${target.java.version}</maven.compiler.target>
