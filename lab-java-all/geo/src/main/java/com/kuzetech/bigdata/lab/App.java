@@ -19,22 +19,22 @@ public class App {
 
         CityResponse response = reader.city(ipAddress);
 
-        Continent continent = response.continent();
+        Continent continent = response.getContinent();
         System.out.println(continent);
 
-        Country country = response.country();
-        System.out.println(country.name());
+        Country country = response.getCountry();
+        System.out.println(country.getName());
 
-        List<Subdivision> subdivisions = response.subdivisions();
+        List<Subdivision> subdivisions = response.getSubdivisions();
         if (subdivisions != null && !subdivisions.isEmpty()) {
             Subdivision subdivision = subdivisions.get(0);
-            System.out.println(subdivision.name());
+            System.out.println(subdivision.getName());
         }
 
-        City city = response.city();
-        System.out.println(city.name());
+        City city = response.getCity();
+        System.out.println(city.getName());
 
         CountryResponse countryResponse = reader2.country(ipAddress);
-        System.out.println(countryResponse.continent());
+        System.out.println(countryResponse.getContinent());
     }
 }

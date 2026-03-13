@@ -33,7 +33,7 @@ public class BaseDemo {
         assert r1 == r2; // 返回的是同一个对象
         System.out.println(r2.total);
 
-        executorService.close();
+        executorService.shutdown();
     }
 
     public static class Task implements Runnable {
