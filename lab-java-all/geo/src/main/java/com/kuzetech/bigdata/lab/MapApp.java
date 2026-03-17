@@ -4,22 +4,15 @@ import com.maxmind.db.Reader;
 
 import java.io.File;
 import java.net.InetAddress;
-import java.util.Map;
 
-public class ReaderApp {
+public class MapApp {
     public static void main(String[] args) throws Exception {
         InetAddress ipAddress = InetAddress.getByName("111.27.86.14");
-
-        File file10 = new File("/Users/huangsw/Downloads/controller10/maxmind-geoip2-city.mmdb");
-        Reader reader10 = new Reader(file10);
-
-        Map map10 = reader10.get(ipAddress, Map.class);
-        System.out.println(map10.get("city"));
 
         File file11 = new File("/Users/huangsw/Downloads/controller11/maxmind-geoip2-city.mmdb");
         Reader reader11 = new Reader(file11);
 
-        Map map = reader11.get(ipAddress, Map.class);
-        System.out.println(map.get("city"));
+        TestResponse res = reader11.get(ipAddress, TestResponse.class);
+        System.out.println(res);
     }
 }

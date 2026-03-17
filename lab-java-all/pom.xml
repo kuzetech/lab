@@ -16,6 +16,7 @@
         <module>concurrent</module>
         <module>picocli</module>
         <module>geo</module>
+        <module>geo-17</module>
     </modules>
 
     <repositories>
