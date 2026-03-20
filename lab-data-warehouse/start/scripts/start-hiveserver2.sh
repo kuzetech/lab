@@ -20,6 +20,7 @@ wait_for() {
 wait_for hive-metastore 9083
 wait_for nn1 8020
 wait_for nn2 8020
+wait_for spark-master 7077
 
 run_init_sql() {
   local dt

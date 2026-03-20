@@ -73,4 +73,16 @@
     <name>dfs.permissions.enabled</name>
     <value>false</value>
   </property>
+
+  <!-- Spark 2.3 (Hadoop 2.7 client) expects numeric seconds here. -->
+  <property>
+    <name>dfs.client.datanode-restart.timeout</name>
+    <value>30</value>
+  </property>
+
+  <!-- Keep this as plain milliseconds for older Hadoop client parsers. -->
+  <property>
+    <name>dfs.client.slow.io.warning.threshold.ms</name>
+    <value>30000</value>
+  </property>
 </configuration>

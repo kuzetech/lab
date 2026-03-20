@@ -70,7 +70,23 @@
 
   <property>
     <name>hive.execution.engine</name>
-    <value>mr</value>
+    <value>spark</value>
+  </property>
+  <property>
+    <name>spark.master</name>
+    <value>spark://spark-master:7077</value>
+  </property>
+  <property>
+    <name>spark.home</name>
+    <value>/opt/spark</value>
+  </property>
+  <property>
+    <name>hive.spark.client.connect.timeout</name>
+    <value>10000ms</value>
+  </property>
+  <property>
+    <name>hive.spark.client.server.connect.timeout</name>
+    <value>120000ms</value>
   </property>
   <property>
     <name>hive.notification.event.poll.interval</name>

@@ -91,20 +91,25 @@ docker compose logs --tail=200 flume-l2 | grep "Creating hdfs://mycluster" | tai
 - `hive-mysql`：Hive Metastore 元数据库（MySQL 8）
 - `hive-metastore`：Hive Metastore（Thrift 9083，外置 MySQL 元数据库）
 - `hive-server2`：HiveServer2（JDBC 10000，WebUI 10002）
+- `spark-master`、`spark-worker`：Hive on Spark 执行引擎
 
 ### 启动
 ```bash
 cd start
-docker compose up -d hive-mysql hive-metastore hive-server2
+docker compose build spark-master
+docker compose up -d spark-master spark-worker hive-mysql hive-metastore hive-server2
 ```
 
 ### 验证服务
 ```bash
 # 查看 Hive 服务日志
-docker compose logs -f hive-mysql hive-metastore hive-server2
+docker compose logs -f spark-master spark-worker hive-mysql hive-metastore hive-server2
 
 # 通过 beeline 连接 HiveServer2 并建表
 docker exec -it hive-server2 beeline -u jdbc:hive2://localhost:10000 -n hive -e "show databases;"
+
+# 确认执行引擎为 spark
+docker exec -it hive-server2 beeline -u jdbc:hive2://localhost:10000 -n hive -e "set hive.execution.engine;"
 ```
 
 ### 启动自动初始化（datagen 外表与分区）
@@ -128,6 +133,9 @@ docker exec -it hdfs-nn1 hdfs dfs -ls /user/hive
 - Hive Metastore Thrift: `localhost:9083`
 - HiveServer2 JDBC: `localhost:10000`
 - HiveServer2 Web UI: `http://localhost:10002`
+- Spark Master RPC: `localhost:7077`
+- Spark Master Web UI: `http://localhost:8081`
+- Spark Worker Web UI: `http://localhost:8082`
 
 ### 元数据库凭据（测试环境）
 - Host: `hive-mysql`

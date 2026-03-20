@@ -268,6 +268,60 @@ services:
     networks:
       - hdfs
 
+  spark-master:
+    build:
+      context: .
+      dockerfile: hive-spark/Dockerfile
+    image: lab/hive-spark:local
+    hostname: spark-master
+    container_name: spark-master
+    environment:
+      HADOOP_CONF_DIR: /etc/hadoop
+      SPARK_NO_DAEMONIZE: "true"
+    volumes:
+      - ./hadoop-conf:/etc/hadoop:ro
+    entrypoint:
+      - /bin/bash
+      - -lc
+    command:
+      - exec /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master --host spark-master --port 7077 --webui-port 8081
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/7077'"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
+    ports:
+      - "7077:7077"
+      - "8081:8081"
+    restart: unless-stopped
+    networks:
+      - hdfs
+
+  spark-worker:
+    image: lab/hive-spark:local
+    hostname: spark-worker
+    container_name: spark-worker
+    environment:
+      HADOOP_CONF_DIR: /etc/hadoop
+      SPARK_NO_DAEMONIZE: "true"
+      SPARK_WORKER_DIR: /tmp/spark/work
+    depends_on:
+      spark-master:
+        condition: service_started
+    volumes:
+      - ./hadoop-conf:/etc/hadoop:ro
+    entrypoint:
+      - /bin/bash
+      - -lc
+    command:
+      - mkdir -p /tmp/spark/work && exec /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker --webui-port 8082 spark://spark-master:7077
+    ports:
+      - "8082:8082"
+    restart: unless-stopped
+    networks:
+      - hdfs
+
   hive-mysql:
     image: mysql:8.0
     hostname: hive-mysql
@@ -298,7 +352,6 @@ services:
     environment:
       HADOOP_CONF_DIR: /etc/hadoop
       HOME: /tmp
-      HIVE_MSCK_INTERVAL_SEC: 300
     depends_on:
       hive-mysql:
         condition: service_healthy
@@ -319,12 +372,13 @@ services:
       - hdfs
 
   hive-server2:
-    image: apache/hive:3.1.3
+    image: lab/hive-spark:local
     hostname: hive-server2
     container_name: hive-server2
     environment:
       HADOOP_CONF_DIR: /etc/hadoop
       HOME: /tmp
+      HIVE_MSCK_INTERVAL_SEC: 300
     depends_on:
       hive-metastore:
         condition: service_started
@@ -332,6 +386,10 @@ services:
         condition: service_healthy
       nn2:
         condition: service_healthy
+      spark-master:
+        condition: service_started
+      spark-worker:
+        condition: service_started
     volumes:
       - ./hadoop-conf:/etc/hadoop:ro
       - ./hive-conf/hive-site.xml:/opt/hive/conf/hive-site.xml:ro
