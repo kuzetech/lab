@@ -50,7 +50,7 @@ docker compose down -v
 ### 目标链路
 - `datagen` 持续生成本地日志：`/datagen/data/log/app.access.log.*`
 - `flume-l1` 使用 `TAILDIR` 采集日志并通过 `AVRO` 转发
-- `flume-l2` 通过 `AVRO` 接收并写入 `hdfs://mycluster/tmp/flume/datagen/%Y-%m-%d/%H`
+- `flume-l2` 通过 `AVRO` 接收并写入 `hdfs://mycluster/tmp/flume/datagen/dt=%Y-%m-%d`
 
 ### 启动
 ```bash
@@ -106,6 +106,18 @@ docker compose logs -f hive-mysql hive-metastore hive-server2
 # 通过 beeline 连接 HiveServer2 并建表
 docker exec -it hive-server2 beeline -u jdbc:hive2://localhost:10000 -n hive -e "show databases;"
 ```
+
+### 启动自动初始化（datagen 外表与分区）
+- 初始化 SQL 文件：`start/hive-conf/init-datagen.sql`
+- 在 `hive-server2` 启动时自动执行（幂等）：
+  - `create database if not exists dwd`
+  - `create external table if not exists dwd.flume_datagen_raw`
+  - `alter table ... add if not exists partition (dt='当天日期')`
+  - `msck repair table dwd.flume_datagen_raw`
+- `hive-server2` 会后台定时执行 `MSCK REPAIR TABLE`（默认每 300 秒）
+  - 配置项：`HIVE_MSCK_INTERVAL_SEC`（`<=0` 表示关闭）
+- 初始化执行日志（容器内）：`/tmp/hive-init.log`
+- 定时修复日志（容器内）：`/tmp/hive-msck.log`
 
 ### 验证 warehouse 在 HDFS HA nameservice
 ```bash

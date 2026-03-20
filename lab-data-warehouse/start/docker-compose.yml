@@ -298,6 +298,7 @@ services:
     environment:
       HADOOP_CONF_DIR: /etc/hadoop
       HOME: /tmp
+      HIVE_MSCK_INTERVAL_SEC: 300
     depends_on:
       hive-mysql:
         condition: service_healthy
@@ -334,6 +335,7 @@ services:
     volumes:
       - ./hadoop-conf:/etc/hadoop:ro
       - ./hive-conf/hive-site.xml:/opt/hive/conf/hive-site.xml:ro
+      - ./hive-conf/init-datagen.sql:/opt/hive/conf/init-datagen.sql:ro
       - ./hive-lib/mysql-connector-j-8.0.33.jar:/opt/hive/lib/mysql-connector-j-8.0.33.jar:ro
       - ./scripts:/scripts:ro
     entrypoint: ["/bin/bash", "/scripts/start-hiveserver2.sh"]
