@@ -1,0 +1,1 @@
+select dt,count(*) from flume_datagen_raw where dt='2026-03-20' group by dt;
