@@ -123,3 +123,12 @@ docker exec -it hdfs-nn1 hdfs dfs -ls /user/hive
 - Database: `metastore`
 - Username: `hive`
 - Password: `hive123`
+
+### MySQL JDBC 驱动（Hive 连接必需）
+- 挂载路径：`start/hive-lib/mysql-connector-j-8.0.33.jar`
+- 若缺失可下载：
+```bash
+mkdir -p start/hive-lib
+curl -fL --retry 3 -o start/hive-lib/mysql-connector-j-8.0.33.jar \
+  https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.0.33/mysql-connector-j-8.0.33.jar
+```
