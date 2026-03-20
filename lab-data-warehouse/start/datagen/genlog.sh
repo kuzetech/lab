@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 # $1 生成数据的种类：user | log
 # 如果生成user
 # $2 如果生成user，则是user数据的用户量
@@ -13,8 +12,6 @@
 # $5,  user数据的路径
 # $6,  日志数据的输出路径（到目录）
 # $7,  是否日志模式（每行flush）
-
-export JAVA_HOME=/opt/apps/jdk1.8.0_191/
 
 if [ $1 = user ];then
 echo "generating user data ..."
