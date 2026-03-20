@@ -206,6 +206,7 @@ services:
           echo "users.txt has $${USER_COUNT} rows, regenerating to 10000..."
           java -cp datagen.jar cn.doitedu.datagen.beans.GenUsers 10000 ./data/users.txt
         fi
+        mkdir -p ./data/log
         START_AT="$(date +%F)_00:00:00"
         echo "start generating logs from $${START_AT}"
         exec java -jar datagen.jar 2000 "$${START_AT}" 1 ./data/users.txt ./data/log/ 1
