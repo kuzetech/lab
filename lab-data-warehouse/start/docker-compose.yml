@@ -236,7 +236,7 @@ services:
       - /bin/bash
       - -lc
       - |
-        mkdir -p /var/lib/flume/l2/channel/checkpoint /var/lib/flume/l2/channel/data
+        mkdir -p /var/lib/flume/l2/channel/ck1 /var/lib/flume/l2/channel/data1 /var/lib/flume/l2/channel/ck2 /var/lib/flume/l2/channel/data2
         exec /app/bin/flume-ng agent -c /opt/flume-config -C /etc/hadoop -f /opt/flume-config/flume.conf -n a2 -Dflume.root.logger=INFO,console -Dlog4j.configuration=file:/opt/flume-config/log4j.properties
     restart: unless-stopped
     networks:
