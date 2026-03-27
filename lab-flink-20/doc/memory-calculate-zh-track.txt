@@ -1,0 +1,57 @@
+内存 14336 MB
+
+taskmanager.memory.jvm-overhead.min = 1gb
+taskmanager.memory.jvm-overhead.max = 4gb
+taskmanager.memory.jvm-overhead.fraction = 0.25
+taskmanager.memory.jvm-overhead = 14336 * 0.25 = 3584 MB
+
+taskmanager.memory.jvm-metaspace.size = 256 mb 默认
+taskmanager.memory.flink.size = 14336 - 3584 - 256 = 10496 MB
+
+taskmanager.memory.network.min = 64mb 默认
+taskmanager.memory.network.max = 768mb
+taskmanager.memory.network.fraction = 0.1 默认
+taskmanager.memory.network = 10496 * 0.1 = 1049.6 MB -- 768mb
+
+taskmanager.memory.managed.fraction = 0.6
+taskmanager.memory.managed = 10496 * 0.6 = 6297.6 MB
+
+taskmanager.memory.framework.heap.size = 128 mb 默认
+taskmanager.memory.framework.off-heap.size = 256 MB
+taskmanager.memory.task.off-heap.size = 0mb 默认
+taskmanager.memory.task.heap.size = 10496 - 768 - 6297.6 - 128 - 256 - 0 = 3046.4 MB
+
+并行度 4 ，761.6 MB
+
+
+ taskmanager.memory.jvm-overhead.min=3758096384b
+ taskmanager.memory.jvm-overhead.max=3758096384b
+
+ -XX:MaxMetaspaceSize=268435456
+
+ -XX:MaxDirectMemorySize=1073741824
+  taskmanager.memory.network.max=805306368b
+  taskmanager.memory.framework.off-heap.size=268435456b
+
+ taskmanager.memory.managed.size=6603512479b
+
+ -Xmx3328599393 -Xms3328599393
+ taskmanager.memory.framework.heap.size=134217728b
+ taskmanager.memory.task.heap.size=3194381665b
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
