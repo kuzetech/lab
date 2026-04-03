@@ -9,11 +9,12 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
-public class AdminTransactionStatus {
+public class AdminTransactionStatus3 {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         final String transactionalId = "my-transactional-id-002";
 
@@ -40,17 +41,6 @@ public class AdminTransactionStatus {
         adminProps.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         Admin admin = Admin.create(adminProps);
 
-        DescribeTransactionsResult result = admin.describeTransactions(Collections.singletonList(transactionalId));
-        TransactionDescription description = result.description(transactionalId).get();
-        System.out.println("---------------------------------");
-        System.out.println("事务 ID: " + transactionalId);
-        System.out.println("当前状态: " + description.state());
-        System.out.println("关联的 Producer ID: " + description.producerId());
-        System.out.println("事务超时时间: " + description.transactionTimeoutMs() + "ms");
-
-        // 到此事务状态都是 CompleteCommit
-        producer.commitTransaction();
-
         Thread.sleep(3000);
         DescribeTransactionsResult result2 = admin.describeTransactions(Collections.singletonList(transactionalId));
         TransactionDescription description2 = result2.description(transactionalId).get();
@@ -61,7 +51,6 @@ public class AdminTransactionStatus {
         System.out.println("事务超时时间: " + description2.transactionTimeoutMs() + "ms");
 
         admin.close();
-        // 会检查生产者的状态，Aborting incomplete transaction due to shutdown
-        producer.close();
+        producer.close(Duration.ZERO);
     }
 }
