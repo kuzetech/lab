@@ -46,27 +46,7 @@ run_init_sql() {
   return 1
 }
 
-run_periodic_msck() {
-  local interval="${HIVE_MSCK_INTERVAL_SEC:-300}"
-  if [[ "${interval}" -le 0 ]]; then
-    echo "Periodic MSCK is disabled (HIVE_MSCK_INTERVAL_SEC=${interval})"
-    return 0
-  fi
-
-  # Ensure HiveServer2 is ready before running scheduled metadata repair.
-  wait_for localhost 10000 120
-
-  while true; do
-    /opt/hive/bin/beeline \
-      -u jdbc:hive2://localhost:10000 \
-      -n hive \
-      -e "use dwd; set hive.msck.path.validation=ignore; msck repair table flume_datagen_raw;" >>/tmp/hive-msck.log 2>&1 || true
-    sleep "${interval}"
-  done
-}
-
 # Run initialization in background to avoid blocking HiveServer2 startup.
 ( run_init_sql ) &
-( run_periodic_msck ) &
 
 exec /opt/hive/bin/hiveserver2 --hiveconf hive.root.logger=INFO,console

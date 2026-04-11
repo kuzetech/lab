@@ -234,7 +234,6 @@ services:
     build:
       context: .
       dockerfile: flume/Dockerfile
-    image: lab/flume-hdfs:local
     hostname: flume-l2
     container_name: hdfs-flume-l2
     environment:
@@ -262,7 +261,6 @@ services:
     build:
       context: .
       dockerfile: flume/Dockerfile
-    image: lab/flume-hdfs:local
     hostname: flume-l1
     container_name: hdfs-flume-l1
     depends_on:
@@ -288,7 +286,6 @@ services:
     build:
       context: .
       dockerfile: hive-spark/Dockerfile
-    image: lab/hive-spark:local
     hostname: spark-master
     container_name: spark-master
     environment:
@@ -315,7 +312,9 @@ services:
       - hdfs
 
   spark-worker:
-    image: lab/hive-spark:local
+    build:
+      context: .
+      dockerfile: hive-spark/Dockerfile
     hostname: spark-worker
     container_name: spark-worker
     environment:
@@ -388,7 +387,9 @@ services:
       - hdfs
 
   hive-server2:
-    image: lab/hive-spark:local
+    build:
+      context: .
+      dockerfile: hive-spark/Dockerfile
     hostname: hive-server2
     container_name: hive-server2
     environment:
