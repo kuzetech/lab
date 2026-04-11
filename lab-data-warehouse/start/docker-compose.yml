@@ -436,5 +436,40 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
     volumes:
       - kafka-data:/bitnami/kafka
+    restart: unless-stopped
+    networks:
+      - hdfs
+
+  hbase:
+    image: harisekhon/hbase:latest
+    container_name: hbase
+    hostname: hbase
+    depends_on:
+      nn1:
+        condition: service_healthy
+      nn2:
+        condition: service_healthy
+      zk1:
+        condition: service_started
+      zk2:
+        condition: service_started
+      zk3:
+        condition: service_started
+    environment:
+      HBASE_MANAGES_ZK: "false"
+      HBASE_ROOTDIR: hdfs://mycluster/hbase
+      HBASE_ZOOKEEPER_QUORUM: zk1,zk2,zk3
+      HBASE_ZOOKEEPER_PROPERTY_CLIENTPORT: 2181
+    ports:
+      - "16000:16000"
+      - "16010:16010"
+      - "16020:16020"
+      - "16030:16030"
+    restart: unless-stopped
+    networks:
+      - hdfs
+                      
