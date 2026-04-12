@@ -1,0 +1,31 @@
+{
+    "account": "Vz54E9Ya",
+    "appId": "cn.doitedu.app1",
+    "appVersion": "3.4",
+    "carrier": "中国移动",
+    "deviceId": "lzhDJKAEKEPE",
+    "deviceType": "MI-6",
+    "platform": "android",
+    "ip": "24.93.136.175",
+    "latitude": 42.09287620431088,
+    "longitude": 79.42106825764643,
+    "netType": "WIFI",
+    "osName": "android",
+    "osVersion": "6.5",
+    "releaseChannel": "豌豆荚",
+    "resolution": "1024*768",
+    "sessionId": "EUbuoZXoxwL",
+    "timeStamp": 1594534406220,
+    "eventId": "productView",
+    "properties": {
+        "pageId": "646",
+        "productId": "157",
+        "refType": "4",
+        "refUrl": "/search",
+        "title": "小米10至尊版超大杯双十一大优惠立买力返现",
+        "url": "items/182365930.html",
+        "utm_campain": "双十一小米促销广告",
+        "utm_loctype": "侧边栏广告",
+        "utm_source": "爱奇艺"
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "account": "OojqS36Vk",
+    "carrier": "中国电信",
+    "cookieid": "QIGfKLZOy3mz",
+    "ip": "208.67.109.145",
+    "netType": "WIFI",
+    "osName": "android",
+    "osVersion": "8.5",
+    "resolution": "2048*1024",
+    "sessionId": "7qSqmopgg0q",
+    "timeStamp": 1595752563993,
+    "userAgent": "Chrome 80.47.4.400 webkit",
+    "eventId": "adClick",
+    "properties": {
+        "adCampain": "15",
+        "adId": "5",
+        "adLocation": "2",
+        "pageId": "475"
+    }
+}

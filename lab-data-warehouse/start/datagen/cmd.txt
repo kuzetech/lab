@@ -1,5 +1,0 @@
-##生成用户数据,用户数量不能低于 10000
-sh genlog.sh user 10000 ./data/users.txt
-
-##根据上一步生成的用户数据，从设定时间开始，逐步生成用户行为日志
-sh genlog.sh log 2000 2026-03-20_00:00:00 1 ./data/users.txt ./data/log/ 1
