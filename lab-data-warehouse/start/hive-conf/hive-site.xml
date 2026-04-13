@@ -68,10 +68,10 @@
     <value>false</value>
   </property>
 
-  <property>
+  <!-- <property>
     <name>hive.execution.engine</name>
     <value>spark</value>
-  </property>
+  </property> -->
   <property>
     <name>spark.master</name>
     <value>spark://spark-master:7077</value>
