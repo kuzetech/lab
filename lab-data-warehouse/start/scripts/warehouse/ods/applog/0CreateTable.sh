@@ -21,14 +21,17 @@ create external table ods.app_event_log
   releaseChannel  string,
   resolution    string,
   sessionId    string,
-  `timestamp`    bigint
+  \`timestamp\`    bigint
 )  
 partitioned by (dt string)
 row format serde 'org.apache.hive.hcatalog.data.JsonSerDe' 
-stored as textfile;   
+stored as textfile
 "
 
-hive -e "$sql"
+/opt/hive/bin/beeline \
+  -u jdbc:hive2://localhost:10000 \
+  -n hive \
+  -e "$sql"
 
 
 if [ $? -eq 0 ];then

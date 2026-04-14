@@ -44,9 +44,15 @@ group by line
 if [ ${hdfds_cnt} -gt ${logserver_cnt} ];then
   echo "检测到${dt}日志采集目录中的数据行数>日支服务器上的日志行数,准备执行去重计算"
   # 启动去重计算
-  hive -e "$sql1"
+  /opt/hive/bin/beeline \
+    -u jdbc:hive2://localhost:10000 \
+    -n hive \
+    -e "$sql1"
   echo "加载日志数据到临时表"
-  hive -e "$sql2"
+  /opt/hive/bin/beeline \
+    -u jdbc:hive2://localhost:10000 \
+    -n hive \
+    -e "$sql2"
   echo "执行了去重计算"
 fi
 

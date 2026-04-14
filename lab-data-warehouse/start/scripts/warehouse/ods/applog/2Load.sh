@@ -31,7 +31,10 @@ fi
 echo "加载的路径为： ${datapath}"
 
 
-${HIVE_HOME}/bin/hive -e "load data inpath '${datapath}' overwrite into table ods.mall_app_log partition(dt='${dt}')"
+${HIVE_HOME}/bin/beeline \
+  -u jdbc:hive2://localhost:10000 \
+  -n hive \
+  -e "load data inpath '${datapath}' overwrite into table ods.app_event_log partition(dt='${dt}')"
 
 # 判断上一条命令执行的返回码(判断hive导入是否成功)
 if [ $? -eq 0 ];then
