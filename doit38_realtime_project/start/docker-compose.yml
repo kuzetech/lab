@@ -11,8 +11,7 @@ services:
       - "8030:8030"
       - "9030:9030"
     volumes:
-      - ./doris-data/fe/doris-meta:/opt/apache-doris/fe/doris-meta
-      - ./doris-data/fe/log:/opt/apache-doris/fe/log
+      - fe-data:/opt/apache-doris/fe
     networks:
       doris-net:
         ipv4_address: 172.28.0.2
@@ -30,11 +29,14 @@ services:
     ports:
       - "8040:8040"
     volumes:
-      - ./doris-data/be/storage:/opt/apache-doris/be/storage
-      - ./doris-data/be/log:/opt/apache-doris/be/log
+      - be-data:/opt/apache-doris/be
     networks:
       doris-net:
         ipv4_address: 172.28.0.3
+
+volumes:
+  fe-data:
+  be-data:
 
 networks:
   doris-net:
