@@ -1,8 +1,8 @@
-package com.kuzetech.bigdata.concurrent.threadpool;
+package com.kuzetech.bigdata.concurrent.thread;
 
 import java.util.concurrent.*;
 
-public class BaseDemo {
+public class DemoExecutors {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         ExecutorService executorService = Executors.newFixedThreadPool(10);
