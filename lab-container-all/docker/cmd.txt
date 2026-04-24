@@ -8,6 +8,7 @@ docker images | grep "postgres" | awk '{print $3}' | xargs docker rmi -f
 ## 运行镜像
 docker run --rm -it --name test --entrypoint /bin/bash registry.biubiubiu.io/funnydb/funnydb-ingest-processor:1.2.1-240109-1844-2cec8c12
 docker run --rm -it --name test                        registry.biubiubiu.io/turbine/ingest:2.0.0-s230209-1522-3f2b7d34 bash
+docker run --rm -it --name test --entrypoint /bin/bash hub.sofunny.io/funnydb/funnydb-mutation:latest
 docker run \
   --volume=/:/rootfs:ro \
   --volume=/var/run:/var/run:ro \

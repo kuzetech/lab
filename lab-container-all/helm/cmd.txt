@@ -30,10 +30,10 @@ helm rollback ingest 1
 
 # 安装
 helm install --dry-run --debug test ./mychart 
-helm install test ./mychart -f value.yaml
+helm install test-mutation ./mychart -f value.yaml
 
 # 卸载
-helm uninstall funnydb-statistician-cron
+helm uninstall test-mutation
 
 ## 推送脚本
 export HELM_REPO_USERNAME=huangshaowei
