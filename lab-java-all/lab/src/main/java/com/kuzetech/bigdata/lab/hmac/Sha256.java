@@ -41,7 +41,7 @@ public class Sha256 {
                 "        }\n" +
                 "    ]\n" +
                 "}";
-        System.out.println(extracted("demo", "123", "123", strContent.getBytes(StandardCharsets.UTF_8)));
+        System.out.println(extracted("FDI_PBYWZ7dy6eYfBCblOdeB", "123", "123", strContent.getBytes(StandardCharsets.UTF_8)));
     }
 
     public static String extracted(
@@ -51,7 +51,7 @@ public class Sha256 {
             byte[] content
     ) throws NoSuchAlgorithmException, InvalidKeyException {
         Mac hmacSha256 = Mac.getInstance("HmacSHA256");
-        hmacSha256.init(new SecretKeySpec("secret".getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+        hmacSha256.init(new SecretKeySpec("FDS_SeJn6vBiWCWFtqepatqSbt8gtscK".getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
 
         byte[] methodBytes = "POST".getBytes(StandardCharsets.UTF_8);
         byte[] all = ArrayUtils.addAll(methodBytes, "/v1/collect".getBytes(StandardCharsets.UTF_8));
