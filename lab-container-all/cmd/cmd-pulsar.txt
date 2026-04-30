@@ -1,0 +1,100 @@
+pulsar-admin topics list public/default
+pulsar-admin topics list -ist pulsar/system
+pulsar-admin topics list-partitioned-topics public/default
+pulsar-admin topics lookup public/default/funnydb-ingest-receive-partition-1
+pulsar-admin topics partitioned-lookup public/default/funnydb-ingest-receive
+pulsar-admin topics bundle-range public/default/funnydb-ingest-receive-partition-1
+
+pulsar-admin topics create-partitioned-topic persistent://public/default/funnydb-ingest-receive -p 9
+pulsar-admin topics delete-partitioned-topic persistent://public/default/funnydb-ingest-receive
+
+pulsar-admin topics create-partitioned-topic persistent://public/default/source -p 9
+pulsar-admin topics create-partitioned-topic persistent://public/default/sink -p 9
+
+pulsar-admin topics update-partitioned-topic -p=32 persistent://public/default/funnydb-flink-track-events
+
+pulsar-admin topics stats persistent://public/default/funnydb-ingest-receive-partition-2
+pulsar-admin topics stats-internal persistent://public/default/funnydb-ingest-receive-partition-2
+pulsar-admin topics partitioned-stats persistent://public/default/funnydb-ingest-receive
+pulsar-admin topics partitioned-stats persistent://public/temp/funnydb-flink-track-events
+pulsar-admin topics partitioned-stats-internal persistent://public/temp/funnydb-flink-track-events
+
+pulsar-admin topics subscriptions persistent://public/default/funnydb-ingest-receive
+pulsar-admin topics unsubscribe -s funnydb-ingest-pipeline persistent://public/default/funnydb-ingest-receive
+pulsar-admin topics unsubscribe -s funnydb-ingest-pipeline-bypass persistent://public/default/funnydb-ingest-receive
+pulsar-admin topics unsubscribe -s pulsar-transaction-validator persistent://public/temp/funnydb-flink-track-events
+pulsar-admin topics unsubscribe -s kuze persistent://public/temp/funnydb-flink-track-events
+pulsar-admin topics create-subscription persistent://public/default/funnydb-ingest-receive  -s funnydb-ingest-pipeline -m latest
+pulsar-admin topics reset-cursor persistent://public/default/funnydb-ingest-receive-partition-2 -s funnydb-ingest-pipeline -m '6401:23484'
+pulsar-admin topics get-subscription-properties persistent://public/default/funnydb-ingest-receive -s funnydb-ingest-pipeline
+
+pulsar-admin brokers list-dynamic-config
+pulsar-admin brokers get-runtime-config
+pulsar-admin brokers get-runtime-config | grep loadManagerClassName
+pulsar-admin brokers get-runtime-config | grep loadBalancerDebugModeEnabled
+pulsar-admin brokers get-runtime-config | grep brokerDeduplicationEnabled
+pulsar-admin brokers update-dynamic-config --config=loadBalancerDebugModeEnabled --value=true
+pulsar-admin brokers update-dynamic-config --config=loadManagerClassName --value=org.apache.pulsar.broker.loadbalance.impl.ModularLoadManagerImpl
+pulsar-admin brokers update-dynamic-config --config=loadManagerClassName --value=org.apache.pulsar.broker.loadbalance.extensions.ExtensibleLoadManagerImpl
+pulsar-admin brokers update-dynamic-config --config=loadBalancerAutoBundleSplitEnabled --value=true
+pulsar-admin brokers delete-dynamic-config
+pulsar-admin brokers get-all-dynamic-config
+
+pulsar-admin namespaces list public
+pulsar-admin namespaces create -b 16 public/test
+pulsar-admin namespaces policies public/default
+pulsar-admin namespaces get-backlog-quotas public/default
+pulsar-admin namespaces get-message-ttl public/default
+pulsar-admin namespaces get-retention public/default
+pulsar-admin namespaces set-retention public/default --size 130G --time 3d
+pulsar-admin namespaces set-retention public/temp --size 10G --time 1d
+pulsar-admin namespaces get-topic-positions -b 0x60000000_0x70000000 public/default
+pulsar-admin namespaces get-topic-positions -b 0x68000000_0x70000000 public/default
+
+pulsar-admin namespaces bundles public/default
+pulsar-admin namespaces split-bundle -b 0x00000000_0x10000000 public/default
+pulsar-admin topics partitioned-lookup public/default/source
+## -d指定要分配到哪台broker
+pulsar-admin namespaces unload -b 0x10000000_0x20000000 -d http://pulsar-broker-0.pulsar-broker.default.svc.cluster.local:8080 public/default
+pulsar-admin namespaces unload -b 0x80000000_0x90000000 -d http://pulsar-broker-1.pulsar-broker.default.svc.cluster.local:8080 public/default
+
+
+pulsar-client produce --messages 'Hello Pulsar!' public/kuze/funnydb-ingest-receive-partition-0
+
+## 默认仅消费一条
+pulsar-client consume -p Earliest -s test public/default/funnydb-ingest-receive
+pulsar-client consume -p Latest -s kuze public/temp/funnydb-flink-track-events
+pulsar-client consume -p Earliest -n 0 -r 0 -s test public/temp/funnydb-flink-track-events |grep 1d970de0-76cf-41b3-9165-70c892c1a48c
+
+pulsar-perf produce \
+--compression=LZ4 \
+--test-duration=30 \
+--batch-time-window=1 \
+--rate=100 \
+--num-test-threads=1 \
+--num-producers=1 \
+public/default/funnydb-ingest-receive
+
+pulsar-perf produce -txn --txn-timeout=100 --num-messages=30 --rate=1 --numMessage-perTransaction=10 public/default/abc-test
+pulsar-perf produce --num-messages=1500 --rate=10 public/default/funnydb-flink-track-events 
+pulsar-perf produce -txn --num-messages=100 --rate=1  public/default/funnydb-flink-track-events
+pulsar-perf produce --rate=100 -u pulsar://pulsar-broker.pulsar.svc.cluster.local:6650 public/default/test
+
+pulsar-perf consume \
+--acks-delay-millis=100 \
+--batch-index-ack=true \
+--test-duration=30 \
+--rate=0.0 \
+--subscription-position=Earliest \
+--num-consumers=1 \
+--subscription-type=Exclusive \
+public/default/funnydb-ingest-receive
+
+pulsar-perf consume --subscriptions=sub --subscription-position=Earliest public/default/funny
+pulsar-perf consume --subscriptions=kuze public/default/funnydb-ingest-receive
+pulsar-perf consume --subscriptions=test --subscription-position=Earliest -u pulsar://pulsar-broker.pulsar.svc.cluster.local:6650 public/default/test
+
+for i in {0..8}; do pulsar-client produce public/kuze/funnydb-ingest-receive-$i --messages 'Hello Pulsar!'; done
+for i in {0..8}; do pulsar-admin topics lookup persistent://public/default/funnydb-ingest-receive-partition-$i; done
+for i in {0..8}; do pulsar-admin topics stats persistent://public/default/funnydb-ingest-receive-partition-$i |grep ownerBroker; done
+for i in {0..8}; do pulsar-admin topics bundle-range public/default/sink-$i; done

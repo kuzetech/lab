@@ -1,0 +1,9 @@
+bookkeeper shell listbookies -a
+bookkeeper shell listledgers -bookieid pulsar-bookie-3.pulsar-bookie.pulsar.svc.cluster.local:3181
+
+bookkeeper shell listunderreplicated
+bookkeeper shell ledger 129045
+bookkeeper shell ledgermetadata -l 129045
+bookkeeper shell deleteledger -l 110951
+
+bookkeeper shell whoisauditor

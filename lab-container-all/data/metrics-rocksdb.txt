@@ -1,0 +1,24 @@
+manager size 由 slot 均分
+同一个 slot 的 rocksdb 实例共用内存
+细分为
+    写入内存 memory table，初始化为 64 * 2 MB，最高可以使用到 共享内存 * 0.5
+    读取内存 block cache，包含数据索引和布隆过滤器，其他大小为 共用内存 - 写入内存
+数据索引和布隆过滤器最低占 block cache 的 0.1，强制保证。
+ 
+avg(
+    flink_taskmanager_job_task_operator_rocksdb_block_cache_hit{kubernetes_pod_name="funnydb-track-event-process-fl-d93a9319-app-taskmanager-1-1"}
+    /
+    (
+        flink_taskmanager_job_task_operator_rocksdb_block_cache_hit{kubernetes_pod_name="funnydb-track-event-process-fl-d93a9319-app-taskmanager-1-1"}
+        +
+        flink_taskmanager_job_task_operator_rocksdb_block_cache_miss{kubernetes_pod_name="funnydb-track-event-process-fl-d93a9319-app-taskmanager-1-1"}
+    )
+) by (operator_name)
+
+
+sum({__name__=~"flink_taskmanager_job_task_operator_.*_rocksdb_cur_size_all_mem_tables"}) by (subtask_index)/1024/1024
+
+avg({__name__=~"flink_taskmanager_job_task_operator_.*_rocksdb_block_cache_usage"}) by (subtask_index)/1024/1024/1024
+
+sum({__name__=~"flink_taskmanager_job_task_operator_.*_rocksdb_estimate_table_readers_mem"}) by (subtask_index)/1024
+

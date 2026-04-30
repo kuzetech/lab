@@ -1,0 +1,48 @@
+# 进入项目代码文件夹，查看提交日志
+git log
+
+# 如果需要合并，需要指定 rebase 到下一次提交点
+git rebase -i e688329af565155e6f1114c6561b5ed85811d896
+
+# 也可以使用快捷命令，合并最近四次提交
+git rebase -i HEAD~4
+
+# 如果你异常退出了 vi 窗口，不要紧张，执行以下命令继续编辑，修改完保存一下
+git rebase --edit-todo
+
+# 继续执行 rebase
+git rebase --continue
+
+# 强制提交 rebase
+git push --force
+
+# 如果你的同事完成了一次 hotfix，并合并入了 master 分支，此时 master 已经领先于你的 feature1 分支了
+# 我们想要同步 master 分支的改动，首先想到了 git:(feature1) git merge master
+# 就会在记录里发现一些 merge 的信息，但是我们觉得这样污染了 commit 记录
+# 我们会使用 rebase 重新指定 feature1 的根
+git:(feature1) git rebase master
+
+这里补充一点：rebase 做了什么操作呢？
+首先，git 会把 feature1 分支里面的每个 commit 取消掉；
+其次，把上面的操作临时保存成 patch 文件，存在 .git/rebase 目录下；
+然后，把 feature1 分支更新到最新的 master 分支；
+最后，把上面保存的 patch 文件应用到 feature1 分支上；
+这个比较形象，rebase从字面意思来看就是变基的意思，“基”也可以叫“根”，所以也可以叫变根，顾名思义，更改feature1分支的根
+
+在 rebase 的过程中，也许会出现冲突 conflict。
+在这种情况，git 会停止 rebase 并会让你去解决冲突。
+在解决完冲突后，用命令去更新这些内容
+git add 
+
+## add 后继续完成 rebase 余下的步骤，这样 git 会继续应用余下的 patch 补丁文件
+git rebase --continue
+
+## 在任何时候，我们都可以用 --abort 参数来终止 rebase 的行动，并且分支会回到 rebase 开始前的状态
+git rebase --abort
+
+######### 特别注意！！！！！
+如果 feature1 不止一个人开发时，需要慎用 rebase 命令
+因为当你提交了 rebase，但是你的同时 feature1 分支上有额外的开发 commit 时
+么当他 pull 远程 master 的时候，这些私有的提交纪录就会丢失。
+这就是为什么我们经常听到有人说 git rebase 是一个危险命令，因为它改变了历史，我们应该谨慎使用。
+除非你可以肯定该 feature1 分支只有你自己使用，否则请谨慎操作。

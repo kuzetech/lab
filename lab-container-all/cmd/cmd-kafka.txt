@@ -1,0 +1,46 @@
+## 其他
+unset JMX_PORT
+
+## topic 操作
+kafka-topics.sh --bootstrap-server localhost:9092 --list
+kafka-topics.sh --bootstrap-server localhost:9092 --create --topic funnydb-mutation-test-output --partitions 9 --replication-factor 3
+kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic funnydb-ingest-mutation-events
+kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic funnydb-ingest-track-events
+kafka-topics.sh --bootstrap-server localhost:9092 --alter --topic topic --partitions 4
+
+## 消费者
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-flink-track-events --group kuze --from-beginning
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-flink-track-events --group kuze --property print.headers=true
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-mutation-test-output --group kuze --max-messages 10
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-ingest-mutation-events --group funnydb-mutation-group --max-messages 100 
+
+
+
+## 消费者组相关
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --list
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --all-groups
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group funnydb-mutation-group 
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --delete --group funnydb-mutation-group
+
+## 查询偏移量
+kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic funnydb-ingest-mutation-events
+kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic funnydb-flink-track-events --time -1
+
+## 重置偏移量
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --execute --topic funnydb-ingest-receive         --group kuze                   --reset-offsets --to-datetime 2025-03-04T09:50:00.000 
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --execute --topic funnydb-ingest-mutation-events --group funnydb-mutation-group --reset-offsets --to-latest 
+
+## 生产者
+kafka-console-producer.sh --broker-list  localhost:9092 --topic pass3
+
+## 事务
+kafka-transactions.sh --bootstrap-server localhost:9092 list
+kafka-transactions.sh --bootstrap-server localhost:9092 find-hanging --topic funnydb-ingest-mutation-events
+kafka-transactions.sh --bootstrap-server localhost:9092 find-hanging --topic funnydb-flink-track-events
+kafka-transactions.sh --bootstrap-server localhost:9092 find-hanging --topic wu_la_la_quan_qiu_fu_wv18n35j-ingest-events-receive-stats
+kafka-transactions.sh --bootstrap-server localhost:9092 abort --topic funnydb-ingest-mutation-events --partition 7 --producer-id 289595 --producer-epoch 0 --coordinator-epoch -1 
+kafka-transactions.sh --bootstrap-server localhost:9092 abort --topic funnydb-ingest-mutation-events --partition 7 --start-offset 200251563
+
+## kafkactl
+kafkactl consume funnydb-flink-track-events -g test2 -i ReadCommitted --max-messages 10
+kafkactl consume funnydb-flink-track-events -g test3 -i ReadUncommitted --max-messages 10

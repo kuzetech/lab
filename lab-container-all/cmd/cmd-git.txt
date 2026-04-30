@@ -1,0 +1,17 @@
+
+## git 配置代理
+git config list
+git config --global http.proxy http://127.0.0.1:7890
+git config --global --unset http.proxy
+
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+
+## git 清除所有失效的远程分支
+git remote prune origin
+
+## 模糊匹配罗列所有本地分支
+git branch --list 'issues/*'
+
+## 批量删除分支
+git branch -D $(git branch --list 'issues/*')

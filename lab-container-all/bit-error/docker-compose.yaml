@@ -1,0 +1,17 @@
+
+services:
+  bit:
+    image: fluent/fluent-bit:latest
+    volumes:
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./logs:/var/gen
+      - ./track:/var/track
+    command: /fluent-bit/bin/fluent-bit -c /fluent-bit/etc/fluent-bit.conf
+    environment:
+      - FLB_LOG_LEVEL=debug
+    networks:
+      - fluent-bit-net
+
+networks:
+  fluent-bit-net:
+    driver: bridge

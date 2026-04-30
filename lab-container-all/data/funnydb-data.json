@@ -1,0 +1,82 @@
+[
+
+
+{
+  "type": "Event",
+  "app": "funnydbshu_ju_cai_ji_zlof46go",
+  "ingest_time": 1683532800001,
+  "ip": "127.0.0.1",
+  "data": {
+    "#op": 1,
+    "#device_id": "device_id",
+    "#channel": "channel",
+    "#device_model": "device_model",
+    "#ip": "134.68.246.32",
+    "#os_platform": "os_platform",
+    "#sdk_type": "sdk_type",
+    "#sdk_version": "sdk_version",
+    "#account_id": "account_id",
+    "#ip_country": "ip_country",
+    "#zone_offset": 1,
+    "#event": "#account_create",
+    "#log_id": "log_id",
+    "#time": 1683532800001,
+    "#data_lifecycle": "data_lifecycle",
+    "#source": 1,
+    "#should_remove": 1
+  }
+}
+
+,
+
+{
+  "type": "UserMutation",
+  "app": "funnydbshu_ju_cai_ji_zlof46go",
+  "ingest_time": 1683532800001,
+  "ip": "127.0.0.1",
+  "data": {
+    "#time": 1683532800001,
+    "#operate": "operate",
+    "properties": {
+      "#user_id": "user_id"
+    },
+    "#identify": "identify",
+    "#sdk_type": "sdk_type",
+    "#sdk_version": "sdk_version",
+    "#op": 1,
+    "#log_id": "log_id"
+  }
+}
+
+,
+
+{
+  "type": "DeviceMutation",
+  "app": "funnydbshu_ju_cai_ji_zlof46go",
+  "ingest_time": 1683532800001,
+  "ip": "127.0.0.1",
+  "data": {
+    "#identify": "identify",
+    "#sdk_type": "sdk_type",
+    "#sdk_version": "sdk_version",
+    "#op": 1,
+    "#log_id": "log_id",
+    "#time": 1683532800001,
+    "#operate": "operate",
+    "properties": {
+      "#device_id": "device_id",
+      "#device_model": "device_model",
+      "#ram_capacity": 1.1,
+      "#cpu_model": "cpu_model",
+      "#screen_height": 1000,
+      "#screen_width": 1000,
+      "#cpu_core_count": 10,
+      "#cpu_frequency": 1.2,
+      "#gpu_model": 5,
+      "#manufacturer": "manufacturer"
+    }
+  }
+}
+
+
+]
