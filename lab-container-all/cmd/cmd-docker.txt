@@ -2,10 +2,10 @@
 docker inspect --type image 08ef35a1c3f0
 
 ## 批量删除 docker 镜像
-docker images | grep "ingest-client" | awk '{print $3}' | xargs docker rmi
-docker images | grep "postgres" | awk '{print $3}' | xargs docker rmi -f
+docker images | grep 'funnydb-mutation' | awk '{print $2}' | xargs -r docker rmi -f
 
 ## 运行镜像
+docker run --rm -d  --name test --entrypoint ""        registry.sofunny.io/funnydb/ipdb:latest sleep 1000000
 docker run --rm -it --name test --entrypoint /bin/bash registry.biubiubiu.io/funnydb/funnydb-ingest-processor:1.2.1-240109-1844-2cec8c12
 docker run --rm -it --name test                        registry.biubiubiu.io/turbine/ingest:2.0.0-s230209-1522-3f2b7d34 bash
 docker run --rm -it --name test --entrypoint /bin/bash hub.sofunny.io/funnydb/funnydb-mutation:latest
@@ -23,12 +23,9 @@ docker run \
   lagoudocker/cadvisor:v0.37.0
 
 ## 复制文件
-docker pull registry.sofunny.io/funnydb/ipdb:latest
-docker run --rm -d --name geoip-tmp --entrypoint "" registry.sofunny.io/funnydb/ipdb:latest sleep 1000000
 docker cp geoip-tmp:/data/maxmind-geoip2-city.mmdb /Users/huangsw/Downloads/maxmind-geoip2-city.mmdb
 docker cp geoip-tmp:/data/maxmind-geoip2-isp.mmdb /Users/huangsw/Downloads/maxmind-geoip2-isp.mmdb
 docker cp geoip-tmp:/data/maxmind-geolite2-country.mmdb /Users/huangsw/Downloads/maxmind-geolite2-country.mmdb
-docker rm -f 3e4d3aed370b96802d22ddc720cde3559bf41337e3811727b0a46a6bd0943260   
 
 ## 构建镜像
 docker build -t registry.biubiubiu.io/turbine/ingest-client:1.0.2 -f code/turbine/sources/ingest-client/Dockerfile --build-arg version=$VERSION .
@@ -39,3 +36,5 @@ docker tag apachepulsar/pulsar-all:4.0.3 registry.sofunny.io/turbine/pulsar-all:
 docker login --username=huangshaowei registry.sofunny.io
 docker push registry.sofunny.io/turbine/pulsar-all:4.0.3
 
+## 仓库登录
+docker login --username=data-analysis registry.sofunny.io

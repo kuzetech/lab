@@ -8,6 +8,7 @@ terraform init
 然后修改 flink job 配置
 
 terraform apply --target="module.ingest-v4.helm_release.ingest-v4"
+terraform apply --target="module.funnydb-mutation.helm_release.funnydb-mutation"
 
 ## 更新 pulsar 集群
 export TF_CLI_ARGS_init=-backend-config="config_path=./.secrets/k8s/kubeconfig.yaml"

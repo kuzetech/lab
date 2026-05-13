@@ -1,6 +1,6 @@
 
-读取 idea.md 的需求内容，
-参照 proposal.md 的目录结构，
+读取 0013-fix-add-pod-error 文件夹中 idea.md 的需求内容，
+参照 docs/issues/0002-commit-offset-to-kafka/proposal.md 的目录结构，
 按同样的目录组织生成一份实现计划，
 并写到对应目录的 proposa.md 文件里
 
@@ -8,7 +8,7 @@
 1. 配置名使用不同的前缀区分框架配置和应用配置，框架配置可添加组件名明确使用范围
 2. 用户必须指定应用业务 migration 文件目录，不能为空
 
-依照 proposa.md 设计文档，对应修改代码
+依照设计文档，对应修改代码
 
 请根据评论完成代码修改
 
