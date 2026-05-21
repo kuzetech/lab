@@ -1,4 +1,6 @@
-SELECT * from (
+SELECT `#user_id`, account from wu_la_la_lite_cv269m7i.users_v limit 1;
+
+
 SELECT
     u.`#user_id` as identify,
     u.`#first_chan_time` as first_chan_time,
@@ -55,6 +57,4 @@ FROM
         WHERE formatDateTime(fromUnixTimestamp64Milli(`#user_create_time`), '%Y-%m-%d', 'Asia/Shanghai') = '2026-05-14'
         GROUP BY `#user_id`
     ) AS u
-    ON u.account = e.account
-) as t
-where identify IN ('2795925','928149','8841620','8858004')
+    ON u.account = e.account;
