@@ -12,11 +12,9 @@
         <module>kafka</module>
         <module>pulsar</module>
         <module>pulsar-transaction-validator</module>
-        <module>table-base</module>
+        <module>redis</module>
         <module>stream-base</module>
         <module>state-processor-demo</module>
-        <module>dynamic-rule</module>
-        <module>redis</module>
     </modules>
 
     <properties>
@@ -37,7 +35,8 @@
         <jackson.version>2.14.1</jackson.version>
         <fastjson.version>2.0.31</fastjson.version>
         <datafaker.version>1.9.0</datafaker.version>
-        <testcontainers.version>1.19.3</testcontainers.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
+        <redis.version>5.1.2</redis.version>
     </properties>
 
     <repositories>
@@ -68,30 +67,6 @@
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-clients</artifactId>
-            <version>${flink.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-api-java</artifactId>
-            <version>${flink.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-runtime</artifactId>
-            <version>${flink.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-planner-loader</artifactId>
-            <version>${flink.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-sql-client</artifactId>
             <version>${flink.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -155,12 +130,6 @@
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-test-utils</artifactId>
-            <version>${flink.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-test-utils</artifactId>
             <version>${flink.version}</version>
             <scope>test</scope>
         </dependency>
@@ -256,7 +225,7 @@
             <dependency>
                 <groupId>redis.clients</groupId>
                 <artifactId>jedis</artifactId>
-                <version>5.1.2</version>
+                <version>${redis.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
