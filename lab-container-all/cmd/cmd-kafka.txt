@@ -36,8 +36,6 @@ kafka-console-producer.sh --broker-list  localhost:9092 --topic pass3
 ## 事务
 kafka-transactions.sh --bootstrap-server localhost:9092 list | grep flink-group-ingest-event-process-flow-controller-transaction
 kafka-transactions.sh --bootstrap-server localhost:9092 find-hanging --topic funnydb-ingest-mutation-events
-kafka-transactions.sh --bootstrap-server localhost:9092 find-hanging --topic funnydb-flink-track-events
-kafka-transactions.sh --bootstrap-server localhost:9092 find-hanging --topic wu_la_la_quan_qiu_fu_wv18n35j-ingest-events-receive-stats
 kafka-transactions.sh --bootstrap-server localhost:9092 abort --topic funnydb-ingest-mutation-events --partition 7 --producer-id 289595 --producer-epoch 0 --coordinator-epoch -1 
 kafka-transactions.sh --bootstrap-server localhost:9092 abort --topic funnydb-ingest-mutation-events --partition 7 --start-offset 200251563
 
