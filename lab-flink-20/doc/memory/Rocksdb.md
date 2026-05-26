@@ -1,17 +1,17 @@
-每个 Operator 的 Subtasks 拥有独立的 rocksdb 实例。如下：
-Flink 的 Slot 共享机制通常允许一个 Slot 运行多个不同的算子子任务。
-如果一个 Slot 里跑了 Window 算子和 Join 算子，那么这个 Slot 里就会同时存在两个物理上隔离的 RocksDB 实例（本地目录也是分开的）。
+# rocksdb 内存使用说明
 
-当开启了 state.backend.rocksdb.memory.managed=true，
-Flink 会开启一个 shared cache + write buffer manager
-其中 shared cache 限制 block cache、index and bloom filters
-write buffer manager 主要负责 MemTables
-这个 TM 上所有的 RocksDB 实例读侧缓存都共用 shared cache。
-但是写入则在 write buffer manager 划分独立的内存空间。
-
-Slot 间的划分：
+作业默认开启 state.backend.rocksdb.memory.managed=true，系统会确保 rocksdb 使用的内存正好与 Flink 的托管内存预算相同
 Managed Memory 会根据 TaskManager 的 Slot 槽位数 进行平均切分。
 每个 Slot 只能获取自己那份额度的 Managed Memory，这确保了不同 Subtask 之间的资源隔离。
+
+Flink 允许一个 Slot 运行多个不同的算子子任务。所以 chain 合并后的每个 subtask 拥有自己的 rocksdb 实例。
+如果一个 Slot 里跑了 Window 算子和 Join 算子，那么这个 Slot 里就会同时存在两个物理上隔离的 RocksDB 实例（本地目录也是分开的）。
+
+每个 slot 会开启独立的 shared read cache + write buffer manager
+其中 shared cache 负责 data block cache、index、bloom filters
+write buffer manager 主要负责 MemTables
+slot 上所有的 RocksDB 实例读缓存共用 shared cache
+但写入则在 write buffer manager 划分独立的内存空间。
 
 对于 Slot 分配的内存池有如下分配规则：
 state.backend.rocksdb.memory.write-buffer-ratio，默认值 0.5，即 50% 的给定内存会分配给写缓冲区使用。
@@ -32,8 +32,7 @@ high-priority-pool-capacity主要留给：
 - bloom filter blocks
 - compression dictionary blocks
 
-rocksdb 中 index/filter 可以存放在 block-cache 中，也可以存放在 block-cache 外。
-通过 cache_index_and_filter_blocks 参数设置。
+rocksdb 中 index/filter 可以存放在 block-cache 中，也可以存放在 block-cache 外。可以通过 cache_index_and_filter_blocks 参数设置。
 但是对 partitioned index/filter 是个特例，官方说明这些 partition 通常会进 block cache 中。
 所以指标 estimate_table_readers_mem 看的是 table reader 自身/附属结构在 block cache 之外的那部分内存，不是 block cache 里的 index/filter block。
 
