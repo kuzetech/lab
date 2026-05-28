@@ -13,7 +13,7 @@ kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-flin
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-flink-track-events       --group kuze --property print.headers=true
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-mutation-test-output     --group kuze --max-messages 10
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-ingest-mutation-events   --group kuze --max-messages 100
-kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-ingest-mutation-events   --group kuze --property print.partition=true --property print.key=true
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-ingest-mutation-events   --group kuze --property print.partition=true --property print.key=true --property print.offset=true
 
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-ingest-mutation-events   --partition 0  --offset 1121074199  --max-messages 2000
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-ingest-mutation-events   --partition 1  --offset 1143196163  --max-messages 2000
