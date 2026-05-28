@@ -1,16 +1,17 @@
 package com.kuzetech.bigdata.lab.flink20.sql.base.time;
 
 import com.kuzetech.bigdata.lab.flink20.sql.core.util.EnvironmentSettingsUtil;
-import org.apache.flink.table.api.EnvironmentSettings;
-import org.apache.flink.table.api.TableEnvironment;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 import java.time.ZoneId;
 
-public class File2Print {
+public class File2PrintAgg {
     public static void main(String[] args) {
-        EnvironmentSettings settings = EnvironmentSettingsUtil.getEnvironmentSettings();
 
-        TableEnvironment tableEnv = TableEnvironment.create(settings);
+        StreamExecutionEnvironment streamExecutionEnvironment = EnvironmentSettingsUtil.getSingleParallelismStreamExecutionEnvironment();
+
+        StreamTableEnvironment tableEnv = StreamTableEnvironment.create(streamExecutionEnvironment);
         tableEnv.getConfig().setLocalTimeZone(ZoneId.of("Asia/Shanghai"));
 
         tableEnv.executeSql("""
@@ -18,10 +19,12 @@ public class File2Print {
                     event STRING,
                     event_time TIMESTAMP(3),
                     proc_time AS PROCTIME(),
-                    WATERMARK FOR event_time AS event_time - INTERVAL '10' SECOND
+                    WATERMARK FOR event_time AS event_time - INTERVAL '60' SECOND
                 ) WITH (
                     'connector' = 'filesystem',
-                    'path' = './data/time',
+                    'scan.watermark.emit.strategy'='on-event',
+                    'scan.watermark.idle-timeout'='10s',
+                    'path' = './data/time/events.csv',
                     'format' = 'csv',
                     'csv.allow-comments' = 'true',
                     'csv.field-delimiter' = ',',
@@ -33,9 +36,10 @@ public class File2Print {
 
         tableEnv.executeSql("""
                 CREATE TEMPORARY TABLE sink (
+                    window_start    TIMESTAMP(3),
+                    window_end  TIMESTAMP(3),
                     event STRING,
-                    event_time TIMESTAMP(3),
-                    proc_time TIMESTAMP(3)
+                    total   BIGINT
                 ) WITH (
                     'connector' = 'print'
                 )
@@ -44,8 +48,12 @@ public class File2Print {
         tableEnv.executeSql("""
                 INSERT INTO sink
                 SELECT
-                    *
-                FROM source;
+                    window_start,
+                    window_end,
+                    event,
+                    count(1) AS total
+                FROM TABLE(TUMBLE(TABLE source, DESCRIPTOR(event_time), INTERVAL '5' MINUTES))
+                GROUP BY window_start, window_end, event;
                 """);
     }
 }
