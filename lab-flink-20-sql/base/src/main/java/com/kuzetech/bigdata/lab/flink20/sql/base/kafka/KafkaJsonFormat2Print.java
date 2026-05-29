@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.lab.flink20.sql.base.time;
+package com.kuzetech.bigdata.lab.flink20.sql.base.kafka;
 
 import com.kuzetech.bigdata.lab.flink20.sql.core.util.EnvironmentSettingsUtil;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -6,41 +6,41 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 import java.time.ZoneId;
 
-public class Kafka2PrintAgg {
+public class KafkaJsonFormat2Print {
     public static void main(String[] args) {
-
         StreamExecutionEnvironment streamExecutionEnvironment = EnvironmentSettingsUtil.getSingleParallelismStreamExecutionEnvironment();
-
         StreamTableEnvironment tableEnv = StreamTableEnvironment.create(streamExecutionEnvironment);
         tableEnv.getConfig().setLocalTimeZone(ZoneId.of("Asia/Shanghai"));
 
-        // login,2026-05-28 10:00:00.000
+        // {"level":15,"price":15.55,"#event_time":1779955200000,"#user_id":"user-fake8697"}
+        // event_time = 2026-05-28 16:00:00
 
         tableEnv.executeSql("""
                 CREATE TEMPORARY TABLE source (
-                    event STRING,
-                    event_time TIMESTAMP(3),
-                    proc_time AS PROCTIME(),
-                    WATERMARK FOR event_time AS event_time - INTERVAL '60' SECOND
+                    level           INT,
+                    price           DECIMAL(32,2),
+                    `#event_time`   BIGINT,
+                    ts AS CAST(TO_TIMESTAMP_LTZ(`#event_time`, 3) AS TIMESTAMP(3)),
+                    `#user_id`      STRING
                 ) WITH (
                     'connector' = 'kafka',
-                    'topic' = 'test-time',
+                    'topic' = 'test-json',
                     'properties.bootstrap.servers' = 'localhost:9092',
-                    'properties.group.id' = 'testTimeGroup',
+                    'properties.group.id' = 'testJsonGroup',
                     'scan.startup.mode' = 'group-offsets',
                     'properties.auto.offset.reset' = 'earliest',
-                    'value.format' = 'csv',
-                    'value.csv.ignore-parse-errors' = 'true'
+                    'value.format' = 'json',
+                    'value.json.ignore-parse-errors' = 'true'
                 )
                 """);
 
-
         tableEnv.executeSql("""
                 CREATE TEMPORARY TABLE sink (
-                    window_start    TIMESTAMP(3),
-                    window_end  TIMESTAMP(3),
-                    event STRING,
-                    total   BIGINT
+                    level           INT,
+                    price           DECIMAL(32,2),
+                    `#event_time`   BIGINT,
+                    ts              TIMESTAMP(3),
+                    `#user_id`      STRING
                 ) WITH (
                     'connector' = 'print'
                 )
@@ -49,12 +49,8 @@ public class Kafka2PrintAgg {
         tableEnv.executeSql("""
                 INSERT INTO sink
                 SELECT
-                    window_start,
-                    window_end,
-                    event,
-                    count(1) AS total
-                FROM TABLE(TUMBLE(TABLE source, DESCRIPTOR(event_time), INTERVAL '5' MINUTES))
-                GROUP BY window_start, window_end, event;
+                    *
+                FROM source
                 """);
     }
 }

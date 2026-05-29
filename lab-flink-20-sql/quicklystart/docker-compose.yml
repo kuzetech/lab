@@ -1,5 +1,6 @@
 volumes:
   data_kf: { }
+  data_pg: { }
 
 services:
   kafka:
@@ -27,3 +28,22 @@ services:
       - KAFKA_BROKER_ID=1
     volumes:
       - data_kf:/bitnami/kafka
+
+  postgres:
+    image: postgres:18
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5432:5432"
+    volumes:
+      - data_pg:/var/lib/postgresql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U app -d app" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10

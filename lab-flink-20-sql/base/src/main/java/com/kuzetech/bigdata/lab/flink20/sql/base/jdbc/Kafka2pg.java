@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.lab.flink20.sql.base.time;
+package com.kuzetech.bigdata.lab.flink20.sql.base.jdbc;
 
 import com.kuzetech.bigdata.lab.flink20.sql.core.util.EnvironmentSettingsUtil;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -6,7 +6,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 import java.time.ZoneId;
 
-public class Kafka2PrintAgg {
+public class Kafka2pg {
     public static void main(String[] args) {
 
         StreamExecutionEnvironment streamExecutionEnvironment = EnvironmentSettingsUtil.getSingleParallelismStreamExecutionEnvironment();
@@ -24,9 +24,9 @@ public class Kafka2PrintAgg {
                     WATERMARK FOR event_time AS event_time - INTERVAL '60' SECOND
                 ) WITH (
                     'connector' = 'kafka',
-                    'topic' = 'test-time',
+                    'topic' = 'test-pg',
                     'properties.bootstrap.servers' = 'localhost:9092',
-                    'properties.group.id' = 'testTimeGroup',
+                    'properties.group.id' = 'testPgGroup',
                     'scan.startup.mode' = 'group-offsets',
                     'properties.auto.offset.reset' = 'earliest',
                     'value.format' = 'csv',
@@ -40,9 +40,14 @@ public class Kafka2PrintAgg {
                     window_start    TIMESTAMP(3),
                     window_end  TIMESTAMP(3),
                     event STRING,
-                    total   BIGINT
+                    total   BIGINT,
+                    PRIMARY KEY (window_start, window_end, event) NOT ENFORCED
                 ) WITH (
-                    'connector' = 'print'
+                    'connector' = 'jdbc',
+                    'url' = 'jdbc:postgresql://localhost:5432/app',
+                    'table-name' = 'record',
+                    'username' = 'app',
+                    'password' = '123456'
                 )
                 """);
 

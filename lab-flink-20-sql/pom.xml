@@ -96,9 +96,10 @@
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-csv</artifactId>
-            <version>${flink.version}</version>
+            <artifactId>flink-connector-jdbc</artifactId>
+            <version>3.3.0-1.20</version>
         </dependency>
+
 
         <!--    format    -->
         <dependency>
@@ -108,9 +109,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-json</artifactId>
+            <artifactId>flink-csv</artifactId>
             <version>${flink.version}</version>
         </dependency>
+
+        <!--    driver    -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.11</version>
+        </dependency>
+
 
         <!--    tool    -->
         <dependency>
