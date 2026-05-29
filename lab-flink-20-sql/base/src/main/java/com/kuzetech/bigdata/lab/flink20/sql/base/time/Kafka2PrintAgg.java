@@ -1,6 +1,6 @@
 package com.kuzetech.bigdata.lab.flink20.sql.base.time;
 
-import com.kuzetech.bigdata.lab.flink20.sql.core.util.EnvironmentSettingsUtil;
+import com.kuzetech.bigdata.lab.flink20.sql.core.util.StreamExecutionEnvironmentUtil;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
@@ -9,7 +9,7 @@ import java.time.ZoneId;
 public class Kafka2PrintAgg {
     public static void main(String[] args) {
 
-        StreamExecutionEnvironment streamExecutionEnvironment = EnvironmentSettingsUtil.getSingleParallelismStreamExecutionEnvironment();
+        StreamExecutionEnvironment streamExecutionEnvironment = StreamExecutionEnvironmentUtil.getSingleParallelismStreamExecutionEnvironment();
 
         StreamTableEnvironment tableEnv = StreamTableEnvironment.create(streamExecutionEnvironment);
         tableEnv.getConfig().setLocalTimeZone(ZoneId.of("Asia/Shanghai"));

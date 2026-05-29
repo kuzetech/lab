@@ -5,12 +5,9 @@ import org.apache.flink.configuration.CheckpointingOptions;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.StateBackendOptions;
 import org.apache.flink.core.execution.CheckpointingMode;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
 
 import java.nio.file.Path;
-
-import static org.apache.flink.configuration.RestOptions.BIND_PORT;
 
 public class EnvironmentSettingsUtil {
     public static EnvironmentSettings getEnvironmentSettings() {
@@ -35,17 +32,5 @@ public class EnvironmentSettingsUtil {
                 .build();
     }
 
-    public static StreamExecutionEnvironment getConfigStreamExecutionEnvironment(ParameterTool parameter) {
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.getConfig().setGlobalJobParameters(parameter);
-        return env;
-    }
 
-    public static StreamExecutionEnvironment getSingleParallelismStreamExecutionEnvironment() {
-        Configuration config = new Configuration();
-        config.set(BIND_PORT, "28899");
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(config);
-        env.setParallelism(1);
-        return env;
-    }
 }

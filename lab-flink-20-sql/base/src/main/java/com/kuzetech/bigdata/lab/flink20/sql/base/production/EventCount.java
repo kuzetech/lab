@@ -1,6 +1,6 @@
 package com.kuzetech.bigdata.lab.flink20.sql.base.production;
 
-import com.kuzetech.bigdata.lab.flink20.sql.core.util.EnvironmentSettingsUtil;
+import com.kuzetech.bigdata.lab.flink20.sql.core.util.StreamExecutionEnvironmentUtil;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
@@ -14,7 +14,7 @@ public class EventCount {
         * */
 
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
-        StreamExecutionEnvironment streamExecutionEnvironment = EnvironmentSettingsUtil.getConfigStreamExecutionEnvironment(parameterTool);
+        StreamExecutionEnvironment streamExecutionEnvironment = StreamExecutionEnvironmentUtil.getConfigStreamExecutionEnvironment(parameterTool);
         //streamExecutionEnvironment.setParallelism(1);
 
         StreamTableEnvironment tableEnv = StreamTableEnvironment.create(streamExecutionEnvironment);
