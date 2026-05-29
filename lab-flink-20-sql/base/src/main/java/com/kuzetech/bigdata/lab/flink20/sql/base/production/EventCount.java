@@ -47,7 +47,7 @@ public class EventCount {
                     'properties.bootstrap.servers' = '%s',
                     'properties.group.id' = '%s',
                     'scan.startup.mode' = 'group-offsets',
-                    'properties.auto.offset.reset' = 'earliest',
+                    'properties.auto.offset.reset' = '%s',
                     'value.format' = 'json',
                     'value.json.ignore-parse-errors' = 'true'
                 )
@@ -55,7 +55,8 @@ public class EventCount {
                 .formatted(
                         jobConfig.getKafkaConfig().getTopic(),
                         jobConfig.getKafkaConfig().getBootstrapServers(),
-                        jobConfig.getKafkaConfig().getGroupId()
+                        jobConfig.getKafkaConfig().getGroupId(),
+                        jobConfig.getKafkaConfig().getOffsetReset()
                 )
         );
 
