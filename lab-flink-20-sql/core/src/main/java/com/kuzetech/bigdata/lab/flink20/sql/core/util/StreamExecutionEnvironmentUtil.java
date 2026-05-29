@@ -1,22 +1,26 @@
 package com.kuzetech.bigdata.lab.flink20.sql.core.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-import static org.apache.flink.configuration.RestOptions.BIND_PORT;
-
+@Slf4j
 public class StreamExecutionEnvironmentUtil {
     public static StreamExecutionEnvironment getConfigStreamExecutionEnvironment(ParameterTool parameter) {
+        Configuration config = new Configuration();
+        config.addAll(ConfigurationUtil.generateCheckpointConfiguration(parameter));
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.getConfig().setGlobalJobParameters(parameter);
+        if (parameter.has("job.parallelism")) {
+            int udParallelism = parameter.getInt("job.parallelism");
+            log.info("user defined job.parallelism : {}", udParallelism);
+            env.setParallelism(udParallelism);
+        }
         return env;
     }
 
     public static StreamExecutionEnvironment getSingleParallelismStreamExecutionEnvironment() {
-        Configuration config = new Configuration();
-        config.set(BIND_PORT, "28899");
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(config);
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
         return env;
     }

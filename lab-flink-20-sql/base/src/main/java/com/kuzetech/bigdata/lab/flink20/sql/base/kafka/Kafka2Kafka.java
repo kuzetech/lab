@@ -10,7 +10,7 @@ public class Kafka2Kafka {
         ParameterTool parameter = ParameterTool.fromArgs(args);
         String kafkaBootstrapServers = parameter.get("kafka.bootstrap.servers", "localhost:9092");
 
-        EnvironmentSettings settings = EnvironmentSettingsUtil.getCheckPointEnvironmentSettings(parameter);
+        EnvironmentSettings settings = EnvironmentSettingsUtil.getCheckPointEnvironmentSettings();
 
         TableEnvironment tableEnv = TableEnvironment.create(settings);
 
