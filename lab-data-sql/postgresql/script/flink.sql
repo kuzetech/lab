@@ -1,4 +1,1 @@
-select *
-from record;
-
-truncate record;
+truncate counter;

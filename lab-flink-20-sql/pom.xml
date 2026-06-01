@@ -11,6 +11,7 @@
     <modules>
         <module>core</module>
         <module>base</module>
+        <module>funnydb-mutation-event-counter</module>
     </modules>
 
     <properties>

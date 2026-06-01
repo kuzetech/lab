@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.lab.flink20.sql.base.production;
+package com.kuzetech.bigdata.lab.flink20.sql.base.pg;
 
 import com.kuzetech.bigdata.lab.flink20.sql.core.config.JobConfig;
 import com.kuzetech.bigdata.lab.flink20.sql.core.util.StreamExecutionEnvironmentUtil;

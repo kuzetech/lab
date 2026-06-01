@@ -11,11 +11,13 @@ import org.apache.flink.api.java.utils.ParameterTool;
 public class JobConfig {
     private KafkaConfig kafkaConfig;
     private JdbcConfig jdbcConfig;
+    private UserDefinedConfig userDefinedConfig;
 
     public static JobConfig getInstance(ParameterTool tool) {
         return new JobConfig(
                 KafkaConfig.getInstance(tool),
-                JdbcConfig.getInstance(tool)
+                JdbcConfig.getInstance(tool),
+                UserDefinedConfig.getInstance(tool)
         );
     }
 }

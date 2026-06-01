@@ -10,7 +10,7 @@ kafka-topics.sh --bootstrap-server localhost:9092 --alter --topic topic --partit
 
 ## 消费者
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-flink-track-events       --group kuze --from-beginning
-kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-flink-track-events       --group kuze --property print.headers=true
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-mutation-test-output     --group kuze --property print.headers=true --max-messages 10
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-mutation-test-output     --group kuze --max-messages 10
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-ingest-mutation-events   --group kuze --max-messages 100
 kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic funnydb-ingest-mutation-events   --group kuze --property print.partition=true --property print.key=true --property print.offset=true
