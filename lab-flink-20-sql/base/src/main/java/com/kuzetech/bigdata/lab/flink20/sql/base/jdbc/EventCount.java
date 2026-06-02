@@ -1,4 +1,4 @@
-package com.kuzetech.bigdata.lab.flink20.sql.base.pg;
+package com.kuzetech.bigdata.lab.flink20.sql.base.jdbc;
 
 import com.kuzetech.bigdata.lab.flink20.sql.core.config.JobConfig;
 import com.kuzetech.bigdata.lab.flink20.sql.core.util.StreamExecutionEnvironmentUtil;
@@ -45,6 +45,7 @@ public class EventCount {
                     'connector' = 'kafka',
                     'topic' = '%s',
                     'properties.bootstrap.servers' = '%s',
+                    'properties.isolation.level' = 'read_committed',
                     'properties.group.id' = '%s',
                     'scan.startup.mode' = 'group-offsets',
                     'properties.auto.offset.reset' = '%s',

@@ -49,6 +49,7 @@ public class Kafka2Kafka {
                     'sink.delivery-guarantee' = 'exactly-once',
                     'sink.transactional-id-prefix' = 'my-prefix',
                     'properties.transaction.timeout.ms' = '900000',
+                    'properties.isolation.level' = 'read_committed',
                     'properties.compression.type' = 'lz4',
                     'properties.batch.size' = '32768',
                     'properties.linger.ms' = '5',
