@@ -8,7 +8,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 @Slf4j
-public class EventDifferent {
+public class EventDifferentGroupBy {
     public static void main(String[] args) {
 
         /*  idea 运行参数
@@ -47,7 +47,7 @@ public class EventDifferent {
                         "   WATERMARK FOR ts AS ts - INTERVAL '5' MINUTES                                   " +
                         ") WITH (                                                                           " +
                         "   'scan.watermark.emit.strategy'='on-event',                                      " +
-                        "   'scan.watermark.idle-timeout'='15s',                                            " +
+                        "   'scan.watermark.idle-timeout'='1m',                                            " +
                         "   'scan.topic-partition-discovery.interval'='5m',                                 " +
                         "   'connector' = 'kafka',                                                          " +
                         "   'topic' = 'funnydb-mutation-test-output',                                       " +
@@ -76,7 +76,7 @@ public class EventDifferent {
                         "   WATERMARK FOR ts AS ts - INTERVAL '5' MINUTES                                   " +
                         ") WITH (                                                                           " +
                         "   'scan.watermark.emit.strategy'='on-event',                                      " +
-                        "   'scan.watermark.idle-timeout'='15s',                                            " +
+                        "   'scan.watermark.idle-timeout'='1m',                                            " +
                         "   'scan.topic-partition-discovery.interval'='5m',                                 " +
                         "   'connector' = 'kafka',                                                          " +
                         "   'topic' = '%s',                                                                 " +
@@ -97,40 +97,49 @@ public class EventDifferent {
 
         String sinkSql =
                 "CREATE TEMPORARY TABLE sink (                                                       " +
+                        "    window_start TIMESTAMP(3),                                              " +
+                        "    window_end TIMESTAMP(3),                                                " +
                         "    `#user_id` STRING,                                                      " +
                         "    `#event_time` BIGINT,                                                   " +
-                        "    `partition` BIGINT,                                                     " +
-                        "    `offset` BIGINT                                                         " +
+                        "    total BIGINT                                                            " +
                         ") WITH (                                                                    " +
                         "    'connector' = 'print'                                                   " +
                         ")                                                                           ";
-        ;
 
         tableEnv.executeSql(sinkSql);
 
-        String execSql =
-                "INSERT INTO sink                                                     " +
-                        "SELECT                                                       " +
-                        "  a.`#user_id`,                                              " +
-                        "  a.`#event_time`,                                           " +
-                        "  a.`partition`,                                             " +
-                        "  a.`offset`                                                 " +
-                        "FROM source_flink AS a                                       " +
-                        "LEFT JOIN(                                                   " +
-                        "  SELECT                                                     " +
-                        "    `#user_id`,                                              " +
-                        "    `#event_time`,                                           " +
-                        "    ts                                                       " +
-                        "  FROM source_mutation                                       " +
-                        "  WHERE CAST(headers['app'] AS STRING) = '%s'                " +
-                        "  AND CAST(headers['mutation_type'] AS STRING) = 'USER'      " +
-                        ") AS b                                                       " +
-                        "ON a.`#user_id` = b.`#user_id`                               " +
-                        "AND a.`#event_time` = b.`#event_time`                        " +
-                        "AND a.ts BETWEEN b.ts - INTERVAL '3' MINUTE                  " +
-                        "             AND b.ts + INTERVAL '3' MINUTE                  " +
-                        "WHERE b.`#user_id` IS NULL                                   ";
+        String mergedSourceViewSql =
+                "CREATE TEMPORARY VIEW merged_source AS                                      " +
+                        "SELECT                                                                 " +
+                        "    `#user_id`,                                                        " +
+                        "    `#event_time`,                                                     " +
+                        "    ts                                                                 " +
+                        "FROM source_flink                                                      " +
+                        "UNION ALL                                                              " +
+                        "SELECT                                                                 " +
+                        "    `#user_id`,                                                        " +
+                        "    `#event_time`,                                                     " +
+                        "    ts                                                                 " +
+                        "FROM source_mutation                                                   " +
+                        "WHERE CAST(headers['app'] AS STRING) = '%s'                            " +
+                        "AND CAST(headers['mutation_type'] AS STRING) = 'USER'                  ";
 
-        tableEnv.executeSql(String.format(execSql, jobConfig.getUserDefinedConfig().getAppFilter()));
+        tableEnv.executeSql(String.format(
+                mergedSourceViewSql,
+                jobConfig.getUserDefinedConfig().getAppFilter()));
+
+        String execSql =
+                "INSERT INTO sink                                                             " +
+                        "SELECT                                                                     " +
+                        "    window_start,                                                          " +
+                        "    window_end,                                                            " +
+                        "    `#user_id`,                                                            " +
+                        "    `#event_time`,                                                         " +
+                        "    COUNT(1) AS total                                                      " +
+                        "FROM TABLE(TUMBLE(TABLE merged_source, DESCRIPTOR(ts), INTERVAL '5' MINUTES)) " +
+                        "GROUP BY window_start, window_end, `#user_id`, `#event_time`               " +
+                        "HAVING MOD(COUNT(1), 2) = 1                                                ";
+
+        tableEnv.executeSql(execSql);
     }
 }

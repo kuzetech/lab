@@ -39,7 +39,7 @@ public class FlinkEventCount {
                         "   WATERMARK FOR ts AS ts - INTERVAL '5' MINUTES                                   " +
                         ") WITH (                                                                           " +
                         "   'scan.watermark.emit.strategy'='on-event',                                      " +
-                        "   'scan.watermark.idle-timeout'='15s',                                            " +
+                        "   'scan.watermark.idle-timeout'='1m',                                            " +
                         "   'scan.topic-partition-discovery.interval'='5m',                                 " +
                         "   'connector' = 'kafka',                                                          " +
                         "   'topic' = '%s',                                                                 " +
