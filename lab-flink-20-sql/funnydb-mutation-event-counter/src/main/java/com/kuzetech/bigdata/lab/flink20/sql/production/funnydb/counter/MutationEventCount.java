@@ -46,6 +46,7 @@ public class MutationEventCount {
                         "   'connector' = 'kafka',                                                          " +
                         "   'topic' = '%s',                                                                 " +
                         "   'properties.bootstrap.servers' = '%s',                                          " +
+                        "   'properties.isolation.level' = 'read_committed',                                " +
                         "   'properties.group.id' = '%s',                                                   " +
                         "   'scan.startup.mode' = 'group-offsets',                                          " +
                         "   'properties.auto.offset.reset' = '%s',                                          " +
