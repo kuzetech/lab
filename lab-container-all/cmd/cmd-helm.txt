@@ -22,11 +22,11 @@ helm upgrade -f ~/helm/api.yaml --version 0.9.0-s230208-1411-0e25fa09 turbine-ap
 helm upgrade --install clunky-serval
 
 # 查看历史部署版本
-helm history ingest
+helm history funnydb-mutation
 
 # 回滚操作
 # 回滚到指定版本,这里的1指的是上面列出的revision版本
-helm rollback ingest 1
+helm rollback funnydb-mutation 3
 
 # 安装
 helm install --dry-run --debug test ./mychart 
