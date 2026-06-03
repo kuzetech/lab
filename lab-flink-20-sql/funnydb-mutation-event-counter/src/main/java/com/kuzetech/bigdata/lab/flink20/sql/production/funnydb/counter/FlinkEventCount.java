@@ -36,7 +36,7 @@ public class FlinkEventCount {
                         "   `#user_id` STRING,                                                              " +
                         "   `#event_time` BIGINT,                                                           " +
                         "   ts AS CAST(TO_TIMESTAMP_LTZ(`#event_time`, 3) AS TIMESTAMP(3)),                 " +
-                        "   WATERMARK FOR ts AS ts - INTERVAL '5' MINUTES                                   " +
+                        "   WATERMARK FOR ts AS ts - INTERVAL '10' MINUTES                                   " +
                         ") WITH (                                                                           " +
                         "   'scan.watermark.emit.strategy'='on-event',                                      " +
                         "   'scan.watermark.idle-timeout'='1m',                                            " +

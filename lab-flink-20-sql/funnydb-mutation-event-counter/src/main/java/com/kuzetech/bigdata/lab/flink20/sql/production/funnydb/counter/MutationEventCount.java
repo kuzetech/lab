@@ -38,7 +38,7 @@ public class MutationEventCount {
                         "   `#event_time` BIGINT,                                                           " +
                         "   headers MAP<STRING, BYTES> METADATA FROM 'headers' VIRTUAL,                    " +
                         "   ts AS CAST(TO_TIMESTAMP_LTZ(`#event_time`, 3) AS TIMESTAMP(3)),                 " +
-                        "   WATERMARK FOR ts AS ts - INTERVAL '5' MINUTES                                   " +
+                        "   WATERMARK FOR ts AS ts - INTERVAL '10' MINUTES                                   " +
                         ") WITH (                                                                           " +
                         "   'scan.watermark.emit.strategy'='on-event',                                      " +
                         "   'scan.watermark.idle-timeout'='1m',                                            " +
