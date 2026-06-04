@@ -7,46 +7,55 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
+import java.time.ZoneId;
+
 @Slf4j
 public class Event2Clickhouse {
     public static void main(String[] args) {
+        /*
+         idea 运行参数
+         --job.parallelism 1
+         --job.checkpoint.enable true
+         --connector.kafka.topic wu_la_la_quan_qiu_fu_wv18n35j-flink-users
+         --connector.kafka.group.id event2ClickhouseGroup
+         --connector.kafka.bootstrap.servers localhost:9092
+         --connector.kafka.offset.reset earliest
+         --connector.jdbc.url jdbc:clickhouse://localhost:8123/app
+         --connector.jdbc.username app
+         --connector.jdbc.password 123456
+         --connector.jdbc.table app.record
+         */
+
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
         JobConfig jobConfig = JobConfig.getInstance(parameterTool);
 
         log.info("jobConfig: {}", jobConfig);
 
-        StreamExecutionEnvironment streamExecutionEnvironment = StreamExecutionEnvironmentUtil.getConfigStreamExecutionEnvironment(parameterTool);
+        StreamExecutionEnvironment streamExecutionEnvironment =
+                StreamExecutionEnvironmentUtil.getConfigStreamExecutionEnvironment(parameterTool);
         StreamTableEnvironment tableEnv = StreamTableEnvironment.create(streamExecutionEnvironment);
+        tableEnv.getConfig().setLocalTimeZone(ZoneId.of("Asia/Shanghai"));
 
         String sourceSql =
-                "CREATE TEMPORARY TABLE source (                                                            " +
-                        "   `#user_id` STRING,                                                              " +
-                        "   `#event_time` BIGINT,                                                           " +
-                        "   ts AS CAST(                                                                   " +
-                        "       CASE                                                                       " +
-                        "           WHEN `#event_time` IS NULL THEN NULL                                   " +
-                        "           WHEN TO_TIMESTAMP_LTZ(`#event_time`, 3) < TIMESTAMP '2020-01-01 00:00:00' THEN NULL " +
-                        "           WHEN TO_TIMESTAMP_LTZ(`#event_time`, 3) > CURRENT_TIMESTAMP + INTERVAL '30' MINUTES THEN NULL " +
-                        "           ELSE TO_TIMESTAMP_LTZ(`#event_time`, 3)                                " +
-                        "       END AS TIMESTAMP(3)                                                        " +
-                        "   ),                                                                             " +
-                        "   WATERMARK FOR ts AS ts - INTERVAL '10' MINUTES                                   " +
-                        ") WITH (                                                                           " +
-                        "   'scan.watermark.emit.strategy'='on-event',                                      " +
-                        "   'scan.watermark.idle-timeout'='1m',                                            " +
-                        "   'scan.topic-partition-discovery.interval'='5m',                                 " +
-                        "   'connector' = 'kafka',                                                          " +
-                        "   'topic' = '%s',                                                                 " +
-                        "   'properties.bootstrap.servers' = '%s',                                          " +
-                        "   'properties.isolation.level' = 'read_committed',                                " +
-                        "   'properties.group.id' = '%s',                                                   " +
-                        "   'scan.startup.mode' = 'group-offsets',                                          " +
-                        "   'properties.auto.offset.reset' = '%s',                                          " +
-                        "   'value.format' = 'json',                                                        " +
-                        "   'value.json.ignore-parse-errors' = 'true'                                       " +
-                        ")                                                                                  ";
+                "CREATE TEMPORARY TABLE source (                                                        " +
+                        "   kafka_topic STRING METADATA FROM 'topic' VIRTUAL,                             " +
+                        "   kafka_partition BIGINT METADATA FROM 'partition' VIRTUAL,                     " +
+                        "   kafka_offset BIGINT METADATA FROM 'offset' VIRTUAL,                           " +
+                        "   payload STRING                                                                " +
+                        ") WITH (                                                                         " +
+                        "   'connector' = 'kafka',                                                        " +
+                        "   'topic' = '%s',                                                               " +
+                        "   'properties.bootstrap.servers' = '%s',                                        " +
+                        "   'properties.group.id' = '%s',                                                 " +
+                        "   'properties.isolation.level' = 'read_committed',                              " +
+                        "   'scan.startup.mode' = 'group-offsets',                                        " +
+                        "   'properties.auto.offset.reset' = '%s',                                        " +
+                        "   'scan.topic-partition-discovery.interval' = '5m',                             " +
+                        "   'value.format' = 'raw'                                                        " +
+                        ")";
 
-        tableEnv.executeSql(String.format(sourceSql,
+        tableEnv.executeSql(String.format(
+                sourceSql,
                 jobConfig.getKafkaConfig().getTopic(),
                 jobConfig.getKafkaConfig().getBootstrapServers(),
                 jobConfig.getKafkaConfig().getGroupId(),
@@ -54,38 +63,43 @@ public class Event2Clickhouse {
 
         String sinkSql =
                 "CREATE TEMPORARY TABLE sink (                                                          " +
-                        "    app STRING,                                                                " +
-                        "    window_start TIMESTAMP(3),                                                 " +
-                        "    window_end  TIMESTAMP(3),                                                  " +
-                        "    event STRING,                                                              " +
-                        "    total BIGINT,                                                              " +
-                        "    PRIMARY KEY (app, window_start, window_end, event) NOT ENFORCED            " +
-                        ") WITH (                                                                       " +
-                        "    'connector' = 'jdbc',                                                      " +
-                        "    'url' = '%s',                                                              " +
-                        "    'table-name' = '%s',                                                       " +
-                        "    'username' = '%s',                                                         " +
-                        "    'password' = '%s'                                                          " +
-                        ")                                                                              ";
-        ;
+                        "    kafka_topic STRING,                                                         " +
+                        "    kafka_partition INT,                                                        " +
+                        "    kafka_offset BIGINT,                                                        " +
+                        "    user_id STRING,                                                             " +
+                        "    event_time BIGINT,                                                          " +
+                        "    payload STRING,                                                             " +
+                        "    ingested_at TIMESTAMP(3)                                                    " +
+                        ") WITH (                                                                         " +
+                        "    'connector' = 'jdbc',                                                        " +
+                        "    'url' = '%s',                                                                " +
+                        "    'table-name' = '%s',                                                         " +
+                        "    'username' = '%s',                                                           " +
+                        "    'password' = '%s',                                                           " +
+                        "    'sink.buffer-flush.max-rows' = '200',                                        " +
+                        "    'sink.buffer-flush.interval' = '1s',                                         " +
+                        "    'sink.max-retries' = '3'                                                     " +
+                        ")";
 
-        tableEnv.executeSql(String.format(sinkSql,
+        tableEnv.executeSql(String.format(
+                sinkSql,
                 jobConfig.getJdbcConfig().getUrl(),
                 jobConfig.getJdbcConfig().getTable(),
                 jobConfig.getJdbcConfig().getUsername(),
                 jobConfig.getJdbcConfig().getPassword()));
 
-        tableEnv.executeSql(
-                "INSERT INTO sink                                                                        " +
-                        "SELECT                                                                          " +
-                        "    'flink' AS app,                                                             " +
-                        "    window_start,                                                               " +
-                        "    window_end,                                                                 " +
-                        "    'USER' AS event,                                                            " +
-                        "    count(1) AS total                                                           " +
-                        "FROM TABLE(TUMBLE(TABLE source, DESCRIPTOR(ts), INTERVAL '5' MINUTES))          " +
-                        "WHERE ts IS NOT NULL                                                          " +
-                        "GROUP BY window_start, window_end                                               "
-        );
+        String insertSql =
+                "INSERT INTO sink                                                                    " +
+                        "SELECT                                                                           " +
+                        "    kafka_topic,                                                                 " +
+                        "    CAST(kafka_partition AS INT),                                                " +
+                        "    kafka_offset,                                                                " +
+                        "    REGEXP_EXTRACT(payload, '#user_id\":\"([^\"]+)\"', 1) AS user_id,           " +
+                        "    CAST(REGEXP_EXTRACT(payload, '#event_time\":([0-9]+)', 1) AS BIGINT) AS event_time, " +
+                        "    payload,                                                                     " +
+                        "    CURRENT_TIMESTAMP AS ingested_at                                             " +
+                        "FROM source                                                                      ";
+
+        tableEnv.executeSql(insertSql);
     }
 }
