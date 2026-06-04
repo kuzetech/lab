@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS app.record
     ingested_at     DateTime64(3)
 )
 ENGINE = ReplacingMergeTree
+TTL ingested_at + INTERVAL 3 DAY
 ORDER BY (kafka_topic, kafka_partition, kafka_offset);
 
 CREATE TABLE IF NOT EXISTS app.counter
@@ -22,4 +23,5 @@ CREATE TABLE IF NOT EXISTS app.counter
     total        Int64
 )
 ENGINE = ReplacingMergeTree
+TTL window_end + INTERVAL 3 DAY
 ORDER BY (app, window_start, window_end, event);

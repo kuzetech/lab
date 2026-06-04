@@ -41,6 +41,7 @@ public class Event2Clickhouse {
                         "   kafka_topic STRING METADATA FROM 'topic' VIRTUAL,                             " +
                         "   kafka_partition BIGINT METADATA FROM 'partition' VIRTUAL,                     " +
                         "   kafka_offset BIGINT METADATA FROM 'offset' VIRTUAL,                           " +
+                        "   headers MAP<STRING, BYTES> METADATA FROM 'headers' VIRTUAL,                   " +
                         "   payload STRING                                                                " +
                         ") WITH (                                                                         " +
                         "   'connector' = 'kafka',                                                        " +
@@ -98,8 +99,16 @@ public class Event2Clickhouse {
                         "    CAST(REGEXP_EXTRACT(payload, '#event_time\":([0-9]+)', 1) AS BIGINT) AS event_time, " +
                         "    payload,                                                                     " +
                         "    CURRENT_TIMESTAMP AS ingested_at                                             " +
-                        "FROM source                                                                      ";
+                        "FROM source                                                                      " +
+                        "WHERE (                                                                          " +
+                        "       headers['app'] IS NULL                                                    " +
+                        "       OR CAST(headers['app'] AS STRING) = '%s'                                  " +
+                        "  )                                                                              " +
+                        "  AND (                                                                          " +
+                        "       headers['mutation_type'] IS NULL                                           " +
+                        "       OR CAST(headers['mutation_type'] AS STRING) = 'USER'                      " +
+                        "  )                                                                              ";
 
-        tableEnv.executeSql(insertSql);
+        tableEnv.executeSql(String.format(insertSql, jobConfig.getUserDefinedConfig().getAppFilter()));
     }
 }
