@@ -37,7 +37,14 @@ public class MutationEventCount {
                         "   `#user_id` STRING,                                                              " +
                         "   `#event_time` BIGINT,                                                           " +
                         "   headers MAP<STRING, BYTES> METADATA FROM 'headers' VIRTUAL,                    " +
-                        "   ts AS CAST(TO_TIMESTAMP_LTZ(`#event_time`, 3) AS TIMESTAMP(3)),                 " +
+                        "   ts AS CAST(                                                                   " +
+                        "       CASE                                                                       " +
+                        "           WHEN `#event_time` IS NULL THEN NULL                                   " +
+                        "           WHEN TO_TIMESTAMP_LTZ(`#event_time`, 3) < TIMESTAMP '2020-01-01 00:00:00' THEN NULL " +
+                        "           WHEN TO_TIMESTAMP_LTZ(`#event_time`, 3) > CURRENT_TIMESTAMP + INTERVAL '30' MINUTES THEN NULL " +
+                        "           ELSE TO_TIMESTAMP_LTZ(`#event_time`, 3)                                " +
+                        "       END AS TIMESTAMP(3)                                                        " +
+                        "   ),                                                                             " +
                         "   WATERMARK FOR ts AS ts - INTERVAL '10' MINUTES                                   " +
                         ") WITH (                                                                           " +
                         "   'scan.watermark.emit.strategy'='on-event',                                      " +
@@ -94,7 +101,8 @@ public class MutationEventCount {
                         "    'USER' AS event,                                                            " +
                         "    count(1) AS total                                                           " +
                         "FROM TABLE(TUMBLE(TABLE source, DESCRIPTOR(ts), INTERVAL '5' MINUTES))          " +
-                        "WHERE CAST(headers['app'] AS STRING) = '%s'                                   " +
+                        "WHERE ts IS NOT NULL                                                          " +
+                        "AND CAST(headers['app'] AS STRING) = '%s'                                     " +
                         "AND CAST(headers['mutation_type'] AS STRING) = 'USER'                           " +
                         "GROUP BY window_start, window_end               ";
 

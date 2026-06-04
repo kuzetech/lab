@@ -24,6 +24,7 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --all-grou
 kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group funnydb-mutation-group 
 kafka-consumer-groups.sh --bootstrap-server localhost:9092 --delete --group kuze
 kafka-consumer-groups.sh --bootstrap-server localhost:9092 --delete --group funnydb-mutation-group
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --delete --group mutation-validator-different
 
 ## 查询偏移量
 kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic funnydb-ingest-mutation-events
@@ -34,6 +35,7 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 --execute --topic fun
 kafka-consumer-groups.sh --bootstrap-server localhost:9092 --execute --topic funnydb-ingest-mutation-events:1 --group kuze --reset-offsets --to-offset 1143196163
 kafka-consumer-groups.sh --bootstrap-server localhost:9092 --execute --topic funnydb-ingest-mutation-events --group kuze                   --reset-offsets --to-datetime 2026-05-14T07:45:00.000 
 kafka-consumer-groups.sh --bootstrap-server localhost:9092 --execute --topic funnydb-ingest-mutation-events --group funnydb-mutation-group --reset-offsets --to-latest 
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --execute --topic funnydb-mutation-test-output --group mutation-validator --reset-offsets --to-latest 
 
 ## 生产者
 kafka-console-producer.sh --broker-list  localhost:9092 --topic pass3

@@ -35,7 +35,14 @@ public class FlinkEventCount {
                 "CREATE TEMPORARY TABLE source (                                                            " +
                         "   `#user_id` STRING,                                                              " +
                         "   `#event_time` BIGINT,                                                           " +
-                        "   ts AS CAST(TO_TIMESTAMP_LTZ(`#event_time`, 3) AS TIMESTAMP(3)),                 " +
+                        "   ts AS CAST(                                                                   " +
+                        "       CASE                                                                       " +
+                        "           WHEN `#event_time` IS NULL THEN NULL                                   " +
+                        "           WHEN TO_TIMESTAMP_LTZ(`#event_time`, 3) < TIMESTAMP '2020-01-01 00:00:00' THEN NULL " +
+                        "           WHEN TO_TIMESTAMP_LTZ(`#event_time`, 3) > CURRENT_TIMESTAMP + INTERVAL '30' MINUTES THEN NULL " +
+                        "           ELSE TO_TIMESTAMP_LTZ(`#event_time`, 3)                                " +
+                        "       END AS TIMESTAMP(3)                                                        " +
+                        "   ),                                                                             " +
                         "   WATERMARK FOR ts AS ts - INTERVAL '10' MINUTES                                   " +
                         ") WITH (                                                                           " +
                         "   'scan.watermark.emit.strategy'='on-event',                                      " +
@@ -90,6 +97,7 @@ public class FlinkEventCount {
                         "    'USER' AS event,                                                            " +
                         "    count(1) AS total                                                           " +
                         "FROM TABLE(TUMBLE(TABLE source, DESCRIPTOR(ts), INTERVAL '5' MINUTES))          " +
+                        "WHERE ts IS NOT NULL                                                          " +
                         "GROUP BY window_start, window_end                                               "
         );
     }
