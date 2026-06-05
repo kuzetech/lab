@@ -4,6 +4,7 @@ unset JMX_PORT
 ## topic 操作
 kafka-topics.sh --bootstrap-server localhost:9092 --list
 kafka-topics.sh --bootstrap-server localhost:9092 --create --topic funnydb-mutation-test-output --partitions 9 --replication-factor 3
+kafka-topics.sh --bootstrap-server localhost:9092 --create --topic funnydb-mutation-test-output --partitions 9 --replication-factor 3
 kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic funnydb-ingest-mutation-events
 kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic funnydb-ingest-track-events
 kafka-topics.sh --bootstrap-server localhost:9092 --alter --topic topic --partitions 4
