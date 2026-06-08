@@ -40,9 +40,11 @@ CREATE TABLE default.mutation ON CLUSTER 'ga_ga_she_ji_x0c11yg5'
                  );
 
 select toStartOfFiveMinutes(fromUnixTimestamp64Milli(`#event_time`)) as start_time,
-       count(if(topic = 'funnydb-mutation-test-output', 1, 0)) -
-       count(if(topic != 'funnydb-mutation-test-output', 1, 0))      as diff
+       count(if(topic = 'funnydb-mutation-test-output', 1, 0))       as mutation,
+       count(if(topic != 'funnydb-mutation-test-output', 1, 0))      as flink
 from mutation
 where 1 = 1
 group by start_time
-order by start_time desc;
+order by start_time desc
+limit 10;
+
