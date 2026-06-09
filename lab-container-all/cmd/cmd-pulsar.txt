@@ -1,33 +1,53 @@
+## 命名空间
+pulsar-admin namespaces list public
+pulsar-admin namespaces create -b 16 public/test
+pulsar-admin namespaces policies public/default
+pulsar-admin namespaces bundles public/default
+pulsar-admin namespaces split-bundle -b 0x00000000_0x10000000 public/default
+pulsar-admin namespaces get-topic-positions -b 0x60000000_0x70000000 public/default
+pulsar-admin namespaces get-topic-positions -b 0x68000000_0x70000000 public/default
+## -d指定要分配到哪台broker
+pulsar-admin namespaces unload -b 0x10000000_0x20000000 -d http://pulsar-broker-0.pulsar-broker.default.svc.cluster.local:8080 public/default
+pulsar-admin namespaces unload -b 0x80000000_0x90000000 -d http://pulsar-broker-1.pulsar-broker.default.svc.cluster.local:8080 public/default
+
+
+
+## 查看 topic 状态
 pulsar-admin topics list public/default
 pulsar-admin topics list -ist pulsar/system
 pulsar-admin topics list-partitioned-topics public/default
 pulsar-admin topics lookup public/default/funnydb-ingest-receive-partition-1
 pulsar-admin topics partitioned-lookup public/default/funnydb-ingest-receive
 pulsar-admin topics bundle-range public/default/funnydb-ingest-receive-partition-1
-
-pulsar-admin topics create-partitioned-topic persistent://public/default/funnydb-ingest-receive -p 9
-pulsar-admin topics delete-partitioned-topic persistent://public/default/funnydb-ingest-receive
-
-pulsar-admin topics create-partitioned-topic persistent://public/default/source -p 9
-pulsar-admin topics create-partitioned-topic persistent://public/default/sink -p 9
-
-pulsar-admin topics update-partitioned-topic -p=32 persistent://public/default/funnydb-flink-track-events
-
-pulsar-admin topics stats persistent://public/default/funnydb-ingest-receive-partition-2
+pulsar-admin topics stats persistent://public/default/ess-sausage_develop-sausage_develop_funnydb_-2380
 pulsar-admin topics stats-internal persistent://public/default/funnydb-ingest-receive-partition-2
 pulsar-admin topics partitioned-stats persistent://public/default/funnydb-ingest-receive
-pulsar-admin topics partitioned-stats persistent://public/temp/funnydb-flink-track-events
+pulsar-admin topics partitioned-stats persistent://public/default/push_message_1
 pulsar-admin topics partitioned-stats-internal persistent://public/temp/funnydb-flink-track-events
 
+
+## 创建 topic
+pulsar-admin topics create-partitioned-topic persistent://public/default/funnydb-ingest-receive -p 9
+pulsar-admin topics delete-partitioned-topic persistent://public/default/funnydb-ingest-receive
+pulsar-admin topics delete-partitioned-topic persistent://public/default/push_message_1
+
+
+## 更新 topic
+pulsar-admin topics update-partitioned-topic -p=32 persistent://public/default/funnydb-flink-track-events
+
+
+## 消费者组
 pulsar-admin topics subscriptions persistent://public/default/funnydb-ingest-receive
 pulsar-admin topics unsubscribe -s funnydb-ingest-pipeline persistent://public/default/funnydb-ingest-receive
 pulsar-admin topics unsubscribe -s funnydb-ingest-pipeline-bypass persistent://public/default/funnydb-ingest-receive
 pulsar-admin topics unsubscribe -s pulsar-transaction-validator persistent://public/temp/funnydb-flink-track-events
 pulsar-admin topics unsubscribe -s kuze persistent://public/temp/funnydb-flink-track-events
+pulsar-admin topics unsubscribe -s test persistent://public/default/funnydb-ingest-receive
 pulsar-admin topics create-subscription persistent://public/default/funnydb-ingest-receive  -s funnydb-ingest-pipeline -m latest
 pulsar-admin topics reset-cursor persistent://public/default/funnydb-ingest-receive-partition-2 -s funnydb-ingest-pipeline -m '6401:23484'
 pulsar-admin topics get-subscription-properties persistent://public/default/funnydb-ingest-receive -s funnydb-ingest-pipeline
 
+## 服务器配置
 pulsar-admin brokers list-dynamic-config
 pulsar-admin brokers get-runtime-config
 pulsar-admin brokers get-runtime-config | grep loadManagerClassName
@@ -40,32 +60,27 @@ pulsar-admin brokers update-dynamic-config --config=loadBalancerAutoBundleSplitE
 pulsar-admin brokers delete-dynamic-config
 pulsar-admin brokers get-all-dynamic-config
 
-pulsar-admin namespaces list public
-pulsar-admin namespaces create -b 16 public/test
-pulsar-admin namespaces policies public/default
+
+## 数据过期与留存
 pulsar-admin namespaces get-backlog-quotas public/default
-pulsar-admin namespaces get-message-ttl public/default
+pulsar-admin namespaces set-backlog-quota  public/default
+pulsar-admin namespaces get-message-ttl  public/default
+pulsar-admin namespaces set-message-ttl  public/default --messageTTL=1d
 pulsar-admin namespaces get-retention public/default
 pulsar-admin namespaces set-retention public/default --size 130G --time 3d
-pulsar-admin namespaces set-retention public/temp --size 10G --time 1d
-pulsar-admin namespaces get-topic-positions -b 0x60000000_0x70000000 public/default
-pulsar-admin namespaces get-topic-positions -b 0x68000000_0x70000000 public/default
-
-pulsar-admin namespaces bundles public/default
-pulsar-admin namespaces split-bundle -b 0x00000000_0x10000000 public/default
-pulsar-admin topics partitioned-lookup public/default/source
-## -d指定要分配到哪台broker
-pulsar-admin namespaces unload -b 0x10000000_0x20000000 -d http://pulsar-broker-0.pulsar-broker.default.svc.cluster.local:8080 public/default
-pulsar-admin namespaces unload -b 0x80000000_0x90000000 -d http://pulsar-broker-1.pulsar-broker.default.svc.cluster.local:8080 public/default
 
 
+## 生产者 
 pulsar-client produce --messages 'Hello Pulsar!' public/kuze/funnydb-ingest-receive-partition-0
 
-## 默认仅消费一条
+
+## 消费者，默认仅消费一条
 pulsar-client consume -p Earliest -s test public/default/funnydb-ingest-receive
 pulsar-client consume -p Latest -s kuze public/temp/funnydb-flink-track-events
 pulsar-client consume -p Earliest -n 0 -r 0 -s test public/temp/funnydb-flink-track-events |grep 1d970de0-76cf-41b3-9165-70c892c1a48c
 
+
+## 压测
 pulsar-perf produce \
 --compression=LZ4 \
 --test-duration=30 \
