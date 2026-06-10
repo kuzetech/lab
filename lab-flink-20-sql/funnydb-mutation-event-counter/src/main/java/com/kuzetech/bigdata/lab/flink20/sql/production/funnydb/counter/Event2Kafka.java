@@ -92,8 +92,8 @@ public class Event2Kafka {
 
         tableEnv.executeSql(String.format(
                 sinkSql,
-                jobConfig.getKafkaConfig().getBootstrapServers(),
-                jobConfig.getKafkaConfig().getTransactionPrefix()
+                jobConfig.getKafkaConfig().getTransactionPrefix(),
+                jobConfig.getKafkaConfig().getBootstrapServers()
         ));
 
         String execSql =
