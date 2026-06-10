@@ -48,3 +48,20 @@ group by start_time
 order by start_time desc
 limit 10;
 
+
+select `#user_id`,
+       count(if(topic = 'funnydb-mutation-test-output', 1, null))  as mutation,
+       count(if(topic != 'funnydb-mutation-test-output', 1, null)) as flink
+from mutation
+where formatDateTime(toStartOfFiveMinutes(fromUnixTimestamp64Milli(`#event_time`)), '%Y-%m-%d %H:%i:%s',
+                     'Asia/Shanghai') = '2026-06-09 15:30:00'
+group by `#user_id`
+having mutation != flink;
+
+
+select *
+from mutation
+where formatDateTime(toStartOfFiveMinutes(fromUnixTimestamp64Milli(`#event_time`)), '%Y-%m-%d %H:%i:%s',
+                     'Asia/Shanghai') = '2026-06-09 15:30:00'
+  and `#user_id` = '1yoyupy';
+

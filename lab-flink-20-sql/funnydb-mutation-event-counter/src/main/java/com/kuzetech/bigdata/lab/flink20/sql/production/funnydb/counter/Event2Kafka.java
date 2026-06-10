@@ -75,7 +75,7 @@ public class Event2Kafka {
                         "    'connector' = 'kafka',                                                  " +
                         "    'topic' = 'mutation-validator',                                         " +
                         "    'sink.delivery-guarantee' = 'exactly-once',                             " +
-                        "    'sink.transactional-id-prefix' = 'mutation-validator',                  " +
+                        "    'sink.transactional-id-prefix' = '%s',                  " +
                         "    'properties.bootstrap.servers' = '%s',                                  " +
                         "    'properties.transaction.timeout.ms' = '900000',                         " +
                         "    'properties.compression.type' = 'lz4',                                  " +
@@ -92,7 +92,8 @@ public class Event2Kafka {
 
         tableEnv.executeSql(String.format(
                 sinkSql,
-                jobConfig.getKafkaConfig().getBootstrapServers()
+                jobConfig.getKafkaConfig().getBootstrapServers(),
+                jobConfig.getKafkaConfig().getTransactionPrefix()
         ));
 
         String execSql =

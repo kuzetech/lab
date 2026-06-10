@@ -26,7 +26,7 @@ kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --all-grou
 kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group funnydb-mutation-group 
 kafka-consumer-groups.sh --bootstrap-server localhost:9092 --delete --group kuze
 kafka-consumer-groups.sh --bootstrap-server localhost:9092 --delete --group funnydb-mutation-group
-kafka-consumer-groups.sh --bootstrap-server localhost:9092 --delete --group mutation-validator-different
+kafka-consumer-groups.sh --bootstrap-server localhost:9092 --delete --group mutation-validator-store
 
 ## 查询偏移量
 kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic funnydb-ingest-mutation-events

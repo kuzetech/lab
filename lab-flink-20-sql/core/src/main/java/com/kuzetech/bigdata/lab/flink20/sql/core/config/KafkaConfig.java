@@ -13,13 +13,15 @@ public class KafkaConfig {
     private String groupId;
     private String bootstrapServers;
     private String offsetReset;
+    private String transactionPrefix;
 
     public static KafkaConfig getInstance(ParameterTool tool) {
         return new KafkaConfig(
                 tool.get("connector.kafka.topic", "test"),
                 tool.get("connector.kafka.group.id", "test"),
                 tool.get("connector.kafka.bootstrap.servers", "localhost:9092"),
-                tool.get("connector.kafka.offset.reset", "earliest")
+                tool.get("connector.kafka.offset.reset", "earliest"),
+                tool.get("connector.kafka.transaction.prefix", "test")
         );
     }
 }
