@@ -1,0 +1,10 @@
+{
+    "customerId": "1",              #用户注册后下发到 nginx 服务器
+    "ip": "208.67.109.145",
+    "centerId": "sg1",              #机房标识，安装机器时下发
+    "timeStamp": 1595752563993,
+    "eventId": "traffic",
+    "properties": {
+        "size": 1024
+    }
+}
