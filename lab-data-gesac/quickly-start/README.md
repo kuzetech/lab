@@ -1,6 +1,6 @@
 # Docker Quick Start
 
-这个目录提供一个可直接运行的 MySQL + Kafka Docker 环境。
+这个目录提供一个可直接运行的 MySQL + Kafka + Doris Docker 环境。
 
 ## 启动
 
@@ -15,6 +15,7 @@ docker compose up -d
 docker compose ps
 docker compose logs -f mysql
 docker compose logs -f kafka
+docker compose logs -f doris
 ```
 
 ## MySQL
@@ -83,6 +84,26 @@ docker compose exec kafka /opt/kafka/bin/kafka-console-producer.sh --bootstrap-s
 
 ```bash
 docker compose exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic quickstart-events --from-beginning
+```
+
+## Doris
+
+### 连接地址
+
+- FE Web UI：`http://localhost:8030`
+- MySQL 协议：`localhost:9030`
+- BE Web UI：`http://localhost:8040`
+
+### 连接命令
+
+```bash
+mysql -h127.0.0.1 -P9030 -uroot
+```
+
+查看集群：
+
+```bash
+mysql -h127.0.0.1 -P9030 -uroot -e 'SHOW BACKENDS;'
 ```
 
 ## 停止

@@ -62,6 +62,32 @@ services:
       retries: 10
       start_period: 30s
 
+  doris:
+    image: ${DORIS_IMAGE:-yagagagaga/doris-standalone:4.1.0}
+    container_name: ${DORIS_CONTAINER_NAME:-quickly-start-doris}
+    restart: unless-stopped
+    ports:
+      - "${DORIS_FE_HTTP_PORT:-8030}:8030"
+      - "${DORIS_FE_QUERY_PORT:-9030}:9030"
+      - "${DORIS_BE_HTTP_PORT:-8040}:8040"
+      - "${DORIS_BE_HEARTBEAT_PORT:-9050}:9050"
+      - "${DORIS_BE_BRPC_PORT:-8060}:8060"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - doris-data:/opt/apache-doris
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -fsS http://127.0.0.1:8030/api/bootstrap >/dev/null || curl -fsS http://127.0.0.1:8030 >/dev/null"
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+
 volumes:
   mysql-data:
   kafka-data:
+  doris-data:
