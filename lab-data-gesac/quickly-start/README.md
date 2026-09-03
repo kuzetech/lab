@@ -1,6 +1,6 @@
 # Docker Quick Start
 
-这个目录提供一个可直接运行的 MySQL + Kafka + Doris Docker 环境。
+这个目录提供一个可直接运行的 MySQL + Kafka + Doris + Flink Docker 环境。
 
 ## 启动
 
@@ -16,6 +16,9 @@ docker compose ps
 docker compose logs -f mysql
 docker compose logs -f kafka
 docker compose logs -f doris
+docker compose logs -f flink-jobmanager
+docker compose logs -f flink-taskmanager-1
+docker compose logs -f flink-taskmanager-2
 ```
 
 ## MySQL
@@ -104,6 +107,34 @@ mysql -h127.0.0.1 -P9030 -uroot
 
 ```bash
 mysql -h127.0.0.1 -P9030 -uroot -e 'SHOW BACKENDS;'
+```
+
+## Flink
+
+### 集群配置
+
+- Flink 版本：`1.20.3`
+- JobManager：1 个
+- TaskManager：2 个
+- 每个 TaskManager：`1 CPU`、`1G` 容器内存、`1` 个 task slot
+
+### 连接地址
+
+- Web UI：`http://localhost:8081`
+- Compose 网络内 JobManager：`flink-jobmanager:6123`
+
+### 常用命令
+
+查看 Flink 集群概览：
+
+```bash
+curl http://localhost:8081/overview
+```
+
+在容器内查看运行中的作业：
+
+```bash
+docker compose exec flink-jobmanager flink list
 ```
 
 ## 停止
