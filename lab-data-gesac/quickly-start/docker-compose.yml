@@ -129,6 +129,15 @@ services:
         taskmanager.memory.process.size: 2g
       TZ: Asia/Shanghai
 
+  dolphinscheduler:
+    image: ${DOLPHINSCHEDULER_IMAGE:-apache/dolphinscheduler-standalone-server:3.4.2}
+    container_name: ${DOLPHINSCHEDULER_CONTAINER_NAME:-quickly-start-dolphinscheduler}
+    restart: unless-stopped
+    ports:
+      - "${DOLPHINSCHEDULER_API_PORT:-12345}:12345"
+    environment:
+      TZ: Asia/Shanghai
+
 volumes:
   mysql-data:
   kafka-data:
