@@ -138,6 +138,14 @@ services:
     environment:
       TZ: Asia/Shanghai
 
+  seatunnel:
+    image: ${SEATUNNEL_IMAGE:-apache/seatunnel:2.3.13}
+    container_name: ${SEATUNNEL_CONTAINER_NAME:-quickly-start-seatunnel}
+    restart: unless-stopped
+    command: ["sh", "-c", "tail -f /dev/null"]
+    environment:
+      TZ: Asia/Shanghai
+
 volumes:
   mysql-data:
   kafka-data:
