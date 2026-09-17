@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export HADOOP_CLASSPATH=$(hadoop classpath)
+
 flink run \
   -t yarn-per-job \
   -Djobmanager.memory.process.size=1024m \

@@ -5,6 +5,8 @@ USER root
 ARG FLINK_VERSION=1.18.1
 ARG HADOOP_VERSION=3.2.1
 ARG MYSQL_CONNECTOR_VERSION=8.0.33
+ARG PAIMON_FLINK_MINOR_VERSION=1.18
+ARG PAIMON_FLINK_VERSION=2.0.0
 
 # Hadoop Client
 COPY dep/hadoop-${HADOOP_VERSION}.tar.gz /tmp/hadoop.tar.gz
@@ -17,6 +19,8 @@ RUN tar -xzf /tmp/flink.tgz -C /opt \
     && mv /opt/flink-${FLINK_VERSION} /opt/flink \
     && rm /tmp/flink.tgz
 COPY dep/flink-yarn-${FLINK_VERSION}.jar /opt/flink/lib/
+COPY dep/paimon-flink-${PAIMON_FLINK_MINOR_VERSION}-${PAIMON_FLINK_VERSION}.jar /opt/flink/lib/
+COPY dep/flink-sql-connector-hive-3.1.3_2.12-${FLINK_VERSION}.jar /opt/flink/lib/
 
 # DolphinScheduler's MySQL profile needs the JDBC driver on both runtime and schema-upgrade classpaths.
 COPY dep/mysql-connector-j-${MYSQL_CONNECTOR_VERSION}.jar /opt/dolphinscheduler/standalone-server/libs/

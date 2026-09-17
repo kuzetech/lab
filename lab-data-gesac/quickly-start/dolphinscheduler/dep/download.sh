@@ -8,6 +8,8 @@ DOWNLOAD_URLS=(
   "https://archive.apache.org/dist/flink/flink-1.18.1/flink-1.18.1-bin-scala_2.12.tgz"
   "https://repo1.maven.org/maven2/org/apache/flink/flink-yarn/1.18.1/flink-yarn-1.18.1.jar"
   "https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.0.33/mysql-connector-j-8.0.33.jar"
+  "https://repo.maven.apache.org/maven2/org/apache/paimon/paimon-flink-1.18/2.0.0/paimon-flink-1.18-2.0.0.jar"
+  "https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-hive-3.1.3_2.12/1.18.1/flink-sql-connector-hive-3.1.3_2.12-1.18.1.jar"
 )
 
 download_file() {

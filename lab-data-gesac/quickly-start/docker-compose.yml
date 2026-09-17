@@ -187,8 +187,9 @@ services:
       - ./hadoop/conf/yarn-site.xml:/etc/hadoop/yarn-site.xml:ro
       - ./hadoop/conf/mapred-site.xml:/etc/hadoop/mapred-site.xml:ro
       - ./hive/conf/hive-site.xml:/etc/hive/hive-site.xml:ro
-      - ./dolphinscheduler/jobs:/opt/jobs:ro
+      - ./dolphinscheduler/jobs:/opt/jobs
       - ./flink/flink-conf.yaml:/opt/flink/conf/flink-conf.yaml
+      - ./flink/sql-client-init:/opt/flink/conf/sql-init
     depends_on:
       mysql:
         condition: service_healthy
