@@ -167,8 +167,20 @@ services:
       HADOOP_CONF_DIR: /etc/hadoop
       YARN_CONF_DIR: /etc/hadoop
       FLINK_HOME: /opt/flink
+      DATABASE: mysql
+      SPRING_PROFILES_ACTIVE: mysql
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dolphinscheduler?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+      SPRING_DATASOURCE_USERNAME: dolphinscheduler
+      SPRING_DATASOURCE_PASSWORD: dolphinscheduler_password
       MASTER_SERVER_LOAD_PROTECTION_ENABLED: "false"
       WORKER_SERVER_LOAD_PROTECTION_ENABLED: "false"
+    command:
+      - /bin/bash
+      - -c
+      - |
+        /bin/bash /opt/dolphinscheduler/tools/bin/upgrade-schema.sh
+        exec /bin/bash /opt/dolphinscheduler/standalone-server/bin/start.sh
     volumes:
       - ./hadoop/conf/core-site.xml:/etc/hadoop/core-site.xml:ro
       - ./hadoop/conf/hdfs-site.xml:/etc/hadoop/hdfs-site.xml:ro
@@ -177,10 +189,16 @@ services:
       - ./dolphinscheduler/jobs:/opt/jobs:ro
       - ./flink/flink-conf.yaml:/opt/flink/conf/flink-conf.yaml
     depends_on:
-      - namenode
-      - datanode
-      - resourcemanager
-      - nodemanager
+      mysql:
+        condition: service_healthy
+      namenode:
+        condition: service_started
+      datanode:
+        condition: service_started
+      resourcemanager:
+        condition: service_started
+      nodemanager:
+        condition: service_started
 
 volumes:
   mysql-data:

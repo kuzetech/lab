@@ -16,4 +16,12 @@ CREATE USER IF NOT EXISTS 'hive'@'%' IDENTIFIED BY 'hive_password';
 
 GRANT ALL PRIVILEGES ON hive_metastore.* TO 'hive'@'%';
 
+CREATE DATABASE IF NOT EXISTS dolphinscheduler
+  DEFAULT CHARACTER SET utf8mb4
+  DEFAULT COLLATE utf8mb4_0900_ai_ci;
+
+CREATE USER IF NOT EXISTS 'dolphinscheduler'@'%' IDENTIFIED BY 'dolphinscheduler_password';
+
+GRANT ALL PRIVILEGES ON dolphinscheduler.* TO 'dolphinscheduler'@'%';
+
 FLUSH PRIVILEGES;

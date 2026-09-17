@@ -4,10 +4,7 @@ USER root
 
 ARG FLINK_VERSION=1.18.1
 ARG HADOOP_VERSION=3.2.1
-
-RUN apt-get update \
-    && apt-get install -y procps \
-    && rm -rf /var/lib/apt/lists/*
+ARG MYSQL_CONNECTOR_VERSION=8.0.33
 
 # Hadoop Client
 COPY dep/hadoop-${HADOOP_VERSION}.tar.gz /tmp/hadoop.tar.gz
@@ -20,6 +17,10 @@ RUN tar -xzf /tmp/flink.tgz -C /opt \
     && mv /opt/flink-${FLINK_VERSION} /opt/flink \
     && rm /tmp/flink.tgz
 COPY dep/flink-yarn-${FLINK_VERSION}.jar /opt/flink/lib/
+
+# DolphinScheduler's MySQL profile needs the JDBC driver on both runtime and schema-upgrade classpaths.
+COPY dep/mysql-connector-j-${MYSQL_CONNECTOR_VERSION}.jar /opt/dolphinscheduler/standalone-server/libs/
+COPY dep/mysql-connector-j-${MYSQL_CONNECTOR_VERSION}.jar /opt/dolphinscheduler/tools/libs/
 
 ENV HADOOP_HOME=/opt/hadoop-3.2.1
 ENV FLINK_HOME=/opt/flink
