@@ -1,0 +1,5 @@
+parallelism.default: 1
+taskmanager.numberOfTaskSlots: 2
+yarn.flink-dist-jar: /opt/flink/lib/flink-dist-1.18.1.jar
+state.checkpoints.dir: hdfs://namenode:9000/flink/checkpoints
+state.savepoints.dir: hdfs://namenode:9000/flink/savepoints

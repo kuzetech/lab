@@ -7,3 +7,13 @@ CREATE TABLE IF NOT EXISTS example_items (
 
 INSERT INTO example_items (name)
 VALUES ('hello mysql');
+
+CREATE DATABASE IF NOT EXISTS hive_metastore
+  DEFAULT CHARACTER SET utf8mb4
+  DEFAULT COLLATE utf8mb4_0900_ai_ci;
+
+CREATE USER IF NOT EXISTS 'hive'@'%' IDENTIFIED BY 'hive_password';
+
+GRANT ALL PRIVILEGES ON hive_metastore.* TO 'hive'@'%';
+
+FLUSH PRIVILEGES;

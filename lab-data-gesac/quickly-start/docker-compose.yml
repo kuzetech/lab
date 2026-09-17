@@ -1,20 +1,20 @@
 services:
   mysql:
-    image: ${MYSQL_IMAGE:-mysql:8.0}
-    container_name: ${MYSQL_CONTAINER_NAME:-quickly-start-mysql}
+    image: mysql:8.0
+    container_name: quickly-start-mysql
     restart: unless-stopped
     ports:
-      - "${MYSQL_PORT:-3306}:3306"
+      - "3306:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-app_db}
-      MYSQL_USER: ${MYSQL_USER:-app_user}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-app_password}
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: app_db
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: app_password
       TZ: Asia/Shanghai
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./conf.d:/etc/mysql/conf.d:ro
-      - ./initdb:/docker-entrypoint-initdb.d:ro
+      - ./mysql/conf.d:/etc/mysql/conf.d:ro
+      - ./mysql/initdb:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test:
         [
@@ -27,18 +27,18 @@ services:
       start_period: 30s
 
   kafka:
-    image: ${KAFKA_IMAGE:-apache/kafka:3.9.2}
-    container_name: ${KAFKA_CONTAINER_NAME:-quickly-start-kafka}
+    image: apache/kafka:3.9.2
+    container_name: quickly-start-kafka
     restart: unless-stopped
     ports:
-      - "${KAFKA_HOST_PORT:-9092}:9092"
+      - "9092:9092"
     environment:
-      CLUSTER_ID: ${KAFKA_CLUSTER_ID:-4L6g3nShT-eMCtK--X86sw}
+      CLUSTER_ID: 4L6g3nShT-eMCtK--X86sw
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:${KAFKA_CONTROLLER_PORT:-9093}
-      KAFKA_LISTENERS: PLAINTEXT://:9092,INTERNAL://:${KAFKA_INTERNAL_PORT:-29092},CONTROLLER://:${KAFKA_CONTROLLER_PORT:-9093}
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:${KAFKA_HOST_PORT:-9092},INTERNAL://kafka:${KAFKA_INTERNAL_PORT:-29092}
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://:9092,INTERNAL://:29092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,INTERNAL://kafka:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,INTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
@@ -62,833 +62,132 @@ services:
       retries: 10
       start_period: 30s
 
-  hdfs-namenode:
-    image: ${HDFS_IMAGE:-apache/hadoop:3.3.6}
-    container_name: ${HDFS_NAMENODE_CONTAINER_NAME:-quickly-start-hdfs-namenode}
-    hostname: hdfs-namenode
-    user: root
+  hive-metastore:
+    image: apache/hive:3.1.3
+    platform: linux/amd64
+    container_name: quickly-start-hive-metastore
     restart: unless-stopped
-    ports:
-      - "${HDFS_NAMENODE_RPC_PORT:-9000}:9000"
-      - "${HDFS_NAMENODE_WEB_PORT:-9870}:9870"
-    environment:
-      HADOOP_CONF_DIR: /opt/hadoop/etc/hadoop
-      HADOOP_LOG_DIR: /tmp/hadoop-logs
-      HADOOP_PID_DIR: /tmp
-      HDFS_NAMENODE_USER: root
-      TZ: Asia/Shanghai
-    command:
-      - bash
-      - -lc
-      - |
-        set -e
-
-        mkdir -p /tmp/hadoop-root/dfs/name /tmp/hadoop-logs
-
-        cat > /opt/hadoop/etc/hadoop/core-site.xml <<'EOF'
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>fs.defaultFS</name>
-            <value>hdfs://hdfs-namenode:9000</value>
-          </property>
-        </configuration>
-        EOF
-
-        cat > /opt/hadoop/etc/hadoop/hdfs-site.xml <<'EOF'
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>dfs.replication</name>
-            <value>1</value>
-          </property>
-          <property>
-            <name>dfs.namenode.name.dir</name>
-            <value>file:///tmp/hadoop-root/dfs/name</value>
-          </property>
-          <property>
-            <name>dfs.namenode.rpc-bind-host</name>
-            <value>0.0.0.0</value>
-          </property>
-          <property>
-            <name>dfs.namenode.servicerpc-bind-host</name>
-            <value>0.0.0.0</value>
-          </property>
-          <property>
-            <name>dfs.namenode.http-bind-host</name>
-            <value>0.0.0.0</value>
-          </property>
-        </configuration>
-        EOF
-
-        if [ ! -d /tmp/hadoop-root/dfs/name/current ]; then
-          hdfs namenode -format -force -nonInteractive
-        fi
-
-        hdfs --daemon start namenode
-
-        trap 'hdfs --daemon stop namenode; exit 0' TERM INT
-        tail -F /tmp/hadoop-logs/*.out &
-        wait $!
-    volumes:
-      - hdfs-namenode:/tmp/hadoop-root/dfs/name
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "hdfs dfsadmin -fs hdfs://hdfs-namenode:9000 -safemode get >/dev/null 2>&1"
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 40s
-
-  hdfs-datanode:
-    image: ${HDFS_IMAGE:-apache/hadoop:3.3.6}
-    container_name: ${HDFS_DATANODE_CONTAINER_NAME:-quickly-start-hdfs-datanode}
-    hostname: hdfs-datanode
-    user: root
-    restart: unless-stopped
-    depends_on:
-      hdfs-namenode:
-        condition: service_healthy
-    ports:
-      - "${HDFS_DATANODE_WEB_PORT:-9864}:9864"
-    environment:
-      HADOOP_CONF_DIR: /opt/hadoop/etc/hadoop
-      HADOOP_LOG_DIR: /tmp/hadoop-logs
-      HADOOP_PID_DIR: /tmp
-      HDFS_DATANODE_USER: root
-      TZ: Asia/Shanghai
-    command:
-      - bash
-      - -lc
-      - |
-        set -e
-
-        mkdir -p /tmp/hadoop-root/dfs/data /tmp/hadoop-logs
-
-        cat > /opt/hadoop/etc/hadoop/core-site.xml <<'EOF'
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>fs.defaultFS</name>
-            <value>hdfs://hdfs-namenode:9000</value>
-          </property>
-        </configuration>
-        EOF
-
-        cat > /opt/hadoop/etc/hadoop/hdfs-site.xml <<'EOF'
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>dfs.replication</name>
-            <value>1</value>
-          </property>
-          <property>
-            <name>dfs.datanode.data.dir</name>
-            <value>file:///tmp/hadoop-root/dfs/data</value>
-          </property>
-          <property>
-            <name>dfs.datanode.http.address</name>
-            <value>0.0.0.0:9864</value>
-          </property>
-        </configuration>
-        EOF
-
-        hdfs --daemon start datanode
-
-        trap 'hdfs --daemon stop datanode; exit 0' TERM INT
-        tail -F /tmp/hadoop-logs/*.out &
-        wait $!
-    volumes:
-      - hdfs-datanode:/tmp/hadoop-root/dfs/data
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "hdfs dfsadmin -fs hdfs://hdfs-namenode:9000 -report 2>/dev/null | grep -q 'Live datanodes (1)'"
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 40s
-
-  yarn-resourcemanager:
-    image: ${YARN_IMAGE:-apache/hadoop:3.3.6}
-    container_name: ${YARN_RESOURCEMANAGER_CONTAINER_NAME:-quickly-start-yarn-resourcemanager}
-    hostname: yarn-resourcemanager
-    user: root
-    restart: unless-stopped
-    ports:
-      - "${YARN_RESOURCEMANAGER_WEB_PORT:-8088}:8088"
-    environment:
-      HADOOP_CONF_DIR: /opt/hadoop/etc/hadoop
-      HADOOP_LOG_DIR: /tmp/hadoop-logs
-      HADOOP_PID_DIR: /tmp
-      YARN_RESOURCEMANAGER_USER: root
-      TZ: Asia/Shanghai
-    command:
-      - bash
-      - -lc
-      - |
-        set -e
-
-        mkdir -p /tmp/hadoop-logs
-
-        cat > /opt/hadoop/etc/hadoop/core-site.xml <<'EOF'
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>fs.defaultFS</name>
-            <value>hdfs://hdfs-namenode:9000</value>
-          </property>
-        </configuration>
-        EOF
-
-        cat > /opt/hadoop/etc/hadoop/yarn-site.xml <<'EOF'
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>yarn.resourcemanager.hostname</name>
-            <value>yarn-resourcemanager</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.bind-host</name>
-            <value>0.0.0.0</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.address</name>
-            <value>yarn-resourcemanager:8032</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.scheduler.address</name>
-            <value>yarn-resourcemanager:8030</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.resource-tracker.address</name>
-            <value>yarn-resourcemanager:8031</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.admin.address</name>
-            <value>yarn-resourcemanager:8033</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.webapp.address</name>
-            <value>0.0.0.0:8088</value>
-          </property>
-          <property>
-            <name>yarn.nodemanager.aux-services</name>
-            <value>mapreduce_shuffle</value>
-          </property>
-        </configuration>
-        EOF
-
-        yarn --daemon start resourcemanager
-
-        trap 'yarn --daemon stop resourcemanager; exit 0' TERM INT
-        tail -F /tmp/hadoop-logs/*.out &
-        wait $!
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "bash -lc '</dev/tcp/127.0.0.1/8088'"
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 40s
-
-  yarn-nodemanager:
-    image: ${YARN_IMAGE:-apache/hadoop:3.3.6}
-    container_name: ${YARN_NODEMANAGER_CONTAINER_NAME:-quickly-start-yarn-nodemanager}
-    hostname: yarn-nodemanager
-    user: root
-    restart: unless-stopped
-    depends_on:
-      yarn-resourcemanager:
-        condition: service_healthy
-    ports:
-      - "${YARN_NODEMANAGER_WEB_PORT:-8042}:8042"
-    environment:
-      HADOOP_CONF_DIR: /opt/hadoop/etc/hadoop
-      HADOOP_LOG_DIR: /tmp/hadoop-logs
-      HADOOP_PID_DIR: /tmp
-      YARN_NODEMANAGER_USER: root
-      TZ: Asia/Shanghai
-    command:
-      - bash
-      - -lc
-      - |
-        set -e
-
-        mkdir -p /tmp/hadoop-logs /tmp/hadoop-root/yarn/local /tmp/hadoop-root/yarn/logs
-
-        cat > /opt/hadoop/etc/hadoop/core-site.xml <<'EOF'
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>fs.defaultFS</name>
-            <value>hdfs://hdfs-namenode:9000</value>
-          </property>
-        </configuration>
-        EOF
-
-        cat > /opt/hadoop/etc/hadoop/yarn-site.xml <<'EOF'
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>yarn.resourcemanager.hostname</name>
-            <value>yarn-resourcemanager</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.address</name>
-            <value>yarn-resourcemanager:8032</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.scheduler.address</name>
-            <value>yarn-resourcemanager:8030</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.resource-tracker.address</name>
-            <value>yarn-resourcemanager:8031</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.admin.address</name>
-            <value>yarn-resourcemanager:8033</value>
-          </property>
-          <property>
-            <name>yarn.nodemanager.aux-services</name>
-            <value>mapreduce_shuffle</value>
-          </property>
-          <property>
-            <name>yarn.nodemanager.local-dirs</name>
-            <value>/tmp/hadoop-root/yarn/local</value>
-          </property>
-          <property>
-            <name>yarn.nodemanager.log-dirs</name>
-            <value>/tmp/hadoop-root/yarn/logs</value>
-          </property>
-          <property>
-            <name>yarn.nodemanager.webapp.address</name>
-            <value>0.0.0.0:8042</value>
-          </property>
-          <property>
-            <name>yarn.nodemanager.resource.memory-mb</name>
-            <value>4096</value>
-          </property>
-          <property>
-            <name>yarn.nodemanager.resource.cpu-vcores</name>
-            <value>2</value>
-          </property>
-        </configuration>
-        EOF
-
-        yarn --daemon start nodemanager
-
-        trap 'yarn --daemon stop nodemanager; exit 0' TERM INT
-        tail -F /tmp/hadoop-logs/*.out &
-        wait $!
-    volumes:
-      - yarn-nodemanager:/tmp/hadoop-root/yarn
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "yarn node -list 2>/dev/null | grep -q 'RUNNING'"
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 40s
-
-  hadoop-client-init:
-    image: ${YARN_IMAGE:-apache/hadoop:3.3.6}
-    container_name: ${HADOOP_CLIENT_INIT_CONTAINER_NAME:-quickly-start-hadoop-client-init}
-    user: root
-    command:
-      - bash
-      - -lc
-      - |
-        set -e
-
-        if [ ! -x /hadoop-client/bin/hadoop ]; then
-          cp -a /opt/hadoop/. /hadoop-client/
-        fi
-
-        chown -R root:root /hadoop-client
-        chmod -R a+rwX /hadoop-client
-    volumes:
-      - hadoop-client:/hadoop-client
-    restart: "no"
-
-  flink-yarn-init:
-    image: ${FLINK_SQL_CLIENT_IMAGE:-flink:1.17.2-scala_2.12-java11}
-    container_name: ${FLINK_YARN_INIT_CONTAINER_NAME:-quickly-start-flink-yarn-init}
-    user: root
-    entrypoint:
-      - bash
-      - -lc
-    command:
-      - |
-        set -e
-
-        mkdir -p /flink-yarn-lib
-        if [ ! -s /flink-yarn-lib/flink-yarn-1.17.2.jar ]; then
-          curl -fL --retry 5 --retry-delay 2 \
-            -o /flink-yarn-lib/flink-yarn-1.17.2.jar \
-            "$${FLINK_YARN_JAR_URL}"
-        fi
-        chmod a+r /flink-yarn-lib/flink-yarn-1.17.2.jar
-    environment:
-      FLINK_YARN_JAR_URL: ${FLINK_YARN_JAR_URL:-https://repo1.maven.org/maven2/org/apache/flink/flink-yarn/1.17.2/flink-yarn-1.17.2.jar}
-      TZ: Asia/Shanghai
-    volumes:
-      - flink-yarn-lib:/flink-yarn-lib
-    restart: "no"
-
-  flink-hive-init:
-    image: ${FLINK_SQL_CLIENT_IMAGE:-flink:1.17.2-scala_2.12-java11}
-    container_name: ${FLINK_HIVE_INIT_CONTAINER_NAME:-quickly-start-flink-hive-init}
-    user: root
-    entrypoint:
-      - bash
-      - -lc
-    command:
-      - |
-        set -e
-
-        mkdir -p /flink-hive-lib
-        if [ ! -s /flink-hive-lib/flink-sql-connector-hive-3.1.3_2.12-1.17.2.jar ]; then
-          curl -fL --retry 5 --retry-delay 2 \
-            -o /flink-hive-lib/flink-sql-connector-hive-3.1.3_2.12-1.17.2.jar \
-            "$${FLINK_HIVE_CONNECTOR_JAR_URL}"
-        fi
-        chmod a+r /flink-hive-lib/flink-sql-connector-hive-3.1.3_2.12-1.17.2.jar
-    environment:
-      FLINK_HIVE_CONNECTOR_JAR_URL: ${FLINK_HIVE_CONNECTOR_JAR_URL:-https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-hive-3.1.3_2.12/1.17.2/flink-sql-connector-hive-3.1.3_2.12-1.17.2.jar}
-      TZ: Asia/Shanghai
-    volumes:
-      - flink-hive-lib:/flink-hive-lib
-    restart: "no"
-
-  flink-sql-client:
-    image: ${FLINK_SQL_CLIENT_IMAGE:-flink:1.17.2-scala_2.12-java11}
-    container_name: ${FLINK_SQL_CLIENT_CONTAINER_NAME:-quickly-start-flink-sql-client}
-    hostname: flink-sql-client
-    user: root
-    restart: unless-stopped
-    entrypoint:
-      - bash
-      - -lc
-    depends_on:
-      hadoop-client-init:
-        condition: service_completed_successfully
-      flink-yarn-init:
-        condition: service_completed_successfully
-      flink-hive-init:
-        condition: service_completed_successfully
-      hive-metastore:
-        condition: service_healthy
-      hdfs-datanode:
-        condition: service_healthy
-      yarn-nodemanager:
-        condition: service_healthy
-    environment:
-      HADOOP_HOME: /opt/hadoop
-      HADOOP_CONF_DIR: /opt/hadoop/etc/hadoop
-      TZ: Asia/Shanghai
-    command:
-      - |
-        set -e
-
-        cp /opt/flink/quickly-start-lib/flink-yarn-1.17.2.jar /opt/flink/lib/flink-yarn-1.17.2.jar
-        cp /opt/flink/quickly-start-hive-lib/flink-sql-connector-hive-3.1.3_2.12-1.17.2.jar /opt/flink/lib/flink-sql-connector-hive-3.1.3_2.12-1.17.2.jar
-
-        cat > /opt/hadoop/etc/hadoop/core-site.xml <<'EOF'
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>fs.defaultFS</name>
-            <value>hdfs://hdfs-namenode:9000</value>
-          </property>
-        </configuration>
-        EOF
-
-        cat > /opt/hadoop/etc/hadoop/yarn-site.xml <<'EOF'
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>yarn.resourcemanager.hostname</name>
-            <value>yarn-resourcemanager</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.address</name>
-            <value>yarn-resourcemanager:8032</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.scheduler.address</name>
-            <value>yarn-resourcemanager:8030</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.resource-tracker.address</name>
-            <value>yarn-resourcemanager:8031</value>
-          </property>
-          <property>
-            <name>yarn.resourcemanager.admin.address</name>
-            <value>yarn-resourcemanager:8033</value>
-          </property>
-        </configuration>
-        EOF
-
-        cat > /opt/hadoop/etc/hadoop/mapred-site.xml <<'EOF'
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>mapreduce.framework.name</name>
-            <value>yarn</value>
-          </property>
-        </configuration>
-        EOF
-
-        cat > /opt/flink/conf/hive-site.xml <<'EOF'
-        <?xml version="1.0" encoding="UTF-8"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>hive.metastore.uris</name>
-            <value>thrift://hive-metastore:9083</value>
-          </property>
-          <property>
-            <name>hive.metastore.warehouse.dir</name>
-            <value>/user/hive/warehouse</value>
-          </property>
-        </configuration>
-        EOF
-
-        sed -i '/# quickly-start-yarn-begin/,/# quickly-start-yarn-end/d' /opt/flink/conf/flink-conf.yaml
-        cat >> /opt/flink/conf/flink-conf.yaml <<'EOF'
-        # quickly-start-yarn-begin
-        execution.target: yarn-per-job
-        yarn.application.name: quickly-start-flink-sql
-        yarn.flink-dist-jar: /opt/flink/lib/flink-dist-1.17.2.jar
-        parallelism.default: 1
-        jobmanager.memory.process.size: 1024m
-        taskmanager.memory.process.size: 1024m
-        taskmanager.numberOfTaskSlots: 2
-        # quickly-start-yarn-end
-        EOF
-
-        cat > /usr/local/bin/sql-client-yarn.sh <<'EOF'
-        #!/usr/bin/env bash
-        set -e
-        export HADOOP_HOME=/opt/hadoop
-        export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
-        export HADOOP_CLASSPATH="$$(/opt/hadoop/bin/hadoop classpath)"
-        exec /opt/flink/bin/sql-client.sh "$$@"
-        EOF
-        chmod +x /usr/local/bin/sql-client-yarn.sh
-
-        tail -f /dev/null
-    volumes:
-      - hadoop-client:/opt/hadoop
-      - flink-yarn-lib:/opt/flink/quickly-start-lib:ro
-      - flink-hive-lib:/opt/flink/quickly-start-hive-lib:ro
-      - ./flink-sql:/opt/flink/sql:ro
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "HADOOP_CLASSPATH=\"$$(/opt/hadoop/bin/hadoop classpath)\" flink --version >/dev/null 2>&1 && /opt/hadoop/bin/yarn node -list 2>/dev/null | grep -q 'RUNNING'"
-        ]
-      interval: 15s
-      timeout: 10s
-      retries: 12
-      start_period: 60s
-
-  hive-mysql-init:
-    image: ${MYSQL_IMAGE:-mysql:8.0}
-    container_name: ${HIVE_MYSQL_INIT_CONTAINER_NAME:-quickly-start-hive-mysql-init}
     depends_on:
       mysql:
         condition: service_healthy
+    ports:
+      - "9083:9083"
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
-      HIVE_METASTORE_DATABASE: ${HIVE_METASTORE_DATABASE:-hive_metastore}
-      HIVE_METASTORE_USER: ${HIVE_METASTORE_USER:-hive}
-      HIVE_METASTORE_PASSWORD: ${HIVE_METASTORE_PASSWORD:-hive_password}
-    command:
-      - sh
+      SERVICE_NAME: metastore
+      DB_DRIVER: mysql
+      METASTORE_PORT: 9083
+      SERVICE_OPTS: >-
+        -Djavax.jdo.option.ConnectionDriverName=com.mysql.cj.jdbc.Driver
+        -Djavax.jdo.option.ConnectionURL=jdbc:mysql://mysql:3306/hive_metastore?createDatabaseIfNotExist=false&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+        -Djavax.jdo.option.ConnectionUserName=hive
+        -Djavax.jdo.option.ConnectionPassword=hive_password
+      TZ: Asia/Shanghai
+    entrypoint:
+      - /bin/bash
       - -c
       - |
-        set -e
-
-        mysql -hmysql -uroot -p"$${MYSQL_ROOT_PASSWORD}" <<EOF
-        CREATE DATABASE IF NOT EXISTS \`$${HIVE_METASTORE_DATABASE}\`
-          DEFAULT CHARACTER SET utf8mb4
-          DEFAULT COLLATE utf8mb4_0900_ai_ci;
-        CREATE USER IF NOT EXISTS '$${HIVE_METASTORE_USER}'@'%' IDENTIFIED BY '$${HIVE_METASTORE_PASSWORD}';
-        ALTER USER '$${HIVE_METASTORE_USER}'@'%' IDENTIFIED BY '$${HIVE_METASTORE_PASSWORD}';
-        GRANT ALL PRIVILEGES ON \`$${HIVE_METASTORE_DATABASE}\`.* TO '$${HIVE_METASTORE_USER}'@'%';
-        FLUSH PRIVILEGES;
-        EOF
-    restart: "no"
-
-  hive-metastore:
-    image: ${HIVE_IMAGE:-apache/hive:3.1.3}
-    container_name: ${HIVE_METASTORE_CONTAINER_NAME:-quickly-start-hive-metastore}
-    hostname: hive-metastore
-    user: root
-    restart: unless-stopped
-    depends_on:
-      hive-mysql-init:
-        condition: service_completed_successfully
-      hdfs-datanode:
-        condition: service_healthy
-    ports:
-      - "${HIVE_METASTORE_PORT:-9083}:9083"
-    environment:
-      HADOOP_CONF_DIR: /opt/hive/conf
-      HOME: /tmp
-      HIVE_METASTORE_DATABASE: ${HIVE_METASTORE_DATABASE:-hive_metastore}
-      HIVE_METASTORE_USER: ${HIVE_METASTORE_USER:-hive}
-      HIVE_METASTORE_PASSWORD: ${HIVE_METASTORE_PASSWORD:-hive_password}
-    volumes:
-      - ${HIVE_MYSQL_CONNECTOR_JAR:-../../lab-data-warehouse/start/hive-lib/mysql-connector-j-8.0.33.jar}:/opt/hive/lib/mysql-connector-j-8.0.33.jar:ro
-    entrypoint:
-      - bash
-      - -lc
-      - |
-        set -euo pipefail
-
-        wait_for() {
-          local host="$$1"
-          local port="$$2"
-          local retries="$${3:-90}"
-
-          for _ in $$(seq 1 "$${retries}"); do
-            if (echo >"/dev/tcp/$${host}/$${port}") >/dev/null 2>&1; then
-              return 0
-            fi
-            sleep 2
-          done
-
-          echo "Timed out waiting for $${host}:$${port}" >&2
-          return 1
-        }
-
-        cat > /opt/hive/conf/core-site.xml <<'EOF'
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>fs.defaultFS</name>
-            <value>hdfs://hdfs-namenode:9000</value>
-          </property>
-        </configuration>
-        EOF
-
-        cat > /opt/hive/conf/hive-site.xml <<EOF
-        <?xml version="1.0" encoding="UTF-8"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>javax.jdo.option.ConnectionURL</name>
-            <value>jdbc:mysql://mysql:3306/$${HIVE_METASTORE_DATABASE}?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC</value>
-          </property>
-          <property>
-            <name>javax.jdo.option.ConnectionDriverName</name>
-            <value>com.mysql.cj.jdbc.Driver</value>
-          </property>
-          <property>
-            <name>javax.jdo.option.ConnectionUserName</name>
-            <value>$${HIVE_METASTORE_USER}</value>
-          </property>
-          <property>
-            <name>javax.jdo.option.ConnectionPassword</name>
-            <value>$${HIVE_METASTORE_PASSWORD}</value>
-          </property>
-          <property>
-            <name>hive.metastore.warehouse.dir</name>
-            <value>/user/hive/warehouse</value>
-          </property>
-          <property>
-            <name>hive.metastore.schema.verification</name>
-            <value>false</value>
-          </property>
-          <property>
-            <name>datanucleus.schema.autoCreateAll</name>
-            <value>false</value>
-          </property>
-        </configuration>
-        EOF
-
-        wait_for mysql 3306
-        wait_for hdfs-namenode 9000
-
-        /opt/hadoop/bin/hdfs dfs -mkdir -p /tmp /user/hive /user/hive/warehouse
-        /opt/hadoop/bin/hdfs dfs -chmod 1777 /tmp /user/hive/warehouse
-
-        if ! timeout 60 /opt/hive/bin/schematool -dbType mysql -info >/dev/null 2>&1; then
-          timeout 180 /opt/hive/bin/schematool -dbType mysql -initSchema --verbose
+        if HADOOP_CLIENT_OPTS="$${HADOOP_CLIENT_OPTS} -Xmx1G $${SERVICE_OPTS}" /opt/hive/bin/schematool -dbType "$${DB_DRIVER}" -info >/dev/null 2>&1; then
+          export IS_RESUME=true
         fi
-
-        exec /opt/hive/bin/hive --service metastore --hiveconf hive.root.logger=INFO,console
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "bash -lc '</dev/tcp/127.0.0.1/9083'"
-        ]
-      interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 60s
-
-  hive-server2:
-    image: ${HIVE_IMAGE:-apache/hive:3.1.3}
-    container_name: ${HIVE_SERVER2_CONTAINER_NAME:-quickly-start-hive-server2}
-    hostname: hive-server2
-    user: root
-    restart: unless-stopped
-    depends_on:
-      hive-metastore:
-        condition: service_healthy
-    ports:
-      - "${HIVE_SERVER2_THRIFT_PORT:-10000}:10000"
-      - "${HIVE_SERVER2_WEB_PORT:-10002}:10002"
-    environment:
-      HADOOP_CONF_DIR: /opt/hive/conf
-      HOME: /tmp
+        exec /entrypoint.sh
     volumes:
-      - ${HIVE_MYSQL_CONNECTOR_JAR:-../../lab-data-warehouse/start/hive-lib/mysql-connector-j-8.0.33.jar}:/opt/hive/lib/mysql-connector-j-8.0.33.jar:ro
-    entrypoint:
-      - bash
-      - -lc
-      - |
-        set -euo pipefail
+      - ${MYSQL_CONNECTOR_JAR:-./hive/jar/mysql-connector-j-8.0.33.jar}:/opt/hive/lib/mysql-connector-j-8.0.33.jar:ro
+      - hive-warehouse:/opt/hive/data/warehouse
 
-        wait_for() {
-          local host="$$1"
-          local port="$$2"
-          local retries="$${3:-90}"
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    restart: unless-stopped
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    volumes:
+      - namenode_data:/hadoop/dfs/name
+    environment:
+      CLUSTER_NAME: single-node
+    env_file:
+      - ./hadoop/hadoop.env
 
-          for _ in $$(seq 1 "$${retries}"); do
-            if (echo >"/dev/tcp/$${host}/$${port}") >/dev/null 2>&1; then
-              return 0
-            fi
-            sleep 2
-          done
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    hostname: datanode
+    restart: unless-stopped
+    ports:
+      - "9864:9864"
+    volumes:
+      - datanode_data:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./hadoop/hadoop.env
+    depends_on:
+      - namenode
 
-          echo "Timed out waiting for $${host}:$${port}" >&2
-          return 1
-        }
+  resourcemanager:
+    image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
+    container_name: resourcemanager
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+    environment:
+      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864"
+    env_file:
+      - ./hadoop/hadoop.env
+    depends_on:
+      - namenode
+      - datanode
 
-        cat > /opt/hive/conf/core-site.xml <<'EOF'
-        <?xml version="1.0"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>fs.defaultFS</name>
-            <value>hdfs://hdfs-namenode:9000</value>
-          </property>
-        </configuration>
-        EOF
-
-        cat > /opt/hive/conf/hive-site.xml <<'EOF'
-        <?xml version="1.0" encoding="UTF-8"?>
-        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-        <configuration>
-          <property>
-            <name>hive.metastore.uris</name>
-            <value>thrift://hive-metastore:9083</value>
-          </property>
-          <property>
-            <name>hive.metastore.warehouse.dir</name>
-            <value>/user/hive/warehouse</value>
-          </property>
-          <property>
-            <name>hive.server2.thrift.bind.host</name>
-            <value>0.0.0.0</value>
-          </property>
-          <property>
-            <name>hive.server2.thrift.port</name>
-            <value>10000</value>
-          </property>
-          <property>
-            <name>hive.server2.webui.host</name>
-            <value>0.0.0.0</value>
-          </property>
-          <property>
-            <name>hive.server2.webui.port</name>
-            <value>10002</value>
-          </property>
-          <property>
-            <name>hive.server2.enable.doAs</name>
-            <value>false</value>
-          </property>
-          <property>
-            <name>hive.notification.event.poll.interval</name>
-            <value>0</value>
-          </property>
-          <property>
-            <name>hive.materializedview.rewriting</name>
-            <value>false</value>
-          </property>
-        </configuration>
-        EOF
-
-        wait_for hive-metastore 9083
-        exec /opt/hive/bin/hiveserver2 --hiveconf hive.root.logger=INFO,console
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "/opt/hive/bin/beeline -u jdbc:hive2://127.0.0.1:10000 -n hive -e 'show databases' >/dev/null 2>&1"
-        ]
-      interval: 15s
-      timeout: 10s
-      retries: 20
-      start_period: 120s
+  nodemanager:
+    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
+    container_name: nodemanager
+    hostname: nodemanager
+    restart: unless-stopped
+    ports:
+      - "8042:8042"
+    environment:
+      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864 resourcemanager:8088"
+    env_file:
+      - ./hadoop/hadoop.env
+    depends_on:
+      - namenode
+      - datanode
+      - resourcemanager
 
   dolphinscheduler:
-    image: ${DOLPHINSCHEDULER_IMAGE:-apache/dolphinscheduler-standalone-server:3.4.2}
-    container_name: ${DOLPHINSCHEDULER_CONTAINER_NAME:-quickly-start-dolphinscheduler}
+    image: dolphinscheduler-flink:3.4.2
+    container_name: quickly-start-dolphinscheduler
     restart: unless-stopped
     ports:
-      - "${DOLPHINSCHEDULER_API_PORT:-12345}:12345"
+      - "12345:12345"
+      - "25333:25333"
     environment:
       TZ: Asia/Shanghai
-
-  seatunnel:
-    image: ${SEATUNNEL_IMAGE:-apache/seatunnel:2.3.13}
-    container_name: ${SEATUNNEL_CONTAINER_NAME:-quickly-start-seatunnel}
-    restart: unless-stopped
-    command: ["sh", "-c", "tail -f /dev/null"]
-    environment:
-      TZ: Asia/Shanghai
+      HADOOP_HOME: /opt/hadoop-3.2.1
+      HADOOP_CONF_DIR: /etc/hadoop
+      YARN_CONF_DIR: /etc/hadoop
+      FLINK_HOME: /opt/flink
+      MASTER_SERVER_LOAD_PROTECTION_ENABLED: "false"
+      WORKER_SERVER_LOAD_PROTECTION_ENABLED: "false"
+    volumes:
+      - ./hadoop/conf/core-site.xml:/etc/hadoop/core-site.xml:ro
+      - ./hadoop/conf/hdfs-site.xml:/etc/hadoop/hdfs-site.xml:ro
+      - ./hadoop/conf/yarn-site.xml:/etc/hadoop/yarn-site.xml:ro
+      - ./hadoop/conf/mapred-site.xml:/etc/hadoop/mapred-site.xml:ro
+      - ./dolphinscheduler/jobs:/opt/jobs:ro
+      - ./flink/flink-conf.yaml:/opt/flink/conf/flink-conf.yaml
+    depends_on:
+      - namenode
+      - datanode
+      - resourcemanager
+      - nodemanager
 
 volumes:
   mysql-data:
   kafka-data:
-  hdfs-namenode:
-  hdfs-datanode:
-  yarn-nodemanager:
-  hadoop-client:
-  flink-yarn-lib:
-  flink-hive-lib:
+  hive-warehouse:
+  namenode_data:
+  datanode_data:
 
 networks:
   default:

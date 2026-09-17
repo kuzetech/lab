@@ -1,2 +1,5 @@
-mysql-data/
-*.log
+hive/jar/*.jar
+flink/jar/*.jar
+dolphinscheduler/dep/*.tgz
+dolphinscheduler/dep/*.gz
+dolphinscheduler/dep/*.jar
