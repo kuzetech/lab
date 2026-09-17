@@ -186,6 +186,7 @@ services:
       - ./hadoop/conf/hdfs-site.xml:/etc/hadoop/hdfs-site.xml:ro
       - ./hadoop/conf/yarn-site.xml:/etc/hadoop/yarn-site.xml:ro
       - ./hadoop/conf/mapred-site.xml:/etc/hadoop/mapred-site.xml:ro
+      - ./hive/conf/hive-site.xml:/etc/hive/hive-site.xml:ro
       - ./dolphinscheduler/jobs:/opt/jobs:ro
       - ./flink/flink-conf.yaml:/opt/flink/conf/flink-conf.yaml
     depends_on:

@@ -1,5 +1,15 @@
-parallelism.default: 1
+parallelism.default: 2
+
+jobmanager.memory.process.size: 768m
+
 taskmanager.numberOfTaskSlots: 2
+taskmanager.memory.process.size: 1024m
+
+state.backend.type: rocksdb
+state.checkpoints.dir: hdfs://namenode:8020/flink/checkpoints
+state.savepoints.dir: hdfs://namenode:8020/flink/savepoints
+state.backend.incremental: true
+
+execution.checkpointing.interval: 15s
+
 yarn.flink-dist-jar: /opt/flink/lib/flink-dist-1.18.1.jar
-state.checkpoints.dir: hdfs://namenode:9000/flink/checkpoints
-state.savepoints.dir: hdfs://namenode:9000/flink/savepoints
