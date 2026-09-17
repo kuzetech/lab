@@ -12,4 +12,4 @@ state.backend.incremental: true
 
 execution.checkpointing.interval: 15s
 
-yarn.flink-dist-jar: /opt/flink/lib/flink-dist-1.18.1.jar
+yarn.flink-dist-jar: /opt/flink/lib/flink-dist-1.20.4.jar

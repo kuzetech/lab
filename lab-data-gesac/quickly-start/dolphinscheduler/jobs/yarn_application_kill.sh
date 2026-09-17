@@ -2,4 +2,4 @@
 
 export HADOOP_CLASSPATH=$(hadoop classpath)
 
-yarn application -kill application_1789617543859_0005
+yarn application -kill application_1789631015769_0003
