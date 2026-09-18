@@ -3,6 +3,8 @@ services:
     image: mysql:8.0
     container_name: quickly-start-mysql
     restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 768m
     ports:
       - "3306:3306"
     environment:
@@ -26,10 +28,30 @@ services:
       retries: 10
       start_period: 30s
 
+  mysql-init:
+    image: mysql:8.0
+    container_name: quickly-start-mysql-init
+    restart: "no"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      TZ: Asia/Shanghai
+    volumes:
+      - ./mysql/initdb:/docker-entrypoint-initdb.d:ro
+    command:
+      - /bin/bash
+      - -c
+      - |
+        mysql -hmysql -uroot -p"$${MYSQL_ROOT_PASSWORD}" app_db < /docker-entrypoint-initdb.d/001-init.sql
+
   kafka:
     image: apache/kafka:3.9.2
     container_name: quickly-start-kafka
     restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 768m
     ports:
       - "9092:9092"
     environment:
@@ -67,9 +89,11 @@ services:
     platform: linux/amd64
     container_name: quickly-start-hive-metastore
     restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 768m
     depends_on:
-      mysql:
-        condition: service_healthy
+      mysql-init:
+        condition: service_completed_successfully
     ports:
       - "9083:9083"
     environment:
@@ -86,18 +110,30 @@ services:
       - /bin/bash
       - -c
       - |
-        if HADOOP_CLIENT_OPTS="$${HADOOP_CLIENT_OPTS} -Xmx1G $${SERVICE_OPTS}" /opt/hive/bin/schematool -dbType "$${DB_DRIVER}" -info >/dev/null 2>&1; then
+        if HADOOP_CLIENT_OPTS="$${HADOOP_CLIENT_OPTS} -Xmx512m $${SERVICE_OPTS}" /opt/hive/bin/schematool -dbType "$${DB_DRIVER}" -info >/dev/null 2>&1; then
           export IS_RESUME=true
         fi
         exec /entrypoint.sh
     volumes:
       - ${MYSQL_CONNECTOR_JAR:-./hive/jar/mysql-connector-j-8.0.33.jar}:/opt/hive/lib/mysql-connector-j-8.0.33.jar:ro
       - hive-warehouse:/opt/hive/data/warehouse
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "timeout 5 bash -c '</dev/tcp/127.0.0.1/9083'"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
 
   namenode:
     image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
     container_name: namenode
     restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 512m
     ports:
       - "9870:9870"
       - "9000:9000"
@@ -113,6 +149,8 @@ services:
     container_name: datanode
     hostname: datanode
     restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 512m
     ports:
       - "9864:9864"
     volumes:
@@ -128,6 +166,8 @@ services:
     image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
     container_name: resourcemanager
     restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 512m
     ports:
       - "8088:8088"
     environment:
@@ -143,6 +183,8 @@ services:
     container_name: nodemanager
     hostname: nodemanager
     restart: unless-stopped
+    cpus: 2.5
+    mem_limit: 3328m
     ports:
       - "8042:8042"
     environment:
@@ -158,6 +200,8 @@ services:
     image: dolphinscheduler-flink:3.4.2
     container_name: quickly-start-dolphinscheduler
     restart: unless-stopped
+    cpus: 1
+    mem_limit: 1536m
     ports:
       - "12345:12345"
       - "25333:25333"
@@ -167,6 +211,21 @@ services:
       HADOOP_CONF_DIR: /etc/hadoop
       YARN_CONF_DIR: /etc/hadoop
       FLINK_HOME: /opt/flink
+      JAVA_OPTS: >-
+        -server
+        -Xms512m
+        -Xmx1024m
+        -Xmn256m
+        -XX:+IgnoreUnrecognizedVMOptions
+        -XX:+PrintGCDateStamps
+        -XX:+PrintGCDetails
+        -Xloggc:gc-%t.log
+        -XX:ErrorFile=java_error-%p.log
+        -XX:-OmitStackTraceInFastThrow
+        -XX:+ExitOnOutOfMemoryError
+        -XX:+HeapDumpOnOutOfMemoryError
+        -XX:HeapDumpPath=dump.hprof
+        -DDOCKER=true
       DATABASE: mysql
       SPRING_PROFILES_ACTIVE: mysql
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
@@ -191,8 +250,8 @@ services:
       - ./flink/flink-conf.yaml:/opt/flink/conf/flink-conf.yaml
       - ./flink/sql-client-init:/opt/flink/conf/sql-init
     depends_on:
-      mysql:
-        condition: service_healthy
+      mysql-init:
+        condition: service_completed_successfully
       namenode:
         condition: service_started
       datanode:
@@ -201,6 +260,16 @@ services:
         condition: service_started
       nodemanager:
         condition: service_started
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "timeout 5 bash -c '</dev/tcp/127.0.0.1/12345'"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 90s
 
 volumes:
   mysql-data:
