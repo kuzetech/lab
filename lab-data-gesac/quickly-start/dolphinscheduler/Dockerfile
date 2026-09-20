@@ -44,3 +44,9 @@ ENV HADOOP_CONF_DIR=/etc/hadoop
 ENV YARN_CONF_DIR=/etc/hadoop
 
 ENV PATH=${PATH}:${HADOOP_HOME}/bin:${FLINK_HOME}/bin
+
+# Make Hadoop/Flink environment available to DolphinScheduler tasks and
+# ad-hoc non-interactive shells inside the container.
+COPY env/default.sh /etc/profile.d/dolphinscheduler-default.sh
+ENV BASH_ENV=/etc/profile.d/dolphinscheduler-default.sh
+RUN printf '\n%s\n' 'source /etc/profile.d/dolphinscheduler-default.sh' >> /root/.bashrc

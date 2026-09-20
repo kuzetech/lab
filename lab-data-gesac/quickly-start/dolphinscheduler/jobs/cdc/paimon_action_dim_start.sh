@@ -1,9 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-export HADOOP_MAPRED_HOME="${HADOOP_MAPRED_HOME:-${HADOOP_HOME}}"
-export HADOOP_CLASSPATH="$(hadoop classpath)"
-
 flink run-application \
     -t yarn-application \
     --detached \

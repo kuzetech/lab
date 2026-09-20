@@ -1,9 +1,15 @@
 parallelism.default: 1
 
-jobmanager.memory.process.size: 768m
+jobmanager.memory.process.size: 512m
+jobmanager.memory.off-heap.size: 64m
+jobmanager.memory.jvm-metaspace.size: 128m
+jobmanager.memory.jvm-overhead.min: 64m
+jobmanager.memory.jvm-overhead.max: 128m
+jobmanager.cpu.cores: 0.5
 
 taskmanager.numberOfTaskSlots: 2
 taskmanager.memory.process.size: 1024m
+taskmanager.cpu.cores: 1.0
 
 state.backend.type: rocksdb
 state.checkpoints.dir: hdfs://namenode:9000/flink/checkpoints

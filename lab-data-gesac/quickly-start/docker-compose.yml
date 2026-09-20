@@ -133,7 +133,7 @@ services:
     container_name: namenode
     restart: unless-stopped
     cpus: 0.5
-    mem_limit: 512m
+    mem_limit: 768m
     ports:
       - "9870:9870"
       - "9000:9000"
@@ -167,7 +167,7 @@ services:
     container_name: resourcemanager
     restart: unless-stopped
     cpus: 0.5
-    mem_limit: 512m
+    mem_limit: 768m
     ports:
       - "8088:8088"
     environment:
@@ -211,6 +211,7 @@ services:
       HADOOP_CONF_DIR: /etc/hadoop
       YARN_CONF_DIR: /etc/hadoop
       FLINK_HOME: /opt/flink
+      BASH_ENV: /etc/profile.d/dolphinscheduler-default.sh
       JAVA_OPTS: >-
         -server
         -Xms512m
@@ -238,6 +239,7 @@ services:
       - /bin/bash
       - -c
       - |
+        source /etc/profile.d/dolphinscheduler-default.sh
         /bin/bash /opt/dolphinscheduler/tools/bin/upgrade-schema.sh
         exec /bin/bash /opt/dolphinscheduler/standalone-server/bin/start.sh
     volumes:
@@ -246,6 +248,7 @@ services:
       - ./hadoop/conf/yarn-site.xml:/etc/hadoop/yarn-site.xml:ro
       - ./hadoop/conf/mapred-site.xml:/etc/hadoop/mapred-site.xml:ro
       - ./hive/conf/hive-site.xml:/etc/hive/hive-site.xml:ro
+      - ./dolphinscheduler/env/default.sh:/etc/profile.d/dolphinscheduler-default.sh:ro
       - ./dolphinscheduler/jobs:/opt/jobs
       - ./flink/flink-conf.yaml:/opt/flink/conf/flink-conf.yaml
       - ./flink/sql-client-init:/opt/flink/conf/sql-init
