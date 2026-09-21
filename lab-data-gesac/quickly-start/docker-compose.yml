@@ -115,7 +115,7 @@ services:
         fi
         exec /entrypoint.sh
     volumes:
-      - ${MYSQL_CONNECTOR_JAR:-./hive/jar/mysql-connector-j-8.0.33.jar}:/opt/hive/lib/mysql-connector-j-8.0.33.jar:ro
+      - ${MYSQL_CONNECTOR_JAR:-./dolphinscheduler/dep/mysql-connector-j-8.0.33.jar}:/opt/hive/lib/mysql-connector-j-8.0.33.jar:ro
       - hive-warehouse:/opt/hive/data/warehouse
     healthcheck:
       test:
