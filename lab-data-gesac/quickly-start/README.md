@@ -1,6 +1,6 @@
 # Docker Quick Start
 
-这个目录提供一个可直接运行的 MySQL + Kafka + Hive Metastore Docker 环境。
+这个目录提供一个可直接运行的 MySQL + Kafka + Hadoop + Hive Metastore Docker 环境。
 
 ## 启动
 
@@ -89,9 +89,26 @@ docker compose exec kafka /opt/kafka/bin/kafka-console-producer.sh --bootstrap-s
 docker compose exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic quickstart-events --from-beginning
 ```
 
+## Hadoop
+
+Hadoop 使用 `apache/hadoop:3.3.6` 镜像。配置文件统一放在 `hadoop/conf/` 目录，并通过 bind mount 挂载到各 Hadoop 容器中：
+
+```text
+hadoop/conf/core-site.xml
+hadoop/conf/hdfs-site.xml
+hadoop/conf/yarn-site.xml
+hadoop/conf/mapred-site.xml
+hadoop/conf/capacity-scheduler.xml
+hadoop/conf/hive-site.xml
+```
+
+`hadoop.env` 已不再使用；HDFS、YARN、MapReduce、Hive client 相关配置都维护在上述 XML 文件中。
+
 ## Hive Metastore
 
 Hive Metastore 使用 `apache/hive:3.1.3` 镜像，以 standalone metastore 模式运行，并连接到 MySQL 中的 `hive_metastore` 数据库。
+
+容器内存限制为 `768m`，启动时使用 `-Xmx512m`，避免 Hive 镜像默认 `-Xmx1G` 在 768 MiB 限制下触发内存问题。
 
 ### MySQL JDBC Driver
 
@@ -99,6 +116,12 @@ Hive Metastore 使用 `apache/hive:3.1.3` 镜像，以 standalone metastore 模�
 
 ```text
 quickly-start/mysql/jar/mysql-connector-j-8.0.33.jar
+```
+
+该 jar 会挂载到容器内：
+
+```text
+/opt/hive/lib/mysql-connector-j-8.0.33.jar
 ```
 
 也可以通过环境变量指定本机已有的 jar：
