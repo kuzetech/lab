@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS erp.user_info (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT IGNORE INTO erp.user_info
+REPLACE INTO erp.user_info
   (id, login_name, nick_name, user_level, birthday, gender, create_time, operate_time, status)
 VALUES
   (1, 'zhangsan', '张三', '1', '1998-03-12', 'M', '2024-01-05 09:12:31', '2024-06-11 14:20:00', 'active'),
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS erp.sku_info (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT IGNORE INTO erp.sku_info
+REPLACE INTO erp.sku_info
   (id, spu_id, price, sku_name, sku_desc, weight, tm_id, tm_name, category3_id, category3_name, is_sale, create_time, operate_time)
 VALUES
   (1, 1001, 3999.00, 'XPhone 15 128GB 星夜黑', '6.1英寸旗舰手机，128GB存储，星夜黑配色', 0.18, 1, '星河科技', 101, '智能手机', 1, '2024-01-06 09:10:00', '2024-06-01 10:20:00'),
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS erp.order_info (
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT IGNORE INTO erp.order_info
+REPLACE INTO erp.order_info
   (id, consignee, consignee_tel, total_amount, order_status, user_id, payment_way, delivery_address, order_comment, out_trade_no, trade_body, create_time, operate_time, expire_time, process_status, tracking_no, parent_order_id, img_url, province_id, activity_reduce_amount, coupon_reduce_amount, original_total_amount, feight_fee, feight_fee_reduce, refundable_time)
 VALUES
   (1, '张三', '13800010001', 3999.00, '1001', 1, 'alipay', '北京市朝阳区望京街道科技园1号', '请工作日配送', 'OT202405010001', 'XPhone 15 128GB 星夜黑', '2024-05-01 09:15:12', '2024-05-01 09:20:30', '2024-05-01 09:45:12', 'paid', 'SF100000001', NULL, 'https://img.example.com/order/1.jpg', 11, 200.00, 100.00, 4299.00, 12.00, 12.00, '2024-05-08 09:15:12'),

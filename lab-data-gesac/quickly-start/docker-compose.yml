@@ -44,7 +44,7 @@ services:
       - /bin/bash
       - -c
       - |
-        mysql -hmysql -uroot -p"$${MYSQL_ROOT_PASSWORD}" app_db < /docker-entrypoint-initdb.d/001-init.sql
+        mysql --default-character-set=utf8mb4 -hmysql -uroot -p"$${MYSQL_ROOT_PASSWORD}" app_db < /docker-entrypoint-initdb.d/001-init.sql
 
   kafka:
     image: apache/kafka:3.9.2
@@ -166,10 +166,12 @@ services:
     image: bde2020/hadoop-resourcemanager:2.0.0-hadoop3.2.1-java8
     container_name: resourcemanager
     restart: unless-stopped
-    cpus: 0.5
-    mem_limit: 768m
+    cpus: 1
+    mem_limit: 1g
     ports:
       - "8088:8088"
+    volumes:
+      - ./hadoop/conf/capacity-scheduler.xml:/etc/hadoop/capacity-scheduler.xml:ro
     environment:
       SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864"
     env_file:
@@ -183,8 +185,7 @@ services:
     container_name: nodemanager
     hostname: nodemanager
     restart: unless-stopped
-    cpus: 2.5
-    mem_limit: 3328m
+    mem_limit: 4g
     ports:
       - "8042:8042"
     environment:
@@ -201,7 +202,7 @@ services:
     container_name: quickly-start-dolphinscheduler
     restart: unless-stopped
     cpus: 1
-    mem_limit: 1536m
+    mem_limit: 0.5g
     ports:
       - "12345:12345"
       - "25333:25333"
@@ -241,7 +242,7 @@ services:
       - |
         source /etc/profile.d/dolphinscheduler-default.sh
         /bin/bash /opt/dolphinscheduler/tools/bin/upgrade-schema.sh
-        exec /bin/bash /opt/dolphinscheduler/standalone-server/bin/start.sh
+        exec tail -f /dev/null
     volumes:
       - ./hadoop/conf/core-site.xml:/etc/hadoop/core-site.xml:ro
       - ./hadoop/conf/hdfs-site.xml:/etc/hadoop/hdfs-site.xml:ro

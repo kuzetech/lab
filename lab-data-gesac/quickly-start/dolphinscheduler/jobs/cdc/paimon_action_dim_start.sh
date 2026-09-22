@@ -6,7 +6,7 @@ flink run-application \
     --detached \
     -Dyarn.application.name=gesac_erp_dim_cdc \
     -Dparallelism.default=2 \
-    -Djobmanager.memory.process.size=768mb \
+    -Djobmanager.memory.process.size=512mb \
     -Dtaskmanager.memory.process.size=1024mb \
     -Dtaskmanager.numberOfTaskSlots=2 \
     /opt/flink/lib/paimon-flink-action-2.0.0.jar \
@@ -25,4 +25,4 @@ flink run-application \
     --table-conf bucket=2 \
     --table-conf changelog-producer=input \
     --table-conf sink.parallelism=2 \
-    --including-tables 'user_info|sku_info'  
+    --including-tables 'user_info'

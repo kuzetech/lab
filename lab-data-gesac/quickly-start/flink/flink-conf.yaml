@@ -6,6 +6,10 @@ jobmanager.memory.jvm-metaspace.size: 128m
 jobmanager.memory.jvm-overhead.min: 64m
 jobmanager.memory.jvm-overhead.max: 128m
 jobmanager.cpu.cores: 0.5
+# Required by Paimon MySQL CDC to preserve non-ASCII text on Flink 1.17+.
+env.java.opts.all: -Dfile.encoding=UTF-8
+# On the single-node setup, tolerate temporary GC/checkpoint I/O stalls.
+heartbeat.timeout: 180 s
 
 taskmanager.numberOfTaskSlots: 2
 taskmanager.memory.process.size: 1024m
