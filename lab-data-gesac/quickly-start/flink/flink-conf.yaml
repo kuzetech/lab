@@ -1,7 +1,7 @@
 # Required by Paimon MySQL CDC to preserve non-ASCII text on Flink 1.17+.
 env.java.opts.all: -Dfile.encoding=UTF-8
 
-parallelism.default: 1
+parallelism.default: 2
 execution.checkpointing.interval: 30s
 
 jobmanager.cpu.cores: 1.0
