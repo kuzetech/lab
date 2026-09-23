@@ -1,25 +1,19 @@
-parallelism.default: 1
-
-jobmanager.memory.process.size: 512m
-jobmanager.memory.off-heap.size: 64m
-jobmanager.memory.jvm-metaspace.size: 128m
-jobmanager.memory.jvm-overhead.min: 64m
-jobmanager.memory.jvm-overhead.max: 128m
-jobmanager.cpu.cores: 0.5
 # Required by Paimon MySQL CDC to preserve non-ASCII text on Flink 1.17+.
 env.java.opts.all: -Dfile.encoding=UTF-8
-# On the single-node setup, tolerate temporary GC/checkpoint I/O stalls.
-heartbeat.timeout: 180s
 
-taskmanager.numberOfTaskSlots: 2
-taskmanager.memory.process.size: 1024m
-taskmanager.cpu.cores: 1.0
-
-state.backend.type: rocksdb
-state.checkpoints.dir: hdfs://namenode:9000/flink/checkpoints
-state.savepoints.dir: hdfs://namenode:9000/flink/savepoints
-state.backend.incremental: true
-
+parallelism.default: 1
 execution.checkpointing.interval: 30s
 
-yarn.flink-dist-jar: /opt/flink/lib/flink-dist-1.20.4.jar
+jobmanager.cpu.cores: 1.0
+jobmanager.memory.process.size: 768m
+
+taskmanager.cpu.cores: 1.0
+taskmanager.memory.process.size: 1024m
+taskmanager.numberOfTaskSlots: 2
+
+state.backend.type: rocksdb
+state.backend.incremental: true
+state.checkpoints.dir: hdfs://namenode:9000/flink/checkpoints
+state.savepoints.dir: hdfs://namenode:9000/flink/savepoints
+
+yarn.flink-dist-jar: /opt/flink/lib/flink-dist-1.20.4.jar 
