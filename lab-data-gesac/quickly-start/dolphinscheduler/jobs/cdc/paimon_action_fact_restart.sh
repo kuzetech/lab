@@ -4,20 +4,20 @@ set -euo pipefail
 flink run-application \
     -t yarn-application \
     --detached \
-    --fromSavepoint hdfs://namenode:9000/flink/savepoint/gesac_erp_order_cdc/savepoint-2e9796-7ca4e80a0d1f \
-    -Dyarn.application.name=gesac_erp_order_cdc \
+    --fromSavepoint hdfs://namenode:9000/flink/savepoints/gesac_erp_order_info_cdc/savepoint-0d1728-2dc9fe97d730 \
+    -Dyarn.application.name=gesac_erp_order_info_cdc \
     -Dparallelism.default=2 \
     -Djobmanager.memory.process.size=768mb \
-    -Dtaskmanager.memory.process.size=1024mb \
+    -Dtaskmanager.memory.process.size=2048mb \
     -Dtaskmanager.numberOfTaskSlots=2 \
     /opt/flink/lib/paimon-flink-action-2.0.0.jar \
     mysql_sync_table \
     --warehouse hdfs://namenode:9000/paimon/hive \
     --database erp \
     --table ods_order_info_cdc \
+    --computed_column  'dt=date_format(create_time,'yyyy-MM-dd')'  \
     --partition_keys dt \
     --primary_keys dt,id \
-    --computed_column  'dt=date_format(create_time,'yyyy-MM-dd')'  \
     --mysql_conf hostname=mysql \
     --mysql_conf username=root \
     --mysql_conf password=root_password \
