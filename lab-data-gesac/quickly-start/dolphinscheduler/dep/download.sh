@@ -11,6 +11,8 @@ DOWNLOAD_URLS=(
   "https://repo.maven.apache.org/maven2/org/apache/paimon/paimon-flink-1.20/2.0.0/paimon-flink-1.20-2.0.0.jar"
   "https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-hive-3.1.3_2.12/1.20.4/flink-sql-connector-hive-3.1.3_2.12-1.20.4.jar"
   "https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-mysql-cdc/3.5.0/flink-sql-connector-mysql-cdc-3.5.0.jar"
+  "https://repo1.maven.org/maven2/org/apache/flink/flink-connector-kafka/3.4.0-1.20/flink-connector-kafka-3.4.0-1.20.jar"
+  "https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.9.2/kafka-clients-3.9.2.jar"
   "https://repo1.maven.org/maven2/org/apache/paimon/paimon-hive-connector-3.1/2.0.0/paimon-hive-connector-3.1-2.0.0.jar"
   "https://repo1.maven.org/maven2/org/apache/paimon/paimon-flink-action/2.0.0/paimon-flink-action-2.0.0.jar"
 )

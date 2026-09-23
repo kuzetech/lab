@@ -1,0 +1,10 @@
+{"event":"page","page":"/home","ts":1790150400000}
+{"event":"login","page":"/login","ts":1790150401000}
+{"event":"page","page":"/product/1001","ts":1790150402000}
+{"event":"page","page":"/cart","ts":1790150403000}
+{"event":"other","page":"/api/heartbeat","ts":1790150404000}
+{"event":"page","page":"/checkout","ts":1790150405000}
+{"event":"login","page":"/login","ts":1790150406000}
+{"event":"page","page":"/order/success","ts":1790150407000}
+{"event":"other","page":"/profile/settings","ts":1790150408000}
+{"event":"page","page":"/home","ts":1790150409000}

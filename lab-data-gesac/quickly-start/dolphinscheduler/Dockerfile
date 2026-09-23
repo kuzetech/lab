@@ -28,6 +28,8 @@ COPY dep/paimon-flink-${PAIMON_FLINK_MINOR_VERSION}-${PAIMON_FLINK_VERSION}.jar 
 COPY dep/flink-sql-connector-hive-3.1.3_2.12-${FLINK_VERSION}.jar /opt/flink/lib/
 COPY dep/mysql-connector-j-${MYSQL_CONNECTOR_VERSION}.jar /opt/flink/lib/
 COPY dep/flink-sql-connector-mysql-cdc-3.5.0.jar /opt/flink/lib/
+COPY dep/flink-connector-kafka-3.4.0-1.20.jar /opt/flink/lib/
+COPY dep/kafka-clients-3.9.2.jar /opt/flink/lib/
 COPY dep/paimon-hive-connector-3.1-2.0.0.jar /opt/flink/lib/
 COPY dep/paimon-flink-action-2.0.0.jar /opt/flink/lib/
 RUN cp /opt/hadoop-${HADOOP_VERSION}/share/hadoop/mapreduce/hadoop-mapreduce-client-*.jar /opt/flink/lib/
