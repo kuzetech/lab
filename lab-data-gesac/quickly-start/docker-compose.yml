@@ -140,7 +140,7 @@ services:
     hostname: namenode
     restart: unless-stopped
     cpus: 0.5
-    mem_limit: 768m
+    mem_limit: 512m
     user: root
     command:
       - /bin/bash
@@ -163,7 +163,7 @@ services:
       - ./hadoop/conf/mapred-site.xml:/opt/hadoop/etc/hadoop/mapred-site.xml:ro
     environment:
       ENSURE_NAMENODE_DIR: /tmp/hadoop-root/dfs/name
-      HDFS_NAMENODE_OPTS: -Xmx512m
+      HDFS_NAMENODE_OPTS: -Xmx384m
 
   datanode:
     image: apache/hadoop:3.3.6
@@ -199,7 +199,7 @@ services:
     hostname: resourcemanager
     restart: unless-stopped
     cpus: 1
-    mem_limit: 1g
+    mem_limit: 768m
     command: ["yarn", "resourcemanager"]
     ports:
       - "8088:8088"
@@ -210,7 +210,7 @@ services:
       - ./hadoop/conf/mapred-site.xml:/opt/hadoop/etc/hadoop/mapred-site.xml:ro
       - ./hadoop/conf/capacity-scheduler.xml:/opt/hadoop/etc/hadoop/capacity-scheduler.xml:ro
     environment:
-      YARN_RESOURCEMANAGER_OPTS: -Xmx768m
+      YARN_RESOURCEMANAGER_OPTS: -Xmx512m
     depends_on:
       - namenode
       - datanode
@@ -240,8 +240,8 @@ services:
     image: dolphinscheduler-flink:3.4.2
     container_name: quickly-start-dolphinscheduler
     restart: unless-stopped
-    cpus: 1
-    mem_limit: 0.5g
+    cpus: 2
+    mem_limit: 1g
     ports:
       - "12345:12345"
       - "25333:25333"

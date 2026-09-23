@@ -5,11 +5,11 @@ flink run-application \
     -t yarn-application \
     --detached \
     --allowNonRestoredState \
-    --fromSavepoint hdfs://namenode:9000/flink/savepoint/gesac_erp_dim_cdc/savepoint-2e9796-7ca4e80a0d1f \
+    --fromSavepoint hdfs://namenode:9000/flink/savepoints/gesac_erp_dim_cdc/savepoint-155a0d-d0fb3679c74b \
     -Dyarn.application.name=gesac_erp_dim_cdc \
     -Dparallelism.default=2 \
-    -Djobmanager.memory.process.size=512mb \
-    -Dtaskmanager.memory.process.size=1024mb \
+    -Djobmanager.memory.process.size=768mb \
+    -Dtaskmanager.memory.process.size=2048mb \
     -Dtaskmanager.numberOfTaskSlots=2 \
     /opt/flink/lib/paimon-flink-action-2.0.0.jar \
     mysql-sync-database \

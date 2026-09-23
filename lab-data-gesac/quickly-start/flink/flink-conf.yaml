@@ -9,7 +9,7 @@ jobmanager.cpu.cores: 0.5
 # Required by Paimon MySQL CDC to preserve non-ASCII text on Flink 1.17+.
 env.java.opts.all: -Dfile.encoding=UTF-8
 # On the single-node setup, tolerate temporary GC/checkpoint I/O stalls.
-heartbeat.timeout: 180 s
+heartbeat.timeout: 180s
 
 taskmanager.numberOfTaskSlots: 2
 taskmanager.memory.process.size: 1024m
@@ -20,6 +20,6 @@ state.checkpoints.dir: hdfs://namenode:9000/flink/checkpoints
 state.savepoints.dir: hdfs://namenode:9000/flink/savepoints
 state.backend.incremental: true
 
-execution.checkpointing.interval: 15s
+execution.checkpointing.interval: 30s
 
 yarn.flink-dist-jar: /opt/flink/lib/flink-dist-1.20.4.jar
