@@ -1,0 +1,19 @@
+PRODUCER events-page
+topic: source_log
+every: 2s
+{
+  "event": "page",
+  "page": "{{internet.url}}",
+  "ts": {{$timestamp}}
+}
+
+###
+
+PRODUCER events-other
+topic: source_log
+every: 2s
+{
+  "event": "other",
+  "page": "",
+  "ts": {{$timestamp}}
+}
