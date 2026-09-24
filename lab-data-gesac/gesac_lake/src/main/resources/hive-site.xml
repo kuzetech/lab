@@ -2,10 +2,10 @@
 <configuration>
     <property>
         <name>hive.metastore.uris</name>
-        <value>thrift://hive-metastore:9083</value>
+        <value>thrift://localhost:9083</value>
     </property>
     <property>
         <name>hive.metastore.warehouse.dir</name>
-        <value>hdfs://namenode:9000/paimon/hive</value>
+        <value>hdfs://localhost:9000/paimon/hive</value>
     </property>
 </configuration>

@@ -89,7 +89,7 @@ services:
     platform: linux/amd64
     container_name: quickly-start-hive-metastore
     restart: unless-stopped
-    cpus: 0.5
+    cpus: 1
     mem_limit: 768m
     depends_on:
       mysql-init:
