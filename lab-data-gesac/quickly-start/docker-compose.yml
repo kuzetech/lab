@@ -220,7 +220,7 @@ services:
     container_name: nodemanager
     hostname: nodemanager
     restart: unless-stopped
-    mem_limit: 4g
+    mem_limit: 3g
     command: ["yarn", "nodemanager"]
     ports:
       - "8042:8042"

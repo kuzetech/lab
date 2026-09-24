@@ -5,6 +5,10 @@
         <value>thrift://localhost:9083</value>
     </property>
     <property>
+        <name>hive.metastore.uri.selection</name>
+        <value>SEQUENTIAL</value>
+    </property>
+    <property>
         <name>hive.metastore.warehouse.dir</name>
         <value>hdfs://localhost:9000/paimon/hive</value>
     </property>

@@ -6,20 +6,22 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.paimon.catalog.Catalog;
 
-public class Kafka2Ods_Ingest {
+public class  Kafka2Ods_Ingest {
     public static void main(String[] args) {
         StreamExecutionEnvironment env =
                 EnvironmentUtil.generateStreamExecutionEnvironment("log_source_to_ods");
         StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
 
         tableEnv.executeSql("""
-                CREATE CATALOG myhive WITH (
+                CREATE CATALOG hive_catalog WITH (
                   'type' = 'hive',
-                  'hive-conf-dir' = '/opt/hive-conf'
+                  'hive-conf-dir' = 'src/main/resources'
                 );
                 """);
 
-        Catalog catalog = CatalogUtil.generateHiveCatalog();
+        tableEnv.executeSql("""
+                USE CATALOG hive_catalog; 
+                """);
 
         tableEnv.executeSql("""
                 CREATE TEMPORARY TABLE source (
@@ -37,7 +39,11 @@ public class Kafka2Ods_Ingest {
                 """);
 
 
-        //PaimonUtil.generateOdsLogEventSink(catalog, "gesac_lake", "ods_log", )
+        tableEnv.sqlQuery("""
+                select * from source
+                """).execute().print();
+
+
 
 
     }
