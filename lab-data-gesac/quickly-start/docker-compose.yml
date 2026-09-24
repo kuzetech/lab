@@ -182,6 +182,8 @@ services:
         exec su -s /bin/bash hadoop -c 'hdfs datanode'
     ports:
       - "9864:9864"
+      - "9866:9866"
+      - "9867:9867"
     volumes:
       - datanode_data:/tmp/hadoop-root/dfs/data
       - ./hadoop/conf/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml:ro

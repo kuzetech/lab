@@ -6,7 +6,7 @@ import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 public class EnvironmentUtil {
-    public static StreamExecutionEnvironment generateStreamExecutionEnvironment(String applicationName){
+    public static StreamExecutionEnvironment generateStreamExecutionEnvironment(String applicationName) {
         //hdfs操作账号
         System.setProperty("HADOOP_USER_NAME", "root");
 
@@ -22,7 +22,6 @@ public class EnvironmentUtil {
         checkpointConfig.setTolerableCheckpointFailureNumber(3);
         checkpointConfig.setCheckpointTimeout(60000);
         checkpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
-
 
         return env;
     }

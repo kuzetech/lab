@@ -9,8 +9,8 @@ public class CatalogUtil {
         Options catalogOptions = new Options();
         catalogOptions.set("type", "paimon");
         catalogOptions.set("metastore", "hive");
-        catalogOptions.set("uri", "thrift://hive-metastore:9083");
-        catalogOptions.set("hive-conf-dir", "./src/main/resources/hive-site.xml");
+        catalogOptions.set("uri", "thrift://localhost:9083");
+        catalogOptions.set("hive-conf-dir", "src/main/resources");
         catalogOptions.set("warehouse", "hdfs://namenode:9000/paimon/hive");
         return FlinkCatalogFactory.createPaimonCatalog(catalogOptions);
     }

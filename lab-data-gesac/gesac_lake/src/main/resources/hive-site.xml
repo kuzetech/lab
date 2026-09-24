@@ -10,6 +10,6 @@
     </property>
     <property>
         <name>hive.metastore.warehouse.dir</name>
-        <value>hdfs://localhost:9000/paimon/hive</value>
+        <value>hdfs://namenode:9000/paimon/hive</value>
     </property>
 </configuration>
