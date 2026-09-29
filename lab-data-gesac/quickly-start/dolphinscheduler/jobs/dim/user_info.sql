@@ -1,4 +1,4 @@
-CREATE TABLE `hive_catalog`.`gmall_lake2024`.`dim_user_info` (
+CREATE TABLE `hive_catalog`.`gesac_lake`.`dim_user_info` (
     `id` BIGINT NOT NULL,
     `login_name` VARCHAR(200),
     `nick_name` VARCHAR(200),
@@ -10,17 +10,16 @@ CREATE TABLE `hive_catalog`.`gmall_lake2024`.`dim_user_info` (
     `status` VARCHAR(200),
     CONSTRAINT `PK_id` PRIMARY KEY (`id`) NOT ENFORCED
 ) WITH (
-    'path' = 'hdfs://namenode:9000/paimon/hive/gmall_lake2024.db/dim_user_info',
+    'path' = 'hdfs://namenode:9000/paimon/hive/gesac_lake.db/dim_user_info',
     'bucket' = '2',
     'changelog-producer' = 'input',
     'sink.parallelism' = '2',
     'tag.automatic-creation' = 'process-time',
     'tag.creation-period' = 'daily',
-    'tag.creation-delay' = '1m',
-    'tag.num-retained-max' = '30' ,
+    'tag.creation-delay' = '5m',
+    'tag.num-retained-max' = '365',
     'metastore.tag-to-partition'='dt',
-    'metastore.tag-to-partition.preview'='process-time',
-    'tag.num-retained-max'='365'
+    'metastore.tag-to-partition.preview'='process-time'
 );
 
 insert into dim_user_info
@@ -34,4 +33,4 @@ select
     `create_time`, 
     `operate_time`,
     `status`
-from `gmall_lake2024`.`ods_user_info_cdc`;
+from `gesac_lake`.`ods_user_info_cdc`;

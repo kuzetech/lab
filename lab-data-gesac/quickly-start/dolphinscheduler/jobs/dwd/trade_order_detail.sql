@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS dwd_trade_order_detail
 )PARTITIONED BY (dt)
  WITH (
     'bucket' = '2',
-    'path' = 'hdfs://hadoop102:8020/paimon/hive/gmall_lake2024.db/dwd_trade_order_detail',
+    'path' = 'hdfs://namenode:9000/paimon/hive/gesac_lake.db/dwd_trade_order_detail',
     'sink.parallelism' = '2',
     'changelog-producer' = 'input',
     'metastore.partitioned-table'='true'
@@ -25,20 +25,19 @@ CREATE TABLE IF NOT EXISTS dwd_trade_order_detail
 
 set 'table.exec.sink.upsert-materialize'='NONE';
 insert into dwd_trade_order_detail
-select 
-     od.`id`,                 
-     od.`order_id`,      
-     oi.`user_id`,          
-     od.`sku_id`,         
-     oi.`province_id`,        
-     oi.`create_time`,         
-     oi.`operate_time`,      
-     od.`sku_num`,         
-     od.`order_price`,         
+select
+     od.`id`,
+     od.`order_id`,
+     oi.`user_id`,
+     od.`sku_id`,
+     oi.`province_id`,
+     oi.`create_time`,
+     oi.`operate_time`,
+     od.`sku_num`,
+     od.`order_price`,
      od.`split_activity_amount`,
      od.`split_coupon_amount`,
-     od.`split_total_amount`,   
+     od.`split_total_amount`,
      oi.`dt`
 from ods_order_info_cdc oi
-inner join ods_order_detail_cdc od on oi.id=od.order_id
-and oi.`dt`=od.`dt`;
+inner join ods_order_detail_cdc od on oi.id=od.order_id and oi.`dt`=od.`dt`;
