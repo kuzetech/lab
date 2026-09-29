@@ -1,3 +1,5 @@
+
+--tag.automatic-creation 可以尝试水印模式
 CREATE TABLE `hive_catalog`.`gesac_lake`.`dim_user_info` (
     `id` BIGINT NOT NULL,
     `login_name` VARCHAR(200),
