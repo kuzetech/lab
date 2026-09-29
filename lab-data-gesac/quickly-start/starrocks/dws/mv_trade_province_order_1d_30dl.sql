@@ -25,5 +25,5 @@ select
     `activity_reduce_amount_1d`,
     `coupon_reduce_amount_1d`,
     `order_total_amount_1d`   
-from paimon_catalog.gmall_lake2024.dws_trade_province_order_1d
-where str2date (dt,'%Y-%m-%d') = current_date()
+from paimon_catalog.gesac_lake.dws_trade_province_order_1d
+where str2date (dt,'%Y-%m-%d') = current_date() 

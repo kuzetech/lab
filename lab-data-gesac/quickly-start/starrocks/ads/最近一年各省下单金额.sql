@@ -9,7 +9,7 @@ from(
     union all 
     select 
         * 
-    from paimon_catalog.gmall_lake2024.dws_trade_province_order_1d 
+    from paimon_catalog.gesac_lake.dws_trade_province_order_1d 
     where str2date(dt,'%Y-%m-%d') > current_date() - interval 30 day 
     and str2date(dt,'%Y-%m-%d') < current_date() - interval 365 day
 ) order_all
