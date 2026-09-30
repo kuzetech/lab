@@ -1,0 +1,133 @@
+name: superset-starrocks
+
+services:
+  starrocks:
+    image: starrocks/allin1-ubuntu:4.1.4
+    restart: unless-stopped
+    ports:
+      - "8030:8030" # StarRocks web UI
+      - "9030:9030" # MySQL-compatible SQL endpoint
+    volumes:
+      - starrocks-data:/data
+    # Explicit limits for Docker Compose (also retained under deploy for Swarm).
+    cpus: "3.0"
+    mem_limit: 6g
+    deploy:
+      resources:
+        limits:
+          cpus: "3.0"
+          memory: 6G
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -h 127.0.0.1 -P 9030 -u root -e 'SELECT 1' >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 40s
+    networks:
+      - analytics
+
+  # Runs once after StarRocks is ready. The SQL is idempotent, so it is safe on
+  # subsequent `docker compose up` runs and preserves any user-added rows.
+  starrocks-init:
+    image: starrocks/allin1-ubuntu:4.1.4
+    depends_on:
+      starrocks:
+        condition: service_healthy
+    command:
+      - /bin/sh
+      - -ec
+      - mysql -h starrocks -P 9030 -u root < /docker-init/starrocks-init.sql
+    volumes:
+      - ./starrocks-init.sql:/docker-init/starrocks-init.sql:ro
+    cpus: "0.5"
+    mem_limit: 512m
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+    restart: "no"
+    networks:
+      - analytics
+
+  superset-init:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: local/superset-starrocks:6.0.0
+    environment:
+      # Change these development credentials and the secret before non-local use.
+      SUPERSET_SECRET_KEY: replace-with-a-long-random-secret-before-production-2026
+      SUPERSET_CONFIG_PATH: /app/pythonpath/superset_config.py
+      ADMIN_USERNAME: admin
+      ADMIN_FIRSTNAME: Superset
+      ADMIN_LASTNAME: Admin
+      ADMIN_EMAIL: admin@example.com
+      ADMIN_PASSWORD: admin
+      STARROCKS_HOST: starrocks
+      STARROCKS_PORT: "9030"
+    depends_on:
+      starrocks-init:
+        condition: service_completed_successfully
+    command: >-
+      /bin/sh -c "superset db upgrade &&
+      (superset fab create-admin
+      --username $$ADMIN_USERNAME
+      --firstname $$ADMIN_FIRSTNAME
+      --lastname $$ADMIN_LASTNAME
+      --email $$ADMIN_EMAIL
+      --password $$ADMIN_PASSWORD || true) &&
+      superset init &&
+      python /app/pythonpath/init_starrocks.py &&
+      superset import-dashboards
+      --path /app/assets/gesac-dashboard.zip
+      --username $$ADMIN_USERNAME"
+    volumes:
+      - superset-home:/app/superset_home
+    cpus: "1.0"
+    mem_limit: 2g
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 2G
+    restart: "no"
+    networks:
+      - analytics
+
+  superset:
+    image: local/superset-starrocks:6.0.0
+    restart: unless-stopped
+    environment:
+      SUPERSET_SECRET_KEY: replace-with-a-long-random-secret-before-production-2026
+      SUPERSET_CONFIG_PATH: /app/pythonpath/superset_config.py
+    depends_on:
+      superset-init:
+        condition: service_completed_successfully
+    ports:
+      - "8088:8088"
+    volumes:
+      - superset-home:/app/superset_home
+    cpus: "2.0"
+    mem_limit: 4g
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 4G
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"from urllib.request import urlopen; urlopen('http://127.0.0.1:8088/health', timeout=3)\""]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - analytics
+
+volumes:
+  starrocks-data:
+  superset-home:
+
+networks:
+  analytics:
+    name: superset-analytics
