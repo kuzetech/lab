@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.springbootdemo.userinfo.mapper.OrderInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.atguigu.springbootdemo.userinfo.bean.OrderInfo">
+        <id column="id" property="id" />
+        <result column="consignee" property="consignee" />
+        <result column="consignee_tel" property="consigneeTel" />
+        <result column="total_amount" property="totalAmount" />
+        <result column="order_status" property="orderStatus" />
+        <result column="user_id" property="userId" />
+        <result column="payment_way" property="paymentWay" />
+        <result column="delivery_address" property="deliveryAddress" />
+        <result column="order_comment" property="orderComment" />
+        <result column="out_trade_no" property="outTradeNo" />
+        <result column="trade_body" property="tradeBody" />
+        <result column="create_time" property="createTime" />
+        <result column="operate_time" property="operateTime" />
+        <result column="expire_time" property="expireTime" />
+        <result column="process_status" property="processStatus" />
+        <result column="tracking_no" property="trackingNo" />
+        <result column="parent_order_id" property="parentOrderId" />
+        <result column="img_url" property="imgUrl" />
+        <result column="province_id" property="provinceId" />
+        <result column="activity_reduce_amount" property="activityReduceAmount" />
+        <result column="coupon_reduce_amount" property="couponReduceAmount" />
+        <result column="original_total_amount" property="originalTotalAmount" />
+        <result column="feight_fee" property="feightFee" />
+        <result column="feight_fee_reduce" property="feightFeeReduce" />
+        <result column="refundable_time" property="refundableTime" />
+    </resultMap>
+
+</mapper>

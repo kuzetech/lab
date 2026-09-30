@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.springbootdemo.userinfo.mapper.UserInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.atguigu.springbootdemo.userinfo.bean.UserInfo">
+        <id column="id" property="id" />
+        <result column="login_name" property="loginName" />
+        <result column="nick_name" property="nickName" />
+        <result column="passwd" property="passwd" />
+        <result column="name" property="name" />
+        <result column="phone_num" property="phoneNum" />
+        <result column="email" property="email" />
+        <result column="head_img" property="headImg" />
+        <result column="user_level" property="userLevel" />
+        <result column="birthday" property="birthday" />
+        <result column="gender" property="gender" />
+        <result column="create_time" property="createTime" />
+        <result column="operate_time" property="operateTime" />
+        <result column="status" property="status" />
+    </resultMap>
+
+</mapper>
