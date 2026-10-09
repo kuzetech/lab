@@ -1,0 +1,28 @@
+-- 测试库 ------------------------------------
+CREATE TABLE IF NOT EXISTS example_items (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+INSERT INTO example_items (name)
+VALUES ('hello mysql');
+-- --------------------------------------------------------------------
+
+
+-- hive 元数据库 ----------------------------------
+CREATE DATABASE IF NOT EXISTS hive_metastore
+  DEFAULT CHARACTER SET utf8mb4
+  DEFAULT COLLATE utf8mb4_0900_ai_ci;
+
+CREATE USER IF NOT EXISTS 'hive'@'%' IDENTIFIED BY 'hive_password';
+ALTER USER 'hive'@'%' IDENTIFIED BY 'hive_password';
+
+GRANT ALL PRIVILEGES ON hive_metastore.* TO 'hive'@'%';
+-- --------------------------------------------------------------------
+
+
+-- 重新加载权限 ----------------------------------
+FLUSH PRIVILEGES;
+-- --------------------------------------------------------------------
