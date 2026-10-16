@@ -1,12 +1,12 @@
 -- 测试库 ------------------------------------
-CREATE TABLE IF NOT EXISTS example_items (
+CREATE TABLE IF NOT EXISTS app_db.example_items (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name VARCHAR(100) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO example_items (name)
+INSERT INTO app_db.example_items (name)
 VALUES ('hello mysql');
 -- --------------------------------------------------------------------
 
