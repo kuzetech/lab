@@ -1,6 +1,5 @@
 package com.kuzetech.bigdata.governance.service.impl;
 
-import com.atguigu.dga.governance.service.*;
 import com.kuzetech.bigdata.governance.service.*;
 import com.kuzetech.bigdata.meta.service.TableMetaInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,48 +15,48 @@ import org.springframework.stereotype.Service;
 public class MainServiceImpl implements MainService {
 
     @Autowired
-    TableMetaInfoService tableMetaInfoService ;
+    TableMetaInfoService tableMetaInfoService;
 
     @Autowired
     GovernanceAssessDetailService governanceAssessDetailService;
 
     @Autowired
-    GovernanceAssessTableService governanceAssessTableService ;
+    GovernanceAssessTableService governanceAssessTableService;
 
     @Autowired
-    GovernanceAssessTecOwnerService governanceAssessTecOwnerService ;
+    GovernanceAssessTecOwnerService governanceAssessTecOwnerService;
 
     @Autowired
-    GovernanceAssessGlobalService governanceAssessGlobalService ;
+    GovernanceAssessGlobalService governanceAssessGlobalService;
 
     @Value("${default.dw.name}")
-    private String defaultDwName ;
+    private String defaultDwName;
 
     @Override
     public void startGovernanceAssess(String schemaName, String assessDate) {
         //1.提取元数据
-        tableMetaInfoService.initTableMetaInfo(schemaName , assessDate);
+        tableMetaInfoService.initTableMetaInfo(schemaName, assessDate);
 
         //2.考评
-        governanceAssessDetailService.mainAssess( assessDate );
+        governanceAssessDetailService.mainAssess(assessDate);
 
         //3.核算分数
-        governanceAssessTableService.calcTableSorce( assessDate );
-        governanceAssessTecOwnerService.calcTecOwnerScore( assessDate );
-        governanceAssessGlobalService.calcGlobalScore( assessDate );
+        governanceAssessTableService.calcTableSorce(assessDate);
+        governanceAssessTecOwnerService.calcTecOwnerScore(assessDate);
+        governanceAssessGlobalService.calcGlobalScore(assessDate);
     }
 
     @Override
     public void startGovernanceAssess(String assessDate) {
-        startGovernanceAssess( defaultDwName , assessDate  );
+        startGovernanceAssess(defaultDwName, assessDate);
     }
 
     @Override
     @Scheduled(cron = "0 40 10 * * *")
     public void startGovernanceAssess() {
-        String schemaName = defaultDwName ;
+        String schemaName = defaultDwName;
         //定时调度一定是当天，直接获取当天的时间即可
-        String assessDate = "2023-05-02" ;
-        startGovernanceAssess(schemaName ,assessDate );
+        String assessDate = "2023-05-02";
+        startGovernanceAssess(schemaName, assessDate);
     }
 }
