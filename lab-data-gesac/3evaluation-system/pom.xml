@@ -19,6 +19,7 @@
     </properties>
 
     <dependencies>
+        <!-- 框架相关 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -43,7 +44,7 @@
         </dependency>
 
 
-        <!-- mybatis -->
+        <!-- mybatis相关 -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
@@ -94,7 +95,7 @@
             <version>1.2.83</version>
         </dependency>
 
-
+        <!-- hive相关 -->
         <dependency>
             <groupId>org.apache.hive</groupId>
             <artifactId>hive-metastore</artifactId>
