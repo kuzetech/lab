@@ -48,5 +48,45 @@ create table if not exists dga.table_meta_info_extra (
   create_time          datetime     null comment '创建时间 (自动生成)',
   update_time          datetime     null comment '更新时间 (自动生成)',
   constraint table_meta_info_extra_pk unique (table_name, schema_name)
-) comment '元数据表附加信息';
+) comment '元数据附加信息表';
+
+create table if not exists dga.governance_metric (
+  id                 bigint NOT NULL AUTO_INCREMENT comment 'id',
+  metric_name        varchar(200)  null comment '指标名称',
+  metric_code        varchar(200)  null comment '指标编码',
+  metric_desc        varchar(2000) null comment '指标描述',
+  governance_type    varchar(20)   null comment '治理类型',
+  metric_params_json varchar(2000) null comment '指标参数',
+  governance_url     varchar(500)  null comment '治理连接',
+  skip_assess_tables varchar(2000) null comment '跳过考评的表名(多表逗号分割)',
+  is_disabled        varchar(1)    null comment '是否启用', 
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='考评指标参数表';
+
+create table if not exists dga.governance_type (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `type_code` varchar(200) DEFAULT NULL COMMENT '治理项类型编码',
+  `type_desc` varchar(2000) DEFAULT NULL COMMENT '治理项类型描述',
+  `type_weight` decimal(10,2) DEFAULT NULL COMMENT '治理类型权重',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='治理考评类别权重表';
+
+create table if not exists dga.governance_assess_detail (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `assess_date` varchar(20) DEFAULT NULL COMMENT '考评日期',
+  `table_name` varchar(200) DEFAULT NULL COMMENT '表名',
+  `schema_name` varchar(200) DEFAULT NULL COMMENT '库名',
+  `metric_id` varchar(200) DEFAULT NULL COMMENT '指标项id',
+  `metric_name` varchar(200) DEFAULT NULL COMMENT '指标项名称',
+  `governance_type` varchar(200) DEFAULT NULL COMMENT '治理类型',
+  `tec_owner` varchar(200) DEFAULT NULL COMMENT '技术负责人',
+  `assess_score` decimal(10,2) DEFAULT NULL COMMENT '考评得分',
+  `assess_problem` varchar(2000) DEFAULT NULL COMMENT '考评问题项',
+  `assess_comment` varchar(2000) DEFAULT NULL COMMENT '考评备注',
+  `is_assess_exception` varchar(1) DEFAULT '0' COMMENT '考评是否异常',
+  `assess_exception_msg` varchar(2000) DEFAULT NULL COMMENT '异常信息',
+  `governance_url` varchar(2000) DEFAULT NULL COMMENT '治理处理路径',
+  `create_time` datetime DEFAULT NULL COMMENT '创建日期',
+   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='治理考评结果明细';
 
