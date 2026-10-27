@@ -1,3 +1,3 @@
 #!/bin/bash
 
-yarn application -kill application_1789741361940_0001
+yarn application -kill application_1793066963962_0006

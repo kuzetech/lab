@@ -38,11 +38,13 @@
     </property>
     <property>
         <name>yarn.nodemanager.resource.memory-mb</name>
-        <value>2048</value>
+        <!-- Reserve 1 GiB of the NodeManager container's 10 GiB limit for
+             the NodeManager JVM and OS-level overhead. -->
+        <value>9216</value>
     </property>
     <property>
         <name>yarn.scheduler.maximum-allocation-mb</name>
-        <value>2048</value>
+        <value>9216</value>
     </property>
     <property>
         <name>yarn.scheduler.minimum-allocation-mb</name>

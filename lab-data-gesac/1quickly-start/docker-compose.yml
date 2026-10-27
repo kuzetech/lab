@@ -49,6 +49,78 @@ services:
           mysql --default-character-set=utf8mb4 -hmysql -uroot -p"$${MYSQL_ROOT_PASSWORD}" < "$${init_script}"
         done
 
+  postgresql:
+    image: postgres:10
+    container_name: quickly-start-postgresql
+    restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 768m
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: app_db
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: app_password
+      TZ: Asia/Shanghai
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+      - ./postgresql/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - ./postgresql/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  postgresql-init:
+    image: postgres:10
+    container_name: quickly-start-postgresql-init
+    restart: "no"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    environment:
+      PGHOST: postgresql
+      PGUSER: app_user
+      PGPASSWORD: app_password
+      PGDATABASE: app_db
+      TZ: Asia/Shanghai
+    volumes:
+      - ./postgresql/initdb:/docker-entrypoint-initdb.d:ro
+      - ./mysql/initdb:/mysql-initdb:ro
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        psql -v ON_ERROR_STOP=1 -f /docker-entrypoint-initdb.d/000-prepare.sql
+        for init_script in /mysql-initdb/*.sql; do
+          sed -E \
+            -e '/^[[:space:]]*CREATE DATABASE/,/;/d' \
+            -e '/^[[:space:]]*(CREATE|ALTER) USER /d' \
+            -e '/^[[:space:]]*GRANT ALL PRIVILEGES /d' \
+            -e '/^[[:space:]]*FLUSH PRIVILEGES/d' \
+            -e 's/`//g' \
+            -e 's/BIGINT UNSIGNED NOT NULL AUTO_INCREMENT/BIGSERIAL NOT NULL/g' \
+            -e 's/BIGINT NOT NULL AUTO_INCREMENT/BIGSERIAL NOT NULL/g' \
+            -e 's/bigint NOT NULL AUTO_INCREMENT/bigserial NOT NULL/g' \
+            -e 's/bigint primary key auto_increment/bigserial primary key/g' \
+            -e 's/BIGINT NOT NULL AUTO_INCREMENT/bigserial NOT NULL/g' \
+            -e 's/[Tt][Ii][Nn][Yy][Ii][Nn][Tt]/SMALLINT/g' \
+            -e 's/[Dd][Aa][Tt][Ee][Tt][Ii][Mm][Ee]/TIMESTAMP/g' \
+            -e "s/[[:space:]]+[Cc][Oo][Mm][Mm][Ee][Nn][Tt][[:space:]]+'[^']*'//g" \
+            -e 's/\) ENGINE=InnoDB[^;]*;/);/g' \
+            -e "s/\)[[:space:]]+[Cc][Oo][Mm][Mm][Ee][Nn][Tt][[:space:]]+'[^']*';/);/g" \
+            -e 's/REPLACE INTO/INSERT INTO/g' \
+            "$${init_script}" | psql -v ON_ERROR_STOP=1
+        done
+        psql -v ON_ERROR_STOP=1 -c "SELECT setval('app_db.example_items_id_seq', (SELECT MAX(id) FROM app_db.example_items))"
+        psql -v ON_ERROR_STOP=1 -c "SELECT setval('erp.user_info_id_seq', (SELECT MAX(id) FROM erp.user_info))"
+        psql -v ON_ERROR_STOP=1 -c "SELECT setval('erp.sku_info_id_seq', (SELECT MAX(id) FROM erp.sku_info))"
+        psql -v ON_ERROR_STOP=1 -c "SELECT setval('erp.order_info_id_seq', (SELECT MAX(id) FROM erp.order_info))"
+
   kafka:
     image: apache/kafka:3.9.2
     container_name: quickly-start-kafka
@@ -225,7 +297,7 @@ services:
     container_name: nodemanager
     hostname: nodemanager
     restart: unless-stopped
-    mem_limit: 3g
+    mem_limit: 10g
     command: ["yarn", "nodemanager"]
     ports:
       - "8042:8042"
@@ -235,7 +307,7 @@ services:
       - ./hadoop/conf/yarn-site.xml:/opt/hadoop/etc/hadoop/yarn-site.xml:ro
       - ./hadoop/conf/mapred-site.xml:/opt/hadoop/etc/hadoop/mapred-site.xml:ro
     environment:
-      YARN_NODEMANAGER_OPTS: -Xmx512m
+      YARN_NODEMANAGER_OPTS: -Xmx1g
     depends_on:
       - namenode
       - datanode
@@ -246,7 +318,7 @@ services:
     container_name: quickly-start-dolphinscheduler
     restart: unless-stopped
     cpus: 2
-    mem_limit: 1.5g
+    mem_limit: 2g
     ports:
       - "12345:12345"
       - "25333:25333"
@@ -322,6 +394,7 @@ services:
 
 volumes:
   mysql-data:
+  postgresql-data:
   kafka-data:
   hive-warehouse:
   namenode_data:
