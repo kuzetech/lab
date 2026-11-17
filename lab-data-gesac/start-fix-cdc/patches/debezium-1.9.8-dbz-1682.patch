@@ -1,0 +1,29 @@
+diff --git a/debezium-connector-postgres/src/main/java/io/debezium/connector/postgresql/connection/pgoutput/PgOutputMessageDecoder.java b/debezium-connector-postgres/src/main/java/io/debezium/connector/postgresql/connection/pgoutput/PgOutputMessageDecoder.java
+index 50be97f25d..aa3d7a6b45 100644
+--- a/debezium-connector-postgres/src/main/java/io/debezium/connector/postgresql/connection/pgoutput/PgOutputMessageDecoder.java
++++ b/debezium-connector-postgres/src/main/java/io/debezium/connector/postgresql/connection/pgoutput/PgOutputMessageDecoder.java
+@@ -7,6 +7,8 @@
+ 
+ import static java.util.stream.Collectors.toMap;
+ 
++import java.io.ByteArrayOutputStream;
+ import java.nio.ByteBuffer;
+ import java.nio.charset.Charset;
++import java.nio.charset.StandardCharsets;
+ import java.sql.DatabaseMetaData;
+@@ -676,10 +678,10 @@
+      * @return string read from the replication stream
+      */
+     private static String readString(ByteBuffer buffer) {
+-        StringBuilder sb = new StringBuilder();
++        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+         byte b = 0;
+         while ((b = buffer.get()) != 0) {
+-            sb.append((char) b);
++            bytes.write(b);
+         }
+-        return sb.toString();
++        return new String(bytes.toByteArray(), StandardCharsets.UTF_8);
+     }
+ 
+     /**

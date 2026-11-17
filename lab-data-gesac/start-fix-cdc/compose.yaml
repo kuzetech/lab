@@ -1,0 +1,18 @@
+services:
+  builder:
+    build:
+      context: .
+      args:
+        FLINK_CDC_COMMIT: ${FLINK_CDC_COMMIT:-1d89ff85ebc337650ef26c3e307957657bda7db4}
+        DEBEZIUM_COMMIT: ${DEBEZIUM_COMMIT:-c88a467e91a7acd0dd535c076a337439e23147ed}
+    image: flink-cdc-3.7-dbz-1682-builder:local
+    environment:
+      HOST_UID: ${HOST_UID:-1000}
+      HOST_GID: ${HOST_GID:-1000}
+      MAVEN_OPTS: ${MAVEN_OPTS:--Xmx3g}
+    volumes:
+      - ./output:/output
+      - maven-repository:/root/.m2/repository
+
+volumes:
+  maven-repository:
