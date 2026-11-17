@@ -3,7 +3,7 @@ volumes:
 
 services:
   kafka:
-    image: bitnami/kafka:3.3.2
+    image: soldevelo/kafka:3.3.2
     user: root
     container_name: kafka
     ports:
