@@ -95,6 +95,11 @@ services:
       - -c
       - |
         set -e
+        # PostgreSQL can still briefly refuse TCP connections after its health
+        # check passes; wait here so this one-shot initializer is reliable.
+        until psql -v ON_ERROR_STOP=1 -c 'SELECT 1' >/dev/null 2>&1; do
+          sleep 2
+        done
         psql -v ON_ERROR_STOP=1 -f /docker-entrypoint-initdb.d/000-prepare.sql
         for init_script in /mysql-initdb/*.sql; do
           sed -E \
@@ -113,8 +118,19 @@ services:
             -e "s/[[:space:]]+[Cc][Oo][Mm][Mm][Ee][Nn][Tt][[:space:]]+'[^']*'//g" \
             -e 's/\) ENGINE=InnoDB[^;]*;/);/g' \
             -e "s/\)[[:space:]]+[Cc][Oo][Mm][Mm][Ee][Nn][Tt][[:space:]]+'[^']*';/);/g" \
-            -e 's/REPLACE INTO/INSERT INTO/g' \
-            "$${init_script}" | psql -v ON_ERROR_STOP=1
+            "$${init_script}" | awk '
+              /REPLACE INTO/ {
+                sub(/REPLACE INTO/, "INSERT INTO")
+                replace_statement = 1
+              }
+              {
+                if (replace_statement && index($$0, ";")) {
+                  sub(/;/, " ON CONFLICT DO NOTHING;")
+                  replace_statement = 0
+                }
+                print
+              }
+            ' | psql -v ON_ERROR_STOP=1
         done
         # 业务表由上面的兼容转换导入后，再启用完整的逻辑复制旧行镜像。
         # Flink CDC 处理 UPDATE / DELETE 时需要该 before image。
@@ -200,7 +216,7 @@ services:
         export METASTORE_PORT="$${METASTORE_PORT:-9083}"
         exec /opt/hive/bin/hive --skiphadoopversion --skiphbasecp --service metastore
     volumes:
-      - ${MYSQL_CONNECTOR_JAR:-./dolphinscheduler/dep/mysql-connector-j-8.0.33.jar}:/opt/hive/lib/mysql-connector-j-8.0.33.jar:ro
+      - ${MYSQL_CONNECTOR_JAR:-./dolphinscheduler/dep/mysql-connector-j-8.0.33.jar/mysql-connector-j-8.0.33.jar}:/opt/hive/lib/mysql-connector-j-8.0.33.jar:ro
       - hive-warehouse:/opt/hive/data/warehouse
     healthcheck:
       test:

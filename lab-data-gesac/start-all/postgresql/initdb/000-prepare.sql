@@ -29,7 +29,7 @@ CREATE SCHEMA IF NOT EXISTS dga;
 GRANT USAGE ON SCHEMA hive_metastore TO hive;
 GRANT ALL PRIVILEGES ON SCHEMA dolphinscheduler TO dolphinscheduler;
 
-# CDC相关
+-- CDC permissions
 GRANT CONNECT ON DATABASE app_db TO dsj_cdc;
 GRANT USAGE ON SCHEMA erp TO dsj_cdc;
 GRANT SELECT ON ALL TABLES IN SCHEMA erp TO dsj_cdc;
