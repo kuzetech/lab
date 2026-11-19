@@ -1,0 +1,32 @@
+version: '3.8'  
+
+services: 
+  streampark:
+    image: apache/streampark:v2.1.5  # 使用前面打包好的镜像
+    ports:
+      - "10000:10000"  # 服务端口,默认账号密码 admin:streampark
+    environment:
+      - TZ=Asia/Shanghai  # 容器内时区
+      - DATASOURCE_DIALECT=h2   # 设置数据源方言，支持 h2, mysql, pgsql，当前为 h2
+                                # 如果使用 MySQL 或 PostgreSQL 数据库，需设置以下参数
+                                # - DATASOURCE_URL=jdbc:mysql://localhost:3306/streampark?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8
+                                # - DATASOURCE_URL=jdbc:postgresql://localhost:5432/streampark?stringtype=unspecified
+                                # - DATASOURCE_USERNAME=root  # 数据库用户名
+                                # - DATASOURCE_PASSWORD=streampark  # 数据库密码
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # 将主机的 Docker 套接字挂载到容器内，允许容器内的进程与 Docker 进行交互
+      - /etc/hosts:/etc/hosts:ro  # 将主机的 /etc/hosts 文件挂载到容器内，容器只读访问该文件
+      - ~/.kube:/root/.kube:ro    # 将主机的 kube 配置目录挂载到容器中，以便访问 Kubernetes 集群
+    privileged: true  # 给予容器更高权限，通常用于需要与宿主机资源交互的场景
+    restart: always   # 容器崩溃或主机重启后总是自动重启容器
+    networks:
+      - streampark    # 使用名为 streampark 的自定义网络
+    healthcheck:  # 设置健康检查
+      test: [ "CMD", "curl", "http://streampark:10000" ]  # 使用 curl 检查容器的 10000 端口是否可访问
+      interval: 5s  # 健康检查的间隔时间为 5 秒
+      timeout: 5s  # 每次健康检查的超时时间为 5 秒
+      retries: 120  # 如果健康检查失败，容器将在 120 次失败后被认为不可用
+
+networks:
+  streampark:
+    driver: bridge  # 使用桥接网络驱动
