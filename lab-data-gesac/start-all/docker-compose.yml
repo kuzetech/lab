@@ -216,7 +216,7 @@ services:
         export METASTORE_PORT="$${METASTORE_PORT:-9083}"
         exec /opt/hive/bin/hive --skiphadoopversion --skiphbasecp --service metastore
     volumes:
-      - ${MYSQL_CONNECTOR_JAR:-./dolphinscheduler/dep/mysql-connector-j-8.0.33.jar/mysql-connector-j-8.0.33.jar}:/opt/hive/lib/mysql-connector-j-8.0.33.jar:ro
+      - ${MYSQL_CONNECTOR_JAR:-./dolphinscheduler/dep/mysql-connector-j-8.0.33.jar}:/opt/hive/lib/mysql-connector-j-8.0.33.jar:ro
       - hive-warehouse:/opt/hive/data/warehouse
     healthcheck:
       test:
@@ -340,6 +340,30 @@ services:
       - namenode
       - datanode
       - resourcemanager
+
+  streampark:
+    build:
+      context: ./dolphinscheduler/dep
+      dockerfile: ../../streampark/Dockerfile
+    image: streampark-flink:2.1.5
+    container_name: quickly-start-streampark
+    restart: unless-stopped
+    ports:
+      - "10000:10000"
+    environment:
+      TZ: Asia/Shanghai
+      DATASOURCE_DIALECT: h2
+      FLINK_HOME: /opt/flink
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/hosts:/etc/hosts:ro
+      - ~/.kube:/root/.kube:ro
+    privileged: true
+    healthcheck:
+      test: ["CMD", "curl", "http://streampark:10000"]
+      interval: 5s
+      timeout: 5s
+      retries: 120
 
   dolphinscheduler:
     image: dolphinscheduler-flink:3.4.2
